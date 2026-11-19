@@ -43,6 +43,7 @@ export default function Bank({path}) {
   const cur = page === 'truck' ? 'live' : page === 'report' ? 'reports' : page;
   return (
     <div className="shell">
+      <a className="skip" href="#content">Skip to content</a>
       <nav className="side" aria-label="Food bank">
         <div style={{padding: 'var(--space-sm) var(--space-md) var(--space-xl)'}}><Wordmark size={28} /></div>
         {nav.map(([href, key, label, I]) => (
@@ -52,7 +53,7 @@ export default function Bank({path}) {
         <div className="muted" style={{padding: '0 var(--space-md)', fontSize: 'var(--fs-sub)'}}>{BANK.name}</div>
         <a href="/" onClick={(e) => (e.preventDefault(), confirm('Sign out of FreshRoute on this device?') && (resetState(), navigate('/', {replace: true})))}><LogOut size={20} aria-hidden="true" />Sign out</a>
       </nav>
-      <main className="main" tabIndex={-1}>
+      <main className="main" id="content" tabIndex={-1}>
         {page === 'live' && <Live />}
         {page === 'truck' && <TruckDetail id={parts[3]} />}
         {page === 'reports' && <Reports />}

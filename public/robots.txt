@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /$
+Disallow: /api/
+Disallow: /s/
+Disallow: /drive
+Disallow: /bank
+Disallow: /setup
+
+Sitemap: https://freshroute.pages.dev/sitemap.xml

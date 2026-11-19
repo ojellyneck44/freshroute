@@ -34,7 +34,7 @@ test('ETA state thresholds', () => {
 });
 
 test('nextWindow finds the open or next donation window', () => {
-  const kroger = stores[0]; // Mon/Wed/Fri 08:30–10:30
+  const kroger = stores[0]; // Mon/Wed/Fri 08:30 to 10:30
   const wedNine = new Date(2026, 10, 18, 9, 0); // Wed 18 Nov 2026
   const w = nextWindow(kroger, wedNine);
   assert.equal(w.isOpen, true);

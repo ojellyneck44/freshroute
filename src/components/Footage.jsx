@@ -97,7 +97,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
           <div className="track" />
           {gaps.map(([a, b], k) => <div key={k} className="gap" style={{left: pct(a), width: `calc(${pct(b)} - ${pct(a)})`}} title="Recording gap" />)}
           {events.filter((e) => TICK[e.kind]).map((e, k) => (
-            <button key={k} className="tick" style={{left: pct(e.t), background: TICK[e.kind]}} onClick={() => jump(e.t - 3000)} aria-label={`${eventText(e)} at ${clock(e.t)}`} title={`${clock(e.t)} ${eventText(e)}`} />
+            <button key={k} className="tick" style={{left: pct(e.t), '--tick': TICK[e.kind]}} onClick={() => jump(e.t - 3000)} aria-label={`${eventText(e)} at ${clock(e.t)}`} title={`${clock(e.t)} ${eventText(e)}`} />
           ))}
           <div className="head" style={{left: pct(t)}} />
           <input type="range" min={start} max={start + span} value={t} onChange={(e) => jump(Number(e.target.value))} aria-label="Scrub through the drive" />

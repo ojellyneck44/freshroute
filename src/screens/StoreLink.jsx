@@ -16,9 +16,12 @@ export default function StoreLink({path}) {
       .then((x) => (setD(x), setErr(null)))
       .catch((e) => setErr(e.message));
   useEffect(() => {
+    // Store links are private to one pickup: keep them out of search results.
+    const m = Object.assign(document.createElement('meta'), {name: 'robots', content: 'noindex, nofollow'});
+    document.head.appendChild(m);
     load();
     const t = setInterval(load, 15000);
-    return () => clearInterval(t);
+    return () => (clearInterval(t), m.remove());
   }, []);
   const ready = async (v) => {
     setBusy(true);

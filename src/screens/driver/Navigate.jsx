@@ -96,7 +96,8 @@ export default function Navigate() {
   const offline = !navigator.onLine || pending() > 20;
 
   return (
-    <div className="mapshell" data-screen tabIndex={-1}>
+    <main className="mapshell" data-screen tabIndex={-1}>
+      <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
       <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
@@ -163,7 +164,7 @@ export default function Navigate() {
       {overlay === 'progress' && <Progress drive={drive} live={live} now={now} onClose={() => setOverlay(null)} />}
       {overlay === 'pickup' && target.kind === 'stop' && <Pickup drive={drive} i={target.i} onClose={() => setOverlay(null)} />}
       {overlay === 'end' && <EndDrive drive={drive} onClose={() => setOverlay(null)} onFinishing={() => (finishing.current = true)} />}
-    </div>
+    </main>
   );
 }
 

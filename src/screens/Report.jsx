@@ -64,8 +64,9 @@ export default function Report({id, back}) {
     navigator.share ? navigator.share({title: 'Drive report', url}).catch(() => {}) : navigator.clipboard?.writeText(url);
   };
 
+  const Root = back === '/drive' ? 'main' : 'div'; // inside the food bank shell there is already a <main>
   return (
-    <main className="overlay-inner" tabIndex={-1} style={{maxWidth: 'var(--size-content)'}}>
+    <Root className="overlay-inner" tabIndex={-1} style={{maxWidth: 'var(--size-content)'}}>
       <div className="spread">
         <Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(back)} />
         {!String(d.id).startsWith('local-') && <Button variant="ghost" label="Share with the food bank" icon={<Share2 size={18} />} onClick={share} />}
@@ -143,7 +144,7 @@ export default function Report({id, back}) {
           )}
         </div>
       </section>
-    </main>
+    </Root>
   );
 }
 

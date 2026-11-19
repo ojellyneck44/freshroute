@@ -1,0 +1,20 @@
+{
+  "$description": "Colours for places that can't read CSS variables (MapLibre paint, <meta name=theme-color>). Values come from DESIGN.md and the style sheet's map page.",
+  "chrome": {"dark": "#0B0F0E", "light": "#F6F8F7"},
+  "base": {
+    "background": "#111715",
+    "water": "#0C2530",
+    "green": "#142219",
+    "building": "#161D1B",
+    "minor": "#232B28",
+    "major": "#2E3734",
+    "motorway": "#3A4541",
+    "casing": "#0B0F0E",
+    "label": "#86928D",
+    "halo": "#0B0F0E"
+  },
+  "route": {
+    "dark": {"on-time": "#B8F25E", "slipping": "#FFB54A", "late": "#FF7A66", "unknown": "#B8F25E", "driven": "#4A5551", "casing": "#0B0F0E"},
+    "light": {"on-time": "#3C7A0C", "slipping": "#9A5800", "late": "#C2341E", "unknown": "#3C7A0C", "driven": "#A3AEA9", "casing": "#FFFFFF"}
+  }
+}

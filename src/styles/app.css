@@ -10,13 +10,18 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
-button { font: inherit; color: inherit; }
-a { color: var(--fr-sprout); }
+/* In Astryx's reset layer, so Astryx components (e.g. a primary Button's dark label) still win. */
+@layer reset {
+  button { font: inherit; color: inherit; }
+  a { color: var(--fr-sprout); }
+}
 :focus-visible { outline: var(--rule) solid var(--fr-text); outline-offset: var(--rule); }
 .num { font-variant-numeric: tabular-nums; }
 .mono { font-family: var(--fr-mono); font-weight: 500; }
 .muted { color: var(--fr-text-2); }
 .faint { color: var(--fr-text-3); }
+.skip { position: absolute; left: var(--space-lg); top: calc(var(--space-2xl) * -2); z-index: 100; padding: var(--space-sm) var(--space-lg); border-radius: var(--r-element); background: var(--fr-text); color: var(--fr-bg); font-weight: 600; }
+.skip:focus { top: var(--space-lg); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 h1, h2, h3 { margin: 0; font-family: var(--fr-display); letter-spacing: -0.01em; text-wrap: balance; }
@@ -65,7 +70,7 @@ h3 { font-size: var(--fs-title3); font-weight: 700; line-height: 1.2; }
 .btn[aria-disabled='true'] { opacity: 0.45; pointer-events: none; }
 .chip {
   display: inline-flex; align-items: center; gap: var(--space-xs); height: var(--size-pin); padding: 0 var(--space-md); border-radius: var(--r-control);
-  font: 600 var(--fs-sub)/1 var(--fr-ui); background: var(--fr-raised); color: var(--fr-text-2); white-space: nowrap;
+  font: 500 var(--fs-sub)/1 var(--fr-ui); background: var(--fr-raised); color: var(--fr-text-2); white-space: nowrap;
 }
 .chip.on-time, .chip.sprout { background: var(--fr-sprout-tint); color: var(--fr-sprout); }
 .chip.slipping, .chip.apricot { background: var(--fr-apricot-tint); color: var(--fr-apricot); }
@@ -114,8 +119,10 @@ button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-b
 .pin { width: var(--size-pin); height: var(--size-pin); border-radius: 50%; display: grid; place-items: center; font: 700 var(--fs-sub)/1 var(--fr-ui); background: var(--fr-raised); color: var(--fr-text); border: var(--border-pin) solid var(--fr-bg); cursor: pointer; transition: transform var(--fr-snap) var(--fr-ease); }
 .pin.open { background: var(--fr-sprout); color: var(--fr-on-sprout); }
 .pin.today { background: var(--fr-surface); color: var(--fr-sprout); box-shadow: inset 0 0 0 var(--space-3xs) var(--fr-sprout); }
-.pin.later { width: var(--size-pin-small); height: var(--size-pin-small); background: var(--fr-raised); box-shadow: inset 0 0 0 var(--space-3xs) var(--fr-text-3); }
+.pin.later { width: var(--space-xl); height: var(--space-xl); background: var(--fr-raised); box-shadow: inset 0 0 0 var(--space-3xs) var(--fr-text-3); }
 .pin.sel { transform: scale(1.3); }
+/* Map markers keep their look but get a 44 px hit area (WCAG 2.5.8). */
+.maplibregl-marker.pin::after, .maplibregl-marker.truck-dot::after, .maplibregl-marker.stopnum::after { content: ''; position: absolute; inset: calc(var(--space-md) * -1); }
 .pin.bank { width: var(--size-pin-bank); height: var(--size-pin-bank); background: var(--fr-text); color: var(--fr-bg); border-radius: var(--r-tag); }
 .puck { width: var(--size-puck); height: var(--size-puck); border-radius: 50%; background: var(--fr-text); border: var(--border-puck) solid var(--fr-bg); display: grid; place-items: center; box-shadow: var(--shadow-puck); }
 .truck-dot { width: var(--size-truck); height: var(--size-truck); border-radius: 50%; border: var(--border-pin) solid var(--fr-bg); box-shadow: var(--shadow-puck); }
@@ -215,8 +222,8 @@ button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-b
 .scrub { position: relative; height: var(--size-puck); margin-top: var(--space-sm); }
 .scrub .track { position: absolute; left: 0; right: 0; top: var(--space-lg); height: var(--border-puck); border-radius: var(--rule); background: var(--fr-line-strong); }
 .scrub .gap { position: absolute; top: var(--space-md); height: var(--size-stopdot); border: 1px dashed var(--fr-text-3); border-radius: var(--rule); }
-.scrub .tick { position: absolute; z-index: 2; top: var(--space-sm); width: var(--border-puck); height: var(--space-xl); border-radius: var(--rule); border: 0; padding: 0; cursor: pointer; transform: translateX(calc(var(--rule) * -1)); }
-.scrub .tick::after { content: ''; position: absolute; inset: calc(var(--space-sm) * -1); }
+.scrub .tick { position: absolute; z-index: 2; top: var(--space-sm); width: var(--space-xl); height: var(--space-xl); border: 0; padding: 0; background: transparent; cursor: pointer; transform: translateX(-50%); }
+.scrub .tick::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: var(--border-puck); border-radius: var(--rule); background: var(--tick); transform: translateX(-50%); }
 .scrub .head { position: absolute; top: var(--space-2xs); width: var(--rule); height: var(--space-2xl); background: var(--fr-text); pointer-events: none; }
 .scrub input[type='range'] { position: absolute; inset: 0; width: 100%; opacity: 0; cursor: pointer; }
 .empty { padding: var(--space-3xl) var(--space-xl); text-align: center; border: 1px dashed var(--fr-line-strong); border-radius: var(--r-glass); color: var(--fr-text-2); }

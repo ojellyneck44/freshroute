@@ -80,7 +80,7 @@ export default function Plan() {
 
   const selStore = sel && storeById(sel);
   return (
-    <div className="mapshell">
+    <main className="mapshell" tabIndex={-1}>
       <MapView route={plan?.route.coords} markers={markers} fitKey={`${ids.join(',') || 'all'}|${plan ? 'planned' : ''}`} padding={{top: 60, bottom: 60, left: innerWidth > 820 ? 440 : 40, right: 60}} label="Map of donation stores" />
       <aside className={`sheet${selStore ? ' tall' : ''}`} aria-label="Plan pickups">
         {selStore ? (
@@ -91,11 +91,11 @@ export default function Plan() {
               <div className="spread">
                 <div>
                   <div className="label">{profile.name ? `${profile.name.split(' ')[0]} · ${profile.van}` : profile.van}</div>
-                  <h2>{tab === 'route' ? 'Your route' : 'Pickups'}</h2>
+                  <h1 style={{fontSize: 'var(--fs-title1)'}}>{tab === 'route' ? 'Your route' : 'Pickups'}</h1>
                 </div>
                 <Button variant="ghost" isIconOnly label="Preferences" icon={<Settings size={20} />} onClick={() => navigate('/drive/prefs')} />
               </div>
-              <SegmentedControl label="Show" value={tab} onChange={setTab} layout="fill">
+              <SegmentedControl label="Show" value={tab} onChange={setTab} layout="fill" size="lg">
                 <SegmentedControlItem value="pickups" label="Pickups" />
                 <SegmentedControlItem value="route" label={`Route${ids.length ? ` (${ids.length})` : ''}`} />
               </SegmentedControl>
@@ -137,7 +137,7 @@ export default function Plan() {
           </>
         )}
       </aside>
-    </div>
+    </main>
   );
 }
 
@@ -153,7 +153,7 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
       <div className="sheet-head">
         <Button variant="ghost" label="All pickups" icon={<ArrowLeft size={18} />} onClick={onBack} />
         <div>
-          <h2>{store.name}</h2>
+          <h1 style={{fontSize: 'var(--fs-title1)'}}>{store.name}</h1>
           <div className="muted">{store.address}, Denton</div>
         </div>
         <div className="row wrap" style={{gap: 'var(--space-xs)'}}>
