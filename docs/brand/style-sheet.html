@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FreshRoute Style Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+@page { size: 1600px 1000px; margin: 0; }
+:root{
+  --a1000:#070A09;--a950:#0B0F0E;--a900:#141A18;--a850:#1C2321;--a800:#252D2A;--a700:#323C38;--a600:#4A5551;--a500:#66726D;--a400:#86928D;--a300:#A3AEA9;--a200:#C9D1CE;--a100:#ECF0EE;
+  --sprout300:#D6FB92;--sprout:#B8F25E;--sprout600:#8CC63A;--sprout800:#3C7A0C;--sprout950:#1A2A0B;
+  --frost:#7FD6F0;--frost800:#0A6F91;--frost950:#0C2530;
+  --apricot:#FFB54A;--apricot800:#9A5800;--apricot950:#2E2008;
+  --tomato:#FF7A66;--tomato800:#C2341E;--tomato950:#33140F;
+  --display:"Overpass",-apple-system,sans-serif;
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+body{font-family:var(--ui);color:var(--a100);-webkit-font-smoothing:antialiased}
+.page{width:1600px;height:1000px;background:var(--a950);position:relative;overflow:hidden;break-after:page;margin:0 auto 24px;padding:72px 88px 64px}
+@media print{.page{margin:0}}
+.folio{position:absolute;left:88px;right:88px;bottom:32px;display:flex;justify-content:space-between;font:400 13px/1 var(--ui);color:var(--a400)}
+.kicker{font:600 15px/1 var(--ui);color:var(--a400);margin-bottom:16px}
+h1{font:800 60px/1.05 var(--display);letter-spacing:-.02em;margin-bottom:20px;text-wrap:balance}
+h2{font:700 25px/1.2 var(--display);letter-spacing:-.01em;margin-bottom:10px}
+h3{font:600 15px/1.3 var(--ui);color:var(--a100);margin-bottom:6px}
+p,li{font:400 17px/1.5 var(--ui);color:var(--a300)}
+.lede{text-wrap:pretty;font-size:21px;line-height:1.45;color:var(--a200);max-width:980px}
+.small{font-size:14px;line-height:1.45;color:var(--a400)}
+.mono{font-family:var(--mono)}
+.label{font:600 13px/1.25 var(--ui);color:var(--a400)}
+b,strong{color:var(--a100);font-weight:600}
+.grid{display:grid;gap:28px}
+.rule{border-top:1px solid var(--a800);padding-top:16px}
+table{border-collapse:collapse;width:100%}
+th{font:600 13px/1.25 var(--ui);color:var(--a400);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--a700)}
+td{font:400 15px/1.4 var(--ui);color:var(--a200);padding:11px 14px 11px 0;border-bottom:1px solid var(--a800);vertical-align:top}
+td.m{font:500 13px/1.4 var(--mono);color:var(--a300)}
+.sep{font-family:var(--ui);font-weight:400;margin:0 .3em}
+.chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:15px;font:600 14px/1 var(--ui)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.glass{background:rgba(28,35,33,.56);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px rgba(255,255,255,.05),0 6px 20px rgba(0,0,0,.3)}
+.glass.dense{background:rgba(20,26,24,.8)}
+.solid{background:var(--a900);border:1px solid var(--a800)}
+.do,.dont{font:600 13px/1 var(--ui);padding:5px 8px;border-radius:5px;display:inline-block;margin-bottom:10px}
+.do{background:var(--a800);color:var(--a100)}
+.dont{background:var(--a800);color:var(--a100)}
+.note{border-top:1px solid var(--a800);padding-top:14px}
+.warnnote{border-top:1px solid var(--a800);padding-top:14px}
+code,pre{font-family:var(--mono)}
+pre{font-size:12.5px;line-height:1.55;color:var(--a200);background:var(--a1000);border:1px solid var(--a800);border-radius:14px;padding:20px 22px;white-space:pre;overflow:hidden}
+pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ibg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C2622"/><stop offset="1" stop-color="#080B0A"/></linearGradient>
+    <linearGradient id="isp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D6FB92"/><stop offset="1" stop-color="#A3E041"/></linearGradient>
+    <symbol id="mark" viewBox="0 0 1024 1024">
+      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/>
+      <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="url(#isp)" stroke-width="100" stroke-linecap="round"/>
+      <circle cx="249.2" cy="634.6" r="26" fill="#0B0F0E"/>
+      <g transform="translate(588 218) rotate(-12)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="url(#isp)"/><path d="M -84 0 C -30 -6 30 -6 80 0" fill="none" stroke="#0E1412" stroke-width="10" stroke-linecap="round" opacity=".5"/></g>
+    </symbol>
+    <symbol id="iconsm" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="url(#ibg)"/>
+      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".3" stroke-width="130" stroke-linecap="round"/>
+      <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="#B8F25E" stroke-width="130" stroke-linecap="round"/>
+      <g transform="translate(588 206) rotate(-12) scale(1.15)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="#B8F25E"/></g>
+    </symbol>
+    <symbol id="icon" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="url(#ibg)"/><use href="#mark"/></symbol>
+    <symbol id="markmono" viewBox="0 0 1024 1024">
+      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="100" stroke-linecap="round"/>
+      <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="currentColor" stroke-width="100" stroke-linecap="round"/>
+      <g transform="translate(588 218) rotate(-12)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="currentColor"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- 1 COVER -->
+<section class="page" style="padding:0;background:radial-gradient(1200px 700px at 78% 30%,#18241D 0%,var(--a950) 60%)">
+  <div style="position:absolute;left:88px;top:88px;display:flex;align-items:center;gap:20px">
+    <svg width="64" height="64" style="border-radius:15px"><use href="#iconsm"/></svg>
+    <div style="font:700 34px/1 var(--display);letter-spacing:-.02em">FreshRoute</div>
+  </div>
+  <div style="position:absolute;left:88px;bottom:150px;max-width:860px">
+    <div class="kicker">Brand and interface style sheet, version 3, for review</div>
+    <h1 style="font-size:104px;line-height:.95">Keep the promise.<br><span style="color:var(--sprout)">Show the proof.</span></h1>
+    <p class="lede" style="margin-top:28px">How FreshRoute looks, sounds and moves: colour, type, the glass material, the app icon, the map, motion and copy rules, all mapped onto Astryx theme tokens. Nothing gets built until you sign off on this document.</p>
+  </div>
+  <svg style="position:absolute;right:-60px;top:120px;width:760px;height:760px"><use href="#mark"/></svg>
+  <div class="folio"><span>FreshRoute · Stevie M. · Internship case study</span><span>19 Nov 2026 · 1</span></div>
+</section>
+
+<!-- 2 IDEA -->
+<section class="page">
+  <h1>One promise, kept in the open.</h1>
+  <p class="lede">When a driver starts a route, FreshRoute locks an arrival time: the <b>promise</b>. Everything in the brand comes back to whether that promise is being kept. The ring shows it, the colour reports it, and the footage backs it up. Cody's problem was never a lack of maps. It was "oh, the truck's here" while he was in the middle of something else, and not knowing how long the yogurt had been out of the fridge.</p>
+  <div class="grid" style="grid-template-columns:1.7fr 1fr 1fr 1fr;margin-top:56px">
+    <div class="rule"><div class="label" style="color:var(--sprout)">The principle everything else serves</div><h2 style="margin-top:12px;font-size:40px">Honest time</h2><p style="font-size:19px">Every number has a baseline: "6 min behind your 10:13 promise", never just "late". We never round a late arrival into an on-time one.</p></div>
+    <div class="rule"><h2 style="margin-top:4px">Calm at speed</h2><p>Drivers look at the iPad for under a second at a time. While the van moves, the screen gets quieter: bigger type, fewer words, no decorative motion.</p></div>
+    <div class="rule"><h2 style="margin-top:4px">Evidence, not surveillance</h2><p>Footage and motion markers protect the driver as much as the food. The tone is that of a dashcam that has your back, not a manager looking over your shoulder.</p></div>
+    <div class="rule"><h2 style="margin-top:4px">Native, not novelty</h2><p>It should feel like it shipped with the iPad: system type for UI, Liquid Glass only on things that float, and Apple's own conventions for sheets, lists and controls.</p></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:56px;gap:48px">
+    <div class="note"><h3>Personality, in one line</h3><p>A calm dispatcher who has done this route a hundred times: dry, precise, on your side. Not a cheerleader, not a cop.</p></div>
+    <div class="note"><h3>What we leave out</h3><p>Gamification (cut by the design studio vote), confetti, streaks, mascots and stock photos of smiling volunteers. The personality comes from the type, the leaf and the ring's motion.</p></div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · The idea</span><span>02</span></div>
+</section>
+
+<!-- 3 LANDSCAPE -->
+<section class="page">
+  <h1>Borrow the conventions, not the look.</h1>
+  <p class="lede">Drivers and managers already know these products, so we reuse what they have learned and avoid looking like any one of them.</p>
+  <table style="margin-top:40px">
+    <tr><th style="width:17%">Product</th><th style="width:27%">What people already know from it</th><th style="width:27%">What we take</th><th>How FreshRoute looks different</th></tr>
+    <tr><td><b>Google Maps / Waze</b></td><td>Maneuver card at the top, big next-turn arrow, route line in one strong colour</td><td>Maneuver card placement, lane-arrow glyph style, a route line that is the brightest thing on screen</td><td>Their route lines are blue on a light map; ours is Sprout on Asphalt. The ETA is a ring, top-right, not a bottom bar</td></tr>
+    <tr><td><b>Life360</b></td><td>Drive reports: a timeline with hard-brake and speed events</td><td>The report structure: map, then event list, then metrics</td><td>Life360 uses friendly purple and family framing. Ours is a work record: monospace timecodes, a baseline on every number</td></tr>
+    <tr><td><b>Ring</b></td><td>Live view, an event timeline you scrub, clips grouped by event</td><td>The scrub bar with event ticks, "Live" state, event thumbnails</td><td>Ring is blue, consumer-security framing. Our markers are coloured by what happened (motion, cold, stop), not by "motion detected"</td></tr>
+    <tr><td><b>Onfleet / Routific</b></td><td>Dispatch dashboards: a list of drivers next to a map</td><td>Manager layout: truck list on the left, map plus detail on the right</td><td>They are light, dense SaaS dashboards. Ours keeps the dark, glanceable driver language on the manager side too</td></tr>
+    <tr><td><b>Careit / Too Good To Go</b></td><td>Food-rescue listings: item, quantity, pickup window</td><td>Listing anatomy, now with pack size, weight and storage type up front (the "popcorn" fix)</td><td>Food rescue apps lean light, soft green and illustrated. We are night-road dark with one sharp green, closer to a tool than a charity app</td></tr>
+  </table>
+  <p class="small" style="margin-top:28px">Colour notes describe each product's general look as of late 2026 and are not exact brand values. The full competitor analysis (features, gaps, pricing) is a separate document that comes with the build.</p>
+  <div class="folio"><span>FreshRoute style sheet · Where FreshRoute sits</span><span>03</span></div>
+</section>
+
+<!-- 4 CORE PALETTE -->
+<section class="page">
+  <h1>Night road, one green.</h1>
+  <p class="lede">The neutrals are a slightly green-tinted asphalt, so the dark mode feels like a road at night rather than a generic grey. There is one brand colour, <b style="color:var(--sprout)">Sprout</b>, and it means "on time". Apricot means "needs a look", Tomato means a broken promise or something destructive, and Frost is only ever the cold chain.</p>
+  <div class="grid" style="grid-template-columns:2.1fr 1fr 1fr 1fr;margin-top:44px;gap:20px">
+    <div>
+      <div style="height:300px;border-radius:24px;background:var(--sprout);padding:26px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
+        <div style="font:700 44px/1 var(--display)">Sprout</div>
+        <div><div style="font:600 15px/1.4 var(--ui)">Brand · on time · primary action · the route line</div><div class="mono" style="font-size:14px;margin-top:6px">#B8F25E · 14.6:1 on Asphalt 950</div></div>
+      </div>
+      <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px">
+        <div style="flex:1;background:var(--sprout300);color:var(--a950);padding:10px" class="mono"><small>300 #D6FB92</small></div>
+        <div style="flex:1;background:var(--sprout600);color:var(--a950);padding:10px" class="mono"><small>600 #8CC63A</small></div>
+        <div style="flex:1;background:var(--sprout800);color:#fff;padding:10px" class="mono"><small>800 #3C7A0C</small></div>
+        <div style="flex:1;background:var(--sprout950);color:var(--sprout);padding:10px" class="mono"><small>950 #1A2A0B</small></div>
+      </div>
+    </div>
+    <div>
+      <div style="height:300px;border-radius:24px;background:var(--apricot);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
+        <div style="font:700 32px/1 var(--display)">Apricot</div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Needs a look: slipping, motion events</div><div class="mono" style="font-size:13px;margin-top:6px">#FFB54A · 11.0:1</div></div>
+      </div>
+      <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--apricot800);color:#fff;padding:10px" class="mono"><small>800 #9A5800</small></div><div style="flex:1;background:var(--apricot950);color:var(--apricot);padding:10px" class="mono"><small>950</small></div></div>
+    </div>
+    <div>
+      <div style="height:300px;border-radius:24px;background:var(--tomato);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
+        <div style="font:700 32px/1 var(--display)">Tomato</div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Late · broken promise · destructive</div><div class="mono" style="font-size:13px;margin-top:6px">#FF7A66 · 7.6:1</div></div>
+      </div>
+      <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--tomato800);color:#fff;padding:10px" class="mono"><small>800 #C2341E</small></div><div style="flex:1;background:var(--tomato950);color:var(--tomato);padding:10px" class="mono"><small>950</small></div></div>
+    </div>
+    <div>
+      <div style="height:300px;border-radius:24px;background:var(--frost);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
+        <div style="font:700 32px/1 var(--display)">Frost</div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Cold chain, and nothing else</div><div class="mono" style="font-size:13px;margin-top:6px">#7FD6F0 · 11.7:1</div></div>
+      </div>
+      <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--frost800);color:#fff;padding:10px" class="mono"><small>800 #0A6F91</small></div><div style="flex:1;background:var(--frost950);color:var(--frost);padding:10px" class="mono"><small>950</small></div></div>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:40px;gap:40px">
+    <div class="note"><h3>Why green is the brand colour</h3><p class="small">The design studio voted "colour creates urgency" #1. If the brand colour is the on-time colour, a screen that looks most like FreshRoute is a screen where everything is fine.</p></div>
+    <div class="note"><h3>Food names, on purpose</h3><p class="small">Sprout, Apricot, Tomato and Frost come from what's in the van. They are easy to say in a design review and they're a small bit of personality that costs nothing.</p></div>
+    <div class="warnnote"><h3>No gradients in the UI</h3><p class="small">The only gradient in the product is inside the app icon. Interface colour is flat, with one exception: glass picks up whatever is behind it.</p></div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Colour · core palette</span><span>04</span></div>
+</section>
+
+<!-- 5 SEMANTIC -->
+<section class="page">
+  <h1>Colour never works alone.</h1>
+  <p class="lede">About 1 in 12 men have a red–green colour vision deficiency, and Sprout vs. Tomato is exactly that pair. Every state therefore also changes its <b>glyph</b> and its <b>words</b>, so a screenshot in greyscale still reads correctly.</p>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:44px;gap:24px">
+    <div class="solid" style="border-radius:24px;padding:28px">
+      <div style="display:flex;align-items:center;gap:20px">
+        <svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--a800)" stroke-width="9"/><circle cx="48" cy="48" r="40" fill="none" stroke="var(--sprout)" stroke-width="9" stroke-linecap="round" stroke-dasharray="180 252" transform="rotate(-90 48 48)"/><path d="M34 49l9 9 18-20" fill="none" stroke="var(--sprout)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><div class="label" style="color:var(--sprout)">On time</div><div style="font:700 30px/1.1 var(--display);margin-top:6px">10:11</div><div class="small">2 min ahead of 10:13</div></div>
+      </div>
+      <p class="small" style="margin-top:20px"><b>Forecast ≤ promise + 3 min.</b> Glyph: check. Copy: "On time" or "2 min ahead".</p>
+    </div>
+    <div class="solid" style="border-radius:24px;padding:28px">
+      <div style="display:flex;align-items:center;gap:20px">
+        <svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--a800)" stroke-width="9"/><circle cx="48" cy="48" r="40" fill="none" stroke="var(--apricot)" stroke-width="9" stroke-linecap="round" stroke-dasharray="150 252" transform="rotate(-90 48 48)"/><circle cx="48" cy="48" r="17" fill="none" stroke="var(--apricot)" stroke-width="5"/><path d="M48 39v10l6 4" fill="none" stroke="var(--apricot)" stroke-width="5" stroke-linecap="round"/></svg>
+        <div><div class="label" style="color:var(--apricot)">Slipping</div><div style="font:700 30px/1.1 var(--display);margin-top:6px">10:20</div><div class="small">7 min behind 10:13</div></div>
+      </div>
+      <p class="small" style="margin-top:20px"><b>+4 to +10 min.</b> Glyph: clock. The food bank gets one quiet update with the reason, if the driver gave one.</p>
+    </div>
+    <div class="solid" style="border-radius:24px;padding:28px">
+      <div style="display:flex;align-items:center;gap:20px">
+        <svg width="96" height="96" viewBox="0 0 96 96"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--a800)" stroke-width="9"/><circle cx="48" cy="48" r="40" fill="none" stroke="var(--tomato)" stroke-width="9" stroke-linecap="round" stroke-dasharray="120 252" transform="rotate(-90 48 48)"/><path d="M48 33v18" stroke="var(--tomato)" stroke-width="6" stroke-linecap="round"/><circle cx="48" cy="61" r="3.6" fill="var(--tomato)"/></svg>
+        <div><div class="label" style="color:var(--tomato)">Late</div><div style="font:700 30px/1.1 var(--display);margin-top:6px">10:31</div><div class="small">18 min behind 10:13</div></div>
+      </div>
+      <p class="small" style="margin-top:20px"><b>More than +10 min.</b> Glyph: exclamation. The promise is shown as broken in the report; it is never quietly reset.</p>
+    </div>
+  </div>
+  <table style="margin-top:40px">
+    <tr><th style="width:16%">Signal</th><th style="width:16%">Colour</th><th style="width:20%">Glyph</th><th>Used for</th></tr>
+    <tr><td><b>Cold chain</b></td><td><span class="chip" style="background:var(--frost950);color:var(--frost)">❄︎ 0:42 out</span></td><td>Snowflake with timer</td><td>The cold timer from "Loaded" until drop-off. It turns Apricot at 1 h and Tomato at 2 h out of the fridge (food-safety thresholds the food bank can edit).</td></tr>
+    <tr><td><b>Motion events</b></td><td><span class="chip" style="background:var(--apricot950);color:var(--apricot)"><span class="dot" style="background:var(--apricot)"></span>Hard brake</span></td><td>Brake, turn and bump marks</td><td>Gyroscope and accelerometer markers on the footage timeline and the report map. Apricot because they need a look, not because something is wrong.</td></tr>
+    <tr><td><b>Stops</b></td><td><span class="chip" style="background:var(--sprout950);color:var(--sprout)"><span class="dot" style="background:var(--sprout)"></span>Pickup 2 of 3</span></td><td>Numbered pin</td><td>Pickups and drop-offs, with item counts at both ends.</td></tr>
+    <tr><td><b>Recording gap</b></td><td><span class="chip" style="background:var(--a850);color:var(--a300);border:1px dashed var(--a600)">Gap 0:48</span></td><td>Hatched bar</td><td>Times the app was in the background and couldn't record. Always shown, never hidden.</td></tr>
+  </table>
+  <div class="folio"><span>FreshRoute style sheet · Colour · what each colour means</span><span>05</span></div>
+</section>
+
+<!-- 6 NEUTRALS + CONTRAST -->
+<section class="page">
+  <h1>Twelve steps of asphalt.</h1>
+  <div style="display:flex;margin-top:28px;border-radius:18px;overflow:hidden;height:130px">
+    <div style="flex:1;background:#070A09;padding:12px;color:var(--a400)" class="mono"><small>1000<br>#070A09</small></div>
+    <div style="flex:1;background:#0B0F0E;padding:12px;color:var(--a400)" class="mono"><small>950<br>#0B0F0E</small></div>
+    <div style="flex:1;background:#141A18;padding:12px;color:var(--a400)" class="mono"><small>900<br>#141A18</small></div>
+    <div style="flex:1;background:#1C2321;padding:12px;color:var(--a400)" class="mono"><small>850<br>#1C2321</small></div>
+    <div style="flex:1;background:#252D2A;padding:12px;color:var(--a300)" class="mono"><small>800<br>#252D2A</small></div>
+    <div style="flex:1;background:#323C38;padding:12px;color:var(--a200)" class="mono"><small>700<br>#323C38</small></div>
+    <div style="flex:1;background:#4A5551;padding:12px;color:var(--a100)" class="mono"><small>600<br>#4A5551</small></div>
+    <div style="flex:1;background:#66726D;padding:12px;color:#fff" class="mono"><small>500<br>#66726D</small></div>
+    <div style="flex:1;background:#86928D;padding:12px;color:var(--a950)" class="mono"><small>400<br>#86928D</small></div>
+    <div style="flex:1;background:#A3AEA9;padding:12px;color:var(--a950)" class="mono"><small>300<br>#A3AEA9</small></div>
+    <div style="flex:1;background:#C9D1CE;padding:12px;color:var(--a950)" class="mono"><small>200<br>#C9D1CE</small></div>
+    <div style="flex:1;background:#ECF0EE;padding:12px;color:var(--a950)" class="mono"><small>100<br>#ECF0EE</small></div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1.25fr;gap:56px;margin-top:40px">
+    <table>
+      <tr><th>Role</th><th>Token</th><th>Dark</th></tr>
+      <tr><td>Page background</td><td class="m">bg.page</td><td class="m">950</td></tr>
+      <tr><td>Map-free surface, lists</td><td class="m">bg.surface</td><td class="m">900</td></tr>
+      <tr><td>Raised: sheets, menus</td><td class="m">bg.raised</td><td class="m">850</td></tr>
+      <tr><td>Hairlines</td><td class="m">border</td><td class="m">800</td></tr>
+      <tr><td>Strong borders, track</td><td class="m">border.strong</td><td class="m">700</td></tr>
+      <tr><td>Primary text</td><td class="m">text</td><td class="m">100</td></tr>
+      <tr><td>Secondary text</td><td class="m">text.secondary</td><td class="m">300</td></tr>
+      <tr><td>Tertiary, timestamps</td><td class="m">text.tertiary</td><td class="m">400</td></tr>
+    </table>
+    <div>
+      <h3>Measured contrast (WCAG 2.2, ratio to 1)</h3>
+      <table style="margin-top:8px">
+        <tr><th>Text</th><th>on 950</th><th>on 900</th><th>on 850</th></tr>
+        <tr><td>Text 100</td><td class="m">16.8</td><td class="m">15.3</td><td class="m">13.9</td></tr>
+        <tr><td>Secondary 300</td><td class="m">8.4</td><td class="m">7.7</td><td class="m">7.0</td></tr>
+        <tr><td>Tertiary 400</td><td class="m">5.9</td><td class="m">5.4</td><td class="m">5.0</td></tr>
+        <tr><td style="color:var(--sprout)">Sprout</td><td class="m">14.6</td><td class="m">13.4</td><td class="m">12.1</td></tr>
+        <tr><td style="color:var(--apricot)">Apricot</td><td class="m">11.0</td><td class="m">10.0</td><td class="m">9.1</td></tr>
+        <tr><td style="color:var(--tomato)">Tomato</td><td class="m">7.6</td><td class="m">6.9</td><td class="m">6.3</td></tr>
+        <tr><td style="color:var(--frost)">Frost</td><td class="m">11.7</td><td class="m">10.7</td><td class="m">9.7</td></tr>
+      </table>
+      <p class="small" style="margin-top:16px">All pass AA (4.5) for body text; everything above Tertiary passes AAA (7). Text on a Sprout button is Asphalt 950 at 14.6. Asphalt 500 is for disabled states and decoration only, never for text a person needs.</p>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Colour · Asphalt neutrals and contrast</span><span>06</span></div>
+</section>
+
+<!-- 7 DAYLIGHT -->
+<section class="page">
+  <h1>Dark by default. Daylight when the sun is on the glass.</h1>
+  <p class="lede">You asked for dark mode, and it stays the default. But a dark iPad on a dashboard at 2 p.m. in Denton mirrors the windshield and becomes hard to read. That's why Google Maps and CarPlay switch by time of day. Safari can't read the light sensor, so FreshRoute does the same: <b>dark by default, Daylight in the driving screens between sunrise and sunset</b>, with a manual override. The manager side follows the system setting.</p>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:32px;margin-top:44px">
+    <div style="border-radius:24px;background:var(--a950);border:1px solid var(--a800);padding:30px;height:340px;position:relative">
+      <div class="label">Dark · default</div>
+      <div style="display:flex;gap:20px;align-items:center;margin-top:24px"><div style="font:700 56px/1 var(--display);color:var(--a100)">10:11</div><span class="chip" style="background:var(--sprout950);color:var(--sprout)">✓ On time</span></div>
+      <p style="margin-top:14px">Sam's Club · Loop 288 · 2 of 3</p>
+      <div style="margin-top:28px;display:flex;gap:12px"><div style="background:var(--sprout);color:var(--a950);font:600 17px/1 var(--ui);padding:16px 22px;border-radius:14px">Start pickup</div><div style="background:var(--a850);color:var(--a100);font:600 17px/1 var(--ui);padding:16px 22px;border-radius:14px">Call store</div></div>
+      <p class="small" style="position:absolute;bottom:26px">Night and indoors. Manager default when the OS is dark.</p>
+    </div>
+    <div style="border-radius:24px;background:#F6F8F7;border:1px solid #DDE3E0;padding:30px;height:340px;position:relative;color:#0E1412">
+      <div class="label" style="color:#4F5A56">Daylight</div>
+      <div style="display:flex;gap:20px;align-items:center;margin-top:24px"><div style="font:700 56px/1 var(--display)">10:11</div><span class="chip" style="background:#E3F3CF;color:#3C7A0C">✓ On time</span></div>
+      <p style="margin-top:14px;color:#4F5A56">Sam's Club · Loop 288 · 2 of 3</p>
+      <div style="margin-top:28px;display:flex;gap:12px"><div style="background:#3C7A0C;color:#fff;font:600 17px/1 var(--ui);padding:16px 22px;border-radius:14px">Start pickup</div><div style="background:#E6EBE9;color:#0E1412;font:600 17px/1 var(--ui);padding:16px 22px;border-radius:14px">Call store</div></div>
+      <p class="small" style="position:absolute;bottom:26px;color:#4F5A56">Sun on the windshield. Sprout darkens to 800 so text passes contrast.</p>
+    </div>
+  </div>
+  <table style="margin-top:36px">
+    <tr><th>Daylight token</th><th>Value</th><th>Contrast on #FFFFFF / #F6F8F7</th><th>Daylight token</th><th>Value</th><th>Contrast</th></tr>
+    <tr><td>Text</td><td class="m">#0E1412</td><td class="m">18.6 / 17.5</td><td>Sprout (text, buttons)</td><td class="m">#3C7A0C</td><td class="m">5.3 / 5.0</td></tr>
+    <tr><td>Secondary</td><td class="m">#4F5A56</td><td class="m">7.2 / 6.7</td><td>Apricot</td><td class="m">#9A5800</td><td class="m">5.6 / 5.2</td></tr>
+    <tr><td>Tertiary</td><td class="m">#5E6965</td><td class="m">5.7 / 5.4</td><td>Tomato · Frost</td><td class="m">#C2341E · #0A6F91</td><td class="m">5.5 · 5.7</td></tr>
+  </table>
+  <div class="folio"><span>FreshRoute style sheet · Colour · Daylight mode</span><span>07</span></div>
+</section>
+
+<!-- 8 TYPE FACES -->
+<section class="page">
+  <h1>Signage, interface, record.</h1>
+  <div class="grid" style="grid-template-columns:1.25fr 1fr 1fr;gap:40px;margin-top:40px">
+    <div class="rule">
+      <div class="label" style="color:var(--sprout)">Display</div>
+      <div style="font:800 72px/1 var(--display);letter-spacing:-.02em;margin:22px 0 14px">Overpass</div>
+      <div style="font:600 30px/1.2 var(--display);color:var(--a300)">Aa Bb Rr 0123 &amp; 10:13</div>
+      <p style="margin-top:20px">Headlines, screen titles, store names and the wordmark. Overpass is based on Highway Gothic, the alphabet on US road signs, which was drawn to be read at speed from a distance. A route app set in road-sign type.</p>
+      <p class="small" style="margin-top:12px">Open Font License, self-hosted as a variable woff2 so the PWA works offline. Used at 22 px and up, weights 700–800. Its middle dot sits tight, so separators get extra space.</p>
+    </div>
+    <div class="rule">
+      <div class="label" style="color:var(--sprout)">Interface</div>
+      <div style="font:600 68px/1 var(--ui);letter-spacing:-.02em;margin:22px 0 14px">SF Pro <span style="font-size:22px;color:var(--a400);font-weight:400;letter-spacing:0">system UI</span></div>
+      <div style="font:400 22px/1.3 var(--ui);color:var(--a300);font-variant-numeric:tabular-nums">Arrive 10:11 · 4.2 mi<br>Cold 0:42 · 3 of 3 stops</div>
+      <p style="margin-top:20px">Every control, list, label and live number. On iPad, iPhone and Mac this <b>is</b> SF Pro, so controls feel native, render crisply and cost zero bytes. Windows gets Segoe UI, Android gets Roboto.</p>
+      <p class="small" style="margin-top:12px">We can't ship SF Pro as a web font (Apple's licence), so we call the system stack instead.</p>
+    </div>
+    <div class="rule">
+      <div class="label" style="color:var(--sprout)">Records</div>
+      <div style="font:600 46px/1.4 var(--mono);margin:22px 0 14px;letter-spacing:-.02em">Plex Mono</div>
+      <div style="font:500 20px/1.4 var(--mono);color:var(--a300)">09:47:12 HARD BRAKE 0.62g<br>VAN-2 · RPT-1043</div>
+      <p style="margin-top:20px">Timecodes, footage overlays, event logs and IDs, nothing else. It marks things that are records rather than UI, so the report reads like evidence.</p>
+      <p class="small" style="margin-top:12px">Open Font License, self-hosted. 500 and 600 weights only.</p>
+    </div>
+  </div>
+  <div class="note" style="margin-top:44px"><h3>The ticking rule</h3><p>Anything that changes while you watch (ETA, cold timer, countdown, speed) is set in the system face with <code>tabular-nums</code>, so digits don't jitter sideways. Overpass is only for numbers that sit still, such as a report headline.</p></div>
+  <div class="folio"><span>FreshRoute style sheet · Typography · three faces, three jobs</span><span>08</span></div>
+</section>
+
+<!-- 9 TYPE SCALE -->
+<section class="page">
+  <h1>Sized for an arm's length.</h1>
+  <p class="lede" style="max-width:1200px">A mounted iPad is about 70 cm from the driver's eyes, roughly twice phone distance. Body text starts at Apple's 17 pt default; anything a driver reads while moving is 28 pt or larger. Sizes are in CSS px and follow Dynamic Type through <code>rem</code>.</p>
+  <table style="margin-top:32px">
+    <tr><th style="width:14%">Token</th><th style="width:44%">Sample</th><th style="width:12%">Face</th><th style="width:14%">Size / line · weight</th><th>Where</th></tr>
+    <tr><td class="m">numeral.hero</td><td><span style="font:700 64px/1 var(--ui);font-variant-numeric:tabular-nums;letter-spacing:-.02em">10:11</span></td><td>System</td><td class="m">64/64 · 700</td><td>ETA ring centre, progress screen</td></tr>
+    <tr><td class="m">display</td><td><span style="font:700 48px/1.05 var(--display);letter-spacing:-.025em">Drive report</span></td><td>Overpass</td><td class="m">48/52 · 700</td><td>Report and role-choice headlines</td></tr>
+    <tr><td class="m">title.1</td><td><span style="font:700 32px/1.1 var(--display);letter-spacing:-.015em">Sam's Club<span class="sep">·</span>Loop 288</span></td><td>Overpass</td><td class="m">32/36 · 650</td><td>Screen titles, store names</td></tr>
+    <tr><td class="m">maneuver</td><td><span style="font:600 30px/1.1 var(--ui)">Turn right onto Loop 288</span></td><td>System</td><td class="m">30/36 · 600</td><td>Next-turn card: the in-motion minimum</td></tr>
+    <tr><td class="m">title.2</td><td><span style="font:600 22px/1.25 var(--ui)">3 stops · 42 min · 18.4 mi</span></td><td>System</td><td class="m">22/28 · 600</td><td>Sheet headers, section titles</td></tr>
+    <tr><td class="m">body</td><td><span style="font:400 17px/1.45 var(--ui)">Ask for Dana at the back dock. Bread comes bagged.</span></td><td>System</td><td class="m">17/24 · 400</td><td>Everything readable at rest</td></tr>
+    <tr><td class="m">footnote</td><td><span style="font:400 13px/1.4 var(--ui);color:var(--a300)">Updated 9:12 AM · from Van 2</span></td><td>System</td><td class="m">13/18 · 400</td><td>Meta, timestamps (never while moving)</td></tr>
+    <tr><td class="m">record</td><td><span style="font:500 14px/1.3 var(--mono)">09:47:12  HARD BRAKE  0.62g</span></td><td>Plex Mono</td><td class="m">14/20 · 500</td><td>Timecodes, event rows</td></tr>
+    <tr><td class="m">label</td><td><span class="label" style="font-size:15px">Promised and forecast</span></td><td>System</td><td class="m">15/20 · 600</td><td>Section labels, chart legends; sentence case</td></tr>
+  </table>
+  <div class="folio"><span>FreshRoute style sheet · Typography · scale</span><span>09</span></div>
+</section>
+
+<!-- 10 GLASS -->
+<section class="page" style="padding:0">
+  <svg width="1600" height="1000" style="position:absolute;inset:0" viewBox="0 0 1600 1000">
+    <rect width="1600" height="1000" fill="#0F1513"/>
+    <path d="M0 640 C 300 600 520 760 900 700 S 1400 560 1600 600 L1600 1000 L0 1000Z" fill="#0C2530" opacity=".9"/><path d="M1300 0 C 1340 120 1440 200 1600 220 L1600 0Z" fill="#0C2530"/>
+    <rect x="1080" y="90" width="300" height="200" rx="16" fill="#142219"/>
+    <g stroke="#2A3330" stroke-width="10" fill="none"><path d="M0 220 H1600"/><path d="M0 470 H1600"/><path d="M380 0 V1000"/><path d="M820 0 V1000"/><path d="M1260 0 V700"/></g>
+    <g stroke="#202825" stroke-width="5" fill="none"><path d="M0 120 H1600"/><path d="M0 340 H1600"/><path d="M600 0 V700"/><path d="M1040 0 V700"/><path d="M180 0 V700"/><path d="M1460 0 V700"/></g>
+    <g stroke="#3A4541" stroke-width="18" fill="none"><path d="M0 560 C 400 520 700 380 1600 330"/></g>
+    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#0B0F0E" stroke-width="20" stroke-linejoin="round"/>
+    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round"/>
+    <circle cx="1420" cy="340" r="18" fill="#B8F25E" stroke="#0B0F0E" stroke-width="5"/>
+    <circle cx="380" cy="560" r="20" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/>
+    <rect y="944" width="1600" height="56" fill="#0B0F0E"/>
+  </svg>
+  <div style="position:absolute;left:88px;top:72px;width:600px">
+    <h1 style="font-size:56px">Glass is for things that float.</h1>
+  </div>
+  <div class="glass" style="position:absolute;left:88px;top:250px;width:520px;border-radius:28px;padding:26px 28px;display:flex;gap:22px;align-items:center">
+    <svg width="64" height="64" viewBox="0 0 64 64"><path d="M20 54V30a8 8 0 0 1 8-8h18" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">0.4 mi</div><div style="font:600 26px/1.2 var(--ui);margin-top:6px">Right onto Loop 288</div></div>
+  </div>
+  <div class="glass" style="position:absolute;right:88px;top:250px;width:180px;height:180px;border-radius:90px;display:grid;place-items:center">
+    <svg width="160" height="160" viewBox="0 0 160 160" style="position:absolute"><circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="80" cy="80" r="70" fill="none" stroke="#B8F25E" stroke-width="10" stroke-linecap="round" stroke-dasharray="300 440" transform="rotate(-90 80 80)"/></svg>
+    <div style="text-align:center"><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">10:11</div><div class="label" style="color:var(--sprout);margin-top:6px">On time</div></div>
+  </div>
+  <div class="solid" style="position:absolute;left:88px;right:88px;bottom:64px;border-radius:28px;padding:30px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px;background:rgba(11,15,14,.94)">
+    <div><span class="do">Glass</span><p class="small">Floating controls over the map or video: maneuver card, ETA ring, camera window, toolbar, sheet grabber, tab bar. Material: 56% Asphalt 850, 24 px blur, 170% saturation, 1 px white 16% edge, 24% top highlight. Over busy map areas (behind the bottom tray) the tint rises to 80%.</p></div>
+    <div><span class="dont">Never glass</span><p class="small">Content: lists, tables, reports, forms, cards stacked on solid backgrounds. Glass on glass. Anything with more than two lines of body text. Those use solid Asphalt 900/850, like this panel.</p></div>
+    <div><span class="do">Fallbacks</span><p class="small"><code>prefers-reduced-transparency</code> and Low Power Mode switch glass to solid Asphalt 850 at 96%. Over bright map areas (Daylight), the tint rises to 72% so text keeps 4.5:1.</p></div>
+  </div>
+  <div class="folio" style="color:var(--a400)"><span>FreshRoute style sheet · Liquid Glass · the material</span><span>10</span></div>
+</section>
+
+<!-- 11 LAYOUT -->
+<section class="page">
+  <h1>Four-point grid, concentric corners.</h1>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:56px;margin-top:32px">
+    <div>
+      <h3>Spacing scale (px)</h3>
+      <div style="display:flex;align-items:flex-end;gap:14px;margin-top:16px;height:90px">
+        <div style="text-align:center"><div style="width:4px;height:4px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">4</div></div>
+        <div style="text-align:center"><div style="width:8px;height:8px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">8</div></div>
+        <div style="text-align:center"><div style="width:12px;height:12px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">12</div></div>
+        <div style="text-align:center"><div style="width:16px;height:16px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">16</div></div>
+        <div style="text-align:center"><div style="width:20px;height:20px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">20</div></div>
+        <div style="text-align:center"><div style="width:24px;height:24px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">24</div></div>
+        <div style="text-align:center"><div style="width:32px;height:32px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">32</div></div>
+        <div style="text-align:center"><div style="width:40px;height:40px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">40</div></div>
+        <div style="text-align:center"><div style="width:56px;height:56px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">56</div></div>
+        <div style="text-align:center"><div style="width:72px;height:72px;background:var(--a400);margin:auto"></div><div class="mono small" style="margin-top:8px">72</div></div>
+      </div>
+      <h3 style="margin-top:44px">Radius: inner = outer − padding</h3>
+      <div style="display:flex;gap:28px;align-items:center;margin-top:16px">
+        <div style="width:280px;height:170px;border-radius:28px;background:var(--a850);padding:16px;position:relative">
+          <div style="height:100%;border-radius:12px;background:var(--a700);display:grid;place-items:center"><span class="mono small" style="color:var(--a200)">12 = 28 − 16</span></div>
+        </div>
+        <table style="width:auto">
+          <tr><td class="m">inner</td><td class="m">8</td><td>Chips, inputs inside rows</td></tr>
+          <tr><td class="m">element</td><td class="m">12–14</td><td>Buttons, fields, thumbnails</td></tr>
+          <tr><td class="m">container</td><td class="m">20–28</td><td>Panels, glass controls</td></tr>
+          <tr><td class="m">page</td><td class="m">36</td><td>Sheets (top corners only)</td></tr>
+        </table>
+      </div>
+      <p class="small" style="margin-top:18px">Corners are continuous-curvature "squircles" where the browser supports <code>corner-shape</code>, and plain radii otherwise.</p>
+    </div>
+    <div>
+      <h3>Breakpoints</h3>
+      <table style="margin-top:10px">
+        <tr><th>Device</th><th>Width</th><th>Layout</th></tr>
+        <tr><td><b>iPad landscape</b> (primary)</td><td class="m">1024–1366</td><td>Full-bleed map, 400 px side sheet, glass controls in the corners</td></tr>
+        <tr><td>iPad portrait</td><td class="m">768–1024</td><td>Map on top, bottom sheet with three detents</td></tr>
+        <tr><td>Phone</td><td class="m">360–430</td><td>Bottom sheet, tab bar, ring shrinks to 96 px</td></tr>
+        <tr><td>Desktop (manager)</td><td class="m">1280+</td><td>Sidebar, truck list, map plus detail; content max 1440</td></tr>
+      </table>
+      <h3 style="margin-top:36px">Touch</h3>
+      <p class="small" style="margin-top:6px">44 × 44 px minimum anywhere (Apple HIG). <b>64 × 64 px for anything a driver presses in a moving van</b>, with 12 px between targets so a bump doesn't hit the wrong one. The primary in-drive action sits bottom-right, within reach of the right thumb on a dash mount.</p>
+      <h3 style="margin-top:28px">Safe areas</h3>
+      <p class="small" style="margin-top:6px">All edges respect <code>env(safe-area-inset-*)</code> in standalone (home-screen) mode, including the iPad's rounded corners and home indicator.</p>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Layout, spacing and shape</span><span>11</span></div>
+</section>
+
+<!-- 12 ICONS -->
+<section class="page">
+  <h1>Lucide outlines, plus five of our own.</h1>
+  <p class="lede">Apple's SF Symbols are licensed for Apple-platform apps only, so the web app uses <b>Lucide</b> (ISC licence), registered as Astryx theme icons. Its line icons sit close to SF Symbols' regular weight. Stroke 1.75 at 24 px, 2.25 at 32 px and up; rounded caps and joins. Icons always sit next to a word, apart from universal ones (close, back, more).</p>
+  <div style="margin-top:32px;border-bottom:1px solid var(--a800)"><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h22"/><path d="M22 16l8 8-8 8"/><path d="M38 10v28" stroke-width="5"/></svg><h3 style="margin:0">Hard brake</h3><p class="small" style="font-size:16px">Forward arrow meeting a stop bar. Deceleration of 0.45 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 40V26a12 12 0 0 1 12-12h12"/><path d="M30 8l6 6-6 6"/><path d="M6 20c-2 4-2 10 0 14"/></svg><h3 style="margin:0">Sharp turn</h3><p class="small" style="font-size:16px">Turn arrow with a sway mark. Lateral force of 0.4 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34h10c4 0 5-10 10-10s6 10 10 10h10"/><path d="M24 8v8M18 12l6-4 6 4"/></svg><h3 style="margin:0">Bump</h3><p class="small" style="font-size:16px">Road bump with a lift arrow. Vertical spike of 0.5 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--frost)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4v22M5 9l20 12M5 21l20-12"/><circle cx="36" cy="36" r="9"/><path d="M36 31v5l3 2"/></svg><h3 style="margin:0">Cold timer</h3><p class="small" style="font-size:16px">Snowflake and clock, kept apart so both read at 24 px.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--tomato)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="28" height="24" rx="5"/><path d="M32 20l12-6v20l-12-6"/><circle cx="18" cy="24" r="5" fill="var(--tomato)" stroke="none"/></svg><h3 style="margin:0">Recording</h3><p class="small" style="font-size:16px">Camera with a solid dot. The one Tomato that does not mean late.</p></div></div>
+  <div class="warnnote" style="margin-top:36px;max-width:1100px"><h3>The recording dot exception</h3><p class="small">A red recording dot is a universal convention and people look for it. It stays Tomato, but it's always a small dot with the word "REC" in Plex Mono, never a ring or a bar, so it can't be confused with the Late state.</p></div>
+  <p class="small" style="margin-top:22px">Thresholds are starting points from published fleet-telematics practice and get tuned with real drives during user testing. No emoji anywhere in the interface.</p>
+  <div class="folio"><span>FreshRoute style sheet · Iconography</span><span>12</span></div>
+</section>
+
+<!-- 13 APP ICON -->
+<section class="page">
+  <h1>The ring, nearly closed. The leaf, waiting.</h1>
+  <div class="grid" style="grid-template-columns:420px 1fr;gap:64px;margin-top:36px">
+    <div>
+      <svg width="420" height="420" style="border-radius:94px;box-shadow:0 12px 32px rgba(0,0,0,.4)"><use href="#icon"/></svg>
+    </div>
+    <div>
+      <p class="lede" style="font-size:19px">The bright arc is the drive so far; the dim stretch is the road left, and the dark notch is the truck. The leaf sits where the ring would close, in the place of the destination: food that's still fresh. It's the ETA ring from the navigation screen, so the icon and the product's main control look the same. At 64 px and below, a simpler cut drops the truck notch and the leaf vein and thickens the ring, so it holds up as a favicon.</p>
+      <div style="display:flex;gap:28px;align-items:flex-end;margin-top:40px">
+        <div style="text-align:center"><svg width="180" height="180" style="border-radius:40px"><use href="#icon"/></svg><div class="label" style="margin-top:10px">iPad 167 px</div></div>
+        <div style="text-align:center"><svg width="120" height="120" style="border-radius:27px"><use href="#icon"/></svg><div class="label" style="margin-top:10px">iPhone 120</div></div>
+        <div style="text-align:center"><svg width="60" height="60" style="border-radius:14px"><use href="#iconsm"/></svg><div class="label" style="margin-top:10px">60 (small cut)</div></div>
+        <div style="text-align:center"><svg width="32" height="32" style="border-radius:7px"><use href="#iconsm"/></svg><div class="label" style="margin-top:10px">Favicon 32 (small cut)</div></div>
+        <div style="text-align:center"><svg width="120" height="120" style="border-radius:60px;background:#0B0F0E"><svg x="12" y="12" width="96" height="96"><use href="#mark"/></svg></svg><div class="label" style="margin-top:10px">Maskable</div></div>
+        <div style="text-align:center"><svg width="120" height="120" style="border-radius:27px;background:#ECF0EE;color:#0E1412"><use href="#markmono"/></svg><div class="label" style="margin-top:10px">Mono / tinted</div></div>
+      </div>
+      <div style="display:flex;gap:48px;align-items:center;margin-top:48px" class="rule">
+        <div style="display:flex;align-items:center;gap:16px"><svg width="52" height="52" style="border-radius:12px"><use href="#iconsm"/></svg><span style="font:700 40px/1 var(--display);letter-spacing:-.02em">FreshRoute</span></div>
+        <div style="display:flex;align-items:center;gap:14px;background:#F6F8F7;padding:14px 22px;border-radius:14px"><svg width="40" height="40" style="color:#3C7A0C"><use href="#markmono"/></svg><span style="font:700 32px/1 var(--display);letter-spacing:-.02em;color:#0E1412">FreshRoute</span></div>
+      </div>
+      <p class="small" style="margin-top:16px">Wordmark: Overpass 800, tracking −1.5%. One word, capital R, single colour. No two-tone "Fresh / Route" split.</p>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · App icon and wordmark</span><span>13</span></div>
+</section>
+
+<!-- 14 MAP -->
+<section class="page" style="padding:0">
+  <svg width="1600" height="1000" style="position:absolute;inset:0" viewBox="0 0 1600 1000">
+    <rect width="1600" height="1000" fill="#111715"/>
+    <g transform="translate(150 0)">
+    <path d="M900 0 C 940 200 1100 260 1120 420 S 1000 700 1060 1000 L1250 1000 C 1200 760 1300 520 1260 360 S 1080 120 1080 0Z" fill="#0C2530"/>
+    <rect x="160" y="560" width="260" height="190" rx="18" fill="#142219"/><rect x="1330" y="80" width="200" height="260" rx="18" fill="#142219"/>
+    <g fill="#161D1B"><rect x="460" y="140" width="140" height="90" rx="6"/><rect x="640" y="140" width="120" height="90" rx="6"/><rect x="460" y="280" width="300" height="110" rx="6"/><rect x="180" y="140" width="220" height="250" rx="6"/></g>
+    <g stroke="#232B28" stroke-width="7" fill="none"><path d="M0 110 H1600"/><path d="M0 420 H900"/><path d="M0 800 H1600"/><path d="M160 0 V1000"/><path d="M620 0 V1000"/><path d="M440 0 V1000"/><path d="M1300 0 V1000"/></g>
+    <g stroke="#3A4541" stroke-width="22" fill="none" stroke-linecap="round"><path d="M-20 520 C 400 500 760 260 1600 230"/></g>
+    <g stroke="#2E3734" stroke-width="13" fill="none"><path d="M780 0 V1000"/></g>
+    <path d="M160 1000 V800 H620 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#0B0F0E" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M160 1000 V800 H620 V560" fill="none" stroke="#4A5551" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M620 560 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <g font-family="-apple-system,sans-serif" font-weight="600">
+      <circle cx="620" cy="560" r="22" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/><path d="M620 546 l9 18 -9 -5 -9 5z" fill="#0B0F0E"/>
+      <g transform="translate(160 800)"><circle r="22" fill="#4A5551" stroke="#0B0F0E" stroke-width="4"/><path d="M-9 0l6 6 12-13" stroke="#ECF0EE" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <g transform="translate(1000 268)"><circle r="22" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#0B0F0E">2</text></g>
+      <g transform="translate(1300 110)"><circle r="22" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#0B0F0E">3</text></g>
+      <g transform="translate(470 460)"><circle r="11" fill="#1C2321" stroke="#86928D" stroke-width="2.5"/></g>
+      <g transform="translate(1380 520)"><circle r="11" fill="#1C2321" stroke="#86928D" stroke-width="2.5"/></g>
+      <text x="1004" y="306" font-size="15" fill="#C9D1CE">Kroger · S Loop 288</text>
+      <text x="1330" y="160" font-size="15" fill="#C9D1CE">North Loop Food Pantry</text>
+      <text x="840" y="200" font-size="13" fill="#86928D" letter-spacing="1.5">LOOP 288</text>
+      <text x="486" y="452" font-size="13" fill="#86928D">Albertsons</text>
+    </g>
+    </g>
+    <rect y="944" width="1600" height="56" fill="#0B0F0E"/>
+  </svg>
+  <div class="solid" style="position:absolute;left:64px;top:64px;width:600px;border-radius:28px;padding:34px 36px;background:var(--a900)">
+    <h1 style="font-size:46px">Quiet streets, one loud line.</h1>
+    <p class="small" style="font-size:15px">A custom MapLibre style on OpenFreeMap tiles (free and open). Base layers stay within Asphalt 900–700, so the route is the brightest thing on the iPad.</p>
+    <table style="margin-top:20px">
+      <tr><td>Land · buildings</td><td class="m">#111715 · #161D1B</td></tr>
+      <tr><td>Streets · arterials · highways</td><td class="m">#232B28 · #2E3734 · #3A4541</td></tr>
+      <tr><td>Water · parks</td><td class="m">#0C2530 · #142219</td></tr>
+      <tr><td>Route ahead</td><td class="m">Sprout 12 px + Asphalt 950 casing</td></tr>
+      <tr><td>Route already driven</td><td class="m">Asphalt 600, same width</td></tr>
+      <tr><td>Stops · done stops</td><td class="m">Numbered Sprout pin · grey check</td></tr>
+      <tr><td>Other donation stores</td><td class="m">Hollow grey dot, label on zoom</td></tr>
+      <tr><td>Labels</td><td class="m">System 13–15 px, Asphalt 200/400</td></tr>
+    </table>
+    <p class="small" style="margin-top:16px">When the route is late, the line ahead turns Apricot or Tomato to match the ring. The truck puck is Asphalt 100 with a heading wedge, never a car illustration.</p>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · The map</span><span>14</span></div>
+</section>
+
+<!-- 15 DATA VIZ -->
+<section class="page">
+  <h1>Promise vs. forecast, over the whole drive.</h1>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr;gap:56px;margin-top:28px">
+    <div class="solid" style="border-radius:24px;padding:28px 30px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>ETA accuracy · Van 2 · 19 Nov</h3><span class="mono small">Arrived 10:19 · promised 10:13 · +6 min</span></div>
+      <svg viewBox="0 0 760 300" width="100%" style="margin-top:18px">
+        <g font-family="IBM Plex Mono" font-size="11" fill="#86928D">
+          <text x="0" y="40">10:30</text><text x="0" y="130">10:13</text><text x="0" y="220">10:00</text>
+          <text x="60" y="292">9:12</text><text x="240" y="292">9:30</text><text x="420" y="292">9:50</text><text x="620" y="292">10:10</text>
+        </g>
+        <g stroke="#252D2A"><path d="M56 36H760M56 216H760"/></g>
+        <path d="M56 126H760" stroke="#B8F25E" stroke-width="2" stroke-dasharray="6 6"/>
+        <text x="700" y="118" font-family="IBM Plex Mono" font-size="11" fill="#B8F25E">PROMISE</text>
+        <rect x="56" y="104" width="704" height="44" fill="#B8F25E" opacity=".06"/>
+        <path d="M56 130 L160 128 L240 122 L300 126 L360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#ECF0EE" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#FFB54A" stroke-width="3" stroke-linejoin="round"/>
+        <g fill="#FFB54A"><circle cx="410" cy="96" r="5"/></g>
+        <text x="416" y="80" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-size="13" fill="#FFB54A">Train at Mingo Rd · +7 min</text>
+        <g><rect x="240" y="244" width="4" height="12" fill="#FFB54A"/><rect x="520" y="244" width="4" height="12" fill="#FFB54A"/><rect x="300" y="244" width="40" height="12" fill="none" stroke="#66726D" stroke-dasharray="3 3"/><rect x="160" y="244" width="70" height="12" rx="3" fill="#7FD6F0" opacity=".85"/></g>
+      </svg>
+      <div style="display:flex;gap:22px;margin-top:6px" class="small"><span><span class="dot" style="background:#ECF0EE"></span> Forecast</span><span><span class="dot" style="background:var(--sprout)"></span> Promise ±3 min band</span><span><span class="dot" style="background:var(--apricot)"></span> Slipping / motion</span><span><span class="dot" style="background:var(--frost)"></span> Cold loaded</span><span>⋯ Recording gap</span></div>
+    </div>
+    <div>
+      <h3>Rules</h3>
+      <ul style="padding-left:20px;margin-top:8px">
+        <li>The y-axis is clock time, not "minutes late", so managers read it like a schedule.</li>
+        <li style="margin-top:8px">The promise is a dashed Sprout line with a ±3 min band. The forecast line takes the colour of its state.</li>
+        <li style="margin-top:8px">Annotations name the cause in plain words, taken from the driver's "what got in the way" answer.</li>
+        <li style="margin-top:8px">Event ticks under the chart use the same track as the video scrubber, so the chart and the footage line up.</li>
+        <li style="margin-top:8px">Every metric has a baseline: "+6 min vs. 9 min average on this route".</li>
+        <li style="margin-top:8px">Axis and tick text: Plex Mono 11–12 px, Asphalt 400. No 3D, no pies, no gradient fills.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Charts and the report timeline</span><span>15</span></div>
+</section>
+
+<!-- 16 MOTION -->
+<section class="page">
+  <h1>Lively when parked, still when moving.</h1>
+  <p class="lede" style="max-width:1250px">You asked for lots of responsive animation, and the parked screens and the manager side get it. Once the van moves (GPS speed &gt; 8 km/h), only motion that carries information is left: the ring filling, the puck moving, a state colour easing from one value to the next. Nothing slides, bounces or pulses for decoration.</p>
+  <div class="grid" style="grid-template-columns:1fr 1.2fr;gap:56px;margin-top:32px">
+    <table>
+      <tr><th>Token</th><th>Spring / curve</th><th>Use</th></tr>
+      <tr><td class="m">snap</td><td class="m">spring 0.28 s, damping 0.86</td><td>Buttons, toggles, chips</td></tr>
+      <tr><td class="m">glide</td><td class="m">spring 0.45 s, damping 0.9</td><td>Sheets, page pushes, pin → card</td></tr>
+      <tr><td class="m">settle</td><td class="m">spring 0.6 s, critically damped (no overshoot)</td><td>Confirmations, ring re-centring</td></tr>
+      <tr><td class="m">ease</td><td class="m">cubic-bezier(.2,.8,.2,1) 0.8 s</td><td>State colour changes (always eased, never flashed)</td></tr>
+      <tr><td class="m">reduced</td><td class="m">opacity crossfade, max 200 ms</td><td><code>prefers-reduced-motion</code> (Astryx's 200 ms cap)</td></tr>
+    </table>
+    <div>
+      <h3>Signature moments</h3>
+      <table style="margin-top:6px">
+        <tr><td style="width:30%"><b>Start drive</b></td><td>The route line draws itself from the truck to the last stop in 900 ms, then the ring locks the promise.</td></tr>
+        <tr><td><b>Pin → store card</b></td><td>The map pin morphs into the card's header (View Transitions API, shared element). Back reverses the same path.</td></tr>
+        <tr><td><b>Ring → progress</b></td><td>Tapping the ETA ring grows it into the full progress screen; the numbers keep their position as they scale.</td></tr>
+        <tr><td><b>Loaded</b></td><td>Item counts tick up, and the cold timer starts with one Frost ripple from the snowflake. The only ripple in the app.</td></tr>
+        <tr><td><b>Slipping</b></td><td>The ring eases Sprout → Apricot over 0.8 s and the glyph cross-fades. No shake, no sound, no red flash.</td></tr>
+        <tr><td><b>Report</b></td><td>The forecast line draws left to right in time with the event ticks dropping into the scrubber.</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Motion</span><span>16</span></div>
+</section>
+
+<!-- 17 IN USE -->
+<section class="page" style="padding:56px 88px">
+  <h1 style="font-size:44px;margin-bottom:24px">Navigation, iPad landscape, on time.</h1>
+  <div style="position:relative;width:1424px;height:800px;border-radius:40px;overflow:hidden;border:10px solid #1A1F1D;box-shadow:0 40px 120px rgba(0,0,0,.6)">
+    <svg width="1404" height="780" viewBox="0 0 1404 780" style="position:absolute;inset:0">
+      <rect width="1404" height="780" fill="#111715"/>
+      <path d="M1180 0 C 1220 160 1080 260 1000 380 S 880 600 930 780 L1110 780 C 1060 600 1220 420 1300 300 S 1404 100 1404 0Z" fill="#0C2530"/>
+      <rect x="120" y="470" width="240" height="170" rx="16" fill="#142219"/>
+      <g fill="#161D1B"><rect x="420" y="120" width="130" height="80" rx="6"/><rect x="580" y="120" width="110" height="80" rx="6"/><rect x="160" y="120" width="200" height="220" rx="6"/></g>
+      <g stroke="#232B28" stroke-width="7" fill="none"><path d="M0 90 H1404"/><path d="M0 380 H760"/><path d="M0 560 H1404"/><path d="M140 0 V620"/><path d="M560 0 V620"/><path d="M400 0 V620"/><path d="M760 0 V620"/></g>
+      <g stroke="#3A4541" stroke-width="20" fill="none" stroke-linecap="round"><path d="M-20 450 C 360 430 680 230 1404 200"/></g>
+      <path d="M-20 560 H400 V470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#0B0F0E" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M-20 560 H400 V470 H500" fill="none" stroke="#4A5551" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M500 470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="500" cy="470" r="22" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/><path d="M514 470 l-18 9 5 -9 -5 -9z" fill="#0B0F0E"/>
+      <g transform="translate(840 256)"><circle r="20" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#0B0F0E">2</text></g>
+      <g transform="translate(1060 300)"><circle r="20" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#0B0F0E">3</text></g>
+    </svg>
+    <!-- camera top-left -->
+    <div class="glass" style="position:absolute;left:24px;top:24px;width:260px;height:170px;border-radius:24px;overflow:hidden;padding:0">
+      <svg style="position:absolute;inset:6px;border-radius:18px;filter:blur(.6px)" width="248" height="158" viewBox="0 0 248 158"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C93A3"/><stop offset=".55" stop-color="#B9B39C"/></linearGradient></defs><rect width="248" height="80" fill="url(#sky)"/><rect y="64" width="248" height="22" fill="#4E5A4A"/><rect x="18" y="52" width="26" height="24" fill="#5F6A63"/><rect x="190" y="46" width="44" height="32" fill="#6B6F66"/><path d="M0 158 L112 78 L136 78 L248 158Z" fill="#3B403E"/><rect y="78" width="248" height="80" fill="#2B302E" opacity=".35"/><path d="M124 82 V158" stroke="#E8E2C8" stroke-width="2.5" stroke-dasharray="9 9"/><path d="M60 158 L118 80M188 158 L130 80" stroke="#D9DCD6" stroke-width="1.5" opacity=".7"/><rect x="108" y="66" width="34" height="22" rx="3" fill="#C9CEC9"/><rect x="110" y="82" width="8" height="3" fill="#C2341E"/><rect x="132" y="82" width="8" height="3" fill="#C2341E"/></svg>
+      <div style="position:absolute;left:16px;top:14px;display:flex;align-items:center;gap:6px;font:600 12px/1 var(--mono);color:#ECF0EE;background:rgba(11,15,14,.55);padding:5px 8px;border-radius:8px"><span class="dot" style="background:var(--tomato)"></span>REC · FRONT</div>
+      <div style="position:absolute;right:16px;bottom:14px;font:500 12px/1 var(--mono);color:#ECF0EE">09:47:12</div>
+    </div>
+    <!-- maneuver -->
+    <div class="glass" style="position:absolute;left:304px;top:24px;width:520px;border-radius:24px;padding:20px 24px;display:flex;gap:20px;align-items:center">
+      <svg width="56" height="56" viewBox="0 0 64 64"><path d="M20 56V30a8 8 0 0 1 8-8h18" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">0.4 mi</div><div style="font:600 26px/1.2 var(--ui);margin-top:6px">Right onto Loop 288</div></div>
+    </div>
+    <!-- ring -->
+    <div class="glass" style="position:absolute;right:24px;top:24px;width:176px;height:176px;border-radius:88px;display:grid;place-items:center">
+      <svg width="156" height="156" viewBox="0 0 156 156" style="position:absolute"><circle cx="78" cy="78" r="68" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="78" cy="78" r="68" fill="none" stroke="#B8F25E" stroke-width="10" stroke-linecap="round" stroke-dasharray="290 428" transform="rotate(-90 78 78)"/></svg>
+      <div style="text-align:center"><div style="font:700 38px/1 var(--ui);font-variant-numeric:tabular-nums">10:11</div><div class="label" style="color:var(--sprout);margin-top:6px">✓ On time</div></div>
+    </div>
+    <!-- cold chip -->
+    <div class="glass" style="position:absolute;right:24px;top:216px;border-radius:18px;padding:12px 16px;font:600 16px/1 var(--ui);color:var(--frost);font-variant-numeric:tabular-nums">❄︎ 0:42 out of fridge</div>
+    <!-- bottom bar -->
+    <div class="glass dense" style="position:absolute;left:24px;right:24px;bottom:24px;border-radius:28px;padding:16px 16px 16px 28px;display:flex;align-items:center;gap:28px">
+      <div style="flex:1"><div style="font:700 24px/1.1 var(--display)">Kroger<span class="sep">·</span>S Loop 288</div><div style="font:400 16px/1.4 var(--ui);color:var(--a300);margin-top:4px;font-variant-numeric:tabular-nums">Stop 2 of 3 · 6 min · 2.1 mi · window closes 10:30</div></div>
+      <div style="display:flex;gap:6px;align-items:center"><span class="dot" style="background:#4A5551;width:12px;height:12px"></span><span style="width:40px;height:3px;background:#4A5551"></span><span class="dot" style="background:var(--sprout);width:14px;height:14px"></span><span style="width:40px;height:3px;background:var(--a700)"></span><span class="dot" style="background:var(--a600);width:12px;height:12px"></span></div>
+      <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);display:grid;place-items:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ECF0EE" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+      <div style="height:64px;padding:0 28px;border-radius:20px;background:var(--sprout);color:var(--a950);font:600 19px/64px var(--ui)">I've arrived</div>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · All together</span><span>17</span></div>
+</section>
+
+<!-- 18 VOICE -->
+<section class="page">
+  <h1>Say the number, say the reason.</h1>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:48px;margin-top:28px">
+    <table>
+      <tr><th style="width:50%">Instead of</th><th>Write</th></tr>
+      <tr><td style="color:var(--a400)">Delayed</td><td>7 min behind your 10:13 promise</td></tr>
+      <tr><td style="color:var(--a400)">Driver is approaching!</td><td>Van 2 arrives in about 15 min (10:11)</td></tr>
+      <tr><td style="color:var(--a400)">Incident detected</td><td>Hard brake at 9:47 on Loop 288. Footage saved.</td></tr>
+      <tr><td style="color:var(--a400)">Submit</td><td>Finish drive</td></tr>
+      <tr><td style="color:var(--a400)">What went wrong?</td><td>Anything slow you down today? (optional)</td></tr>
+      <tr><td style="color:var(--a400)">+100%</td><td>2 pickups, up from 1 last Tuesday</td></tr>
+      <tr><td style="color:var(--a400)">Oops! Something went wrong 😅</td><td>Couldn't upload the last 2 minutes of video. Retrying on Wi-Fi.</td></tr>
+    </table>
+    <div>
+      <h3>Rules</h3>
+      <ul style="padding-left:20px;margin-top:6px">
+        <li>Sentence case everywhere. Button labels are verbs that say exactly what happens.</li>
+        <li style="margin-top:8px">Times are local clock times ("10:11"), plus a relative time only when it's under an hour.</li>
+        <li style="margin-top:8px">Never blame the driver. Questions about delays offer causes (traffic, store not ready, train, loading took longer) and "something else".</li>
+        <li style="margin-top:8px">No exclamation marks, no emoji, no "Oops".</li>
+        <li style="margin-top:8px">Footage language is factual and neutral: "saved", "marked", "shared with North Loop Food Pantry".</li>
+      </ul>
+      <h3 style="margin-top:28px">One status vocabulary (Careit audit #04)</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <span class="chip" style="background:var(--a850);color:var(--a200)">Scheduled</span>
+        <span class="chip" style="background:var(--a850);color:var(--a200)">En route to pickup</span>
+        <span class="chip" style="background:var(--frost950);color:var(--frost)">Loaded</span>
+        <span class="chip" style="background:var(--a850);color:var(--a200)">En route to food bank</span>
+        <span class="chip" style="background:var(--sprout950);color:var(--sprout)">Delivered</span>
+      </div>
+      <p class="small" style="margin-top:10px">These exact words appear in the driver app, manager view, alerts, the store link and the report, with no synonyms.</p>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Voice and words</span><span>18</span></div>
+</section>
+
+<!-- 19 ASTRYX -->
+<section class="page">
+  <h1>One theme file, about 180 components.</h1>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:48px;margin-top:24px">
+    <div>
+      <p>Everything above becomes one local Astryx theme, <code>freshroute</code>, extending Neutral. Astryx components then pick up the colours, faces, radii and motion without per-screen styling. Glass and the map are the only custom layers.</p>
+<pre style="margin-top:18px"><span class="k">export const</span> freshroute = defineTheme({
+  name: <span class="s">'freshroute'</span>,
+  extends: neutralTheme,
+  palette: themePalette({ accent: <span class="s">'#B8F25E'</span>, neutral: <span class="s">'#66726D'</span>,
+    success: <span class="s">'#B8F25E'</span>, warning: <span class="s">'#FFB54A'</span>,
+    danger: <span class="s">'#FF7A66'</span>, info: <span class="s">'#7FD6F0'</span> }),
+  typography: {
+    scale: { base: 17, ratio: 1.2 },
+    body:    { family: <span class="s">'-apple-system'</span>, fallbacks: <span class="s">'"Segoe UI", Roboto, sans-serif'</span> },
+    heading: { family: <span class="s">'Overpass'</span>, url: <span class="s">'/fonts/overpass.css'</span> },
+    code:    { family: <span class="s">'IBM Plex Mono'</span>, url: <span class="s">'/fonts/plex-mono.css'</span> },
+  },
+  radius: { base: 12, multiplier: 1 },
+  motion: { tempo: 1, character: <span class="s">'standard'</span> },
+  tokens: {
+    <span class="s">'--color-background-surface'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#141A18'</span>],
+    <span class="s">'--color-on-accent'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#0B0F0E'</span>],
+    <span class="s">'--color-accent'</span>: [<span class="s">'#3C7A0C'</span>, <span class="s">'#B8F25E'</span>],  <span class="c">// [daylight, dark]</span>
+  },
+});</pre>
+      <p class="small" style="margin-top:12px">Accent and success share Sprout on purpose: the primary action is the on-time path. Focus rings and selection use Asphalt 100, so focus never reads as a status. Token names follow Astryx's theming docs (read 19 Nov 2026). Astryx is in beta, so exact names get confirmed against <code>astryx theme template</code> at build time.</p>
+    </div>
+    <table>
+      <tr><th style="width:42%">FreshRoute piece</th><th>Astryx component</th></tr>
+      <tr><td>Route tray, store sheet (portrait / phone)</td><td class="m">Bottom Sheet</td></tr>
+      <tr><td>Store sheet (landscape), manager detail</td><td class="m">Drawer · Layout · Section</td></tr>
+      <tr><td>Manager shell, truck list</td><td class="m">App Shell · Side Nav · List</td></tr>
+      <tr><td>Stops in a route, reorder</td><td class="m">List · Stepper</td></tr>
+      <tr><td>Pickup counts</td><td class="m">Number Input · Field · Form Layout</td></tr>
+      <tr><td>Cold timer, countdowns</td><td class="m">Timer · Timestamp</td></tr>
+      <tr><td>On time / Slipping / Late</td><td class="m">Badge · Status Dot</td></tr>
+      <tr><td>Reports table, export</td><td class="m">Table · Pagination · Dropdown Menu</td></tr>
+      <tr><td>Footage events</td><td class="m">Thumbnail · Lightbox · Metadata List</td></tr>
+      <tr><td>Map / list switch, camera picker</td><td class="m">Segmented Control</td></tr>
+      <tr><td>"What slowed you down"</td><td class="m">Selectable Card · Text Area</td></tr>
+      <tr><td>Alerts and offline states</td><td class="m">Toast · Banner · Empty State</td></tr>
+      <tr><td>Consent, finish-drive confirm</td><td class="m">Dialog · Checkbox Input</td></tr>
+      <tr><td><b>Custom</b> (not in Astryx)</td><td>ETA ring, map (MapLibre), glass layer, video scrubber with event ticks</td></tr>
+    </table>
+  </div>
+  <div class="folio"><span>FreshRoute style sheet · Built on Astryx</span><span>19</span></div>
+</section>
+
+<!-- 20 OPEN -->
+<section class="page">
+  <h1>Decisions I'd like you to check.</h1>
+  <table style="margin-top:28px">
+    <tr><th style="width:4%">#</th><th style="width:40%">Decision</th><th>Why, and the alternative</th></tr>
+    <tr><td class="m">1</td><td><b>Sprout lime as the one brand colour</b>, which also means "on time"</td><td>It ties the brand to the promise and stands out from the blue/purple of maps and Life360. The alternative is a deeper green (#4CC38A), which is calmer but closer to every food-rescue app.</td></tr>
+    <tr><td class="m">2</td><td><b>Daylight mode</b> on driving screens during daytime</td><td>Readability in sun, as on page 07. If you want dark mode always, drivers can still pin it in Preferences.</td></tr>
+    <tr><td class="m">3</td><td><b>System font for UI</b> instead of a web font</td><td>It's native on Apple hardware and costs nothing to load. The trade-off is that Windows managers see Segoe UI. The alternative is Overpass for interface text too, which costs about 40 KB.</td></tr>
+    <tr><td class="m">4</td><td><b>Overpass</b> as the display face (your pick)</td><td>Road-sign heritage, legible at distance. Shown here on every headline; tell me if it reads too wide anywhere.</td></tr>
+    <tr><td class="m">5</td><td><b>Glass only on floating controls</b></td><td>Apple's own rule for Liquid Glass, and it keeps reports readable. More glass would look more "Liquid Glass" but hurts contrast.</td></tr>
+    <tr><td class="m">6</td><td><b>Motion goes quiet above 8 km/h</b></td><td>Driver safety. Parked and manager screens keep the full motion set.</td></tr>
+    <tr><td class="m">7</td><td><b>App icon</b>: direction A, ring and leaf (your pick, page 13)</td><td>The small cut (no notch, no vein, thicker ring) is used at 64 px and below.</td></tr>
+    <tr><td class="m">8</td><td><b>State thresholds</b>: on time ≤ +3 min, slipping +4–10, late &gt; +10; cold timer warns at 1 h and 2 h</td><td>Starting values. The food bank can edit them, and user testing will tell us if they're right.</td></tr>
+  </table>
+  <p class="lede" style="margin-top:36px">Once you approve this (with any changes), the next step is the build: the Vite + React PWA on Astryx, MapLibre, Cloudflare Pages and R2, then the audits.</p>
+  <div class="folio"><span>FreshRoute style sheet · For your review</span><span>20</span></div>
+</section>
+</body>
+</html>

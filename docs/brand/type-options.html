@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FreshRoute Type Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;600;700&family=Libre+Franklin:wght@400;600;700;800&family=Source+Sans+3:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+@page { size: 1600px 1000px; margin: 0; }
+:root{--a950:#0B0F0E;--a900:#141A18;--a850:#1C2321;--a800:#252D2A;--a700:#323C38;--a400:#86928D;--a300:#A3AEA9;--a200:#C9D1CE;--a100:#ECF0EE;--sprout:#B8F25E;--sprout950:#1A2A0B;
+  --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000}
+body{font-family:var(--sys);color:var(--a100);-webkit-font-smoothing:antialiased}
+.page{width:1600px;height:1000px;background:var(--a950);position:relative;overflow:hidden;break-after:page;margin:0 auto 24px;padding:72px 88px 64px}
+@media print{.page{margin:0}}
+.folio{position:absolute;left:88px;right:88px;bottom:32px;display:flex;justify-content:space-between;font:400 13px/1 var(--sys);color:var(--a400)}
+h1{font:700 52px/1.05 var(--sys);letter-spacing:-.02em;margin-bottom:16px}
+p{font:400 17px/1.5 var(--sys);color:var(--a300)}
+.lede{font-size:20px;line-height:1.45;color:var(--a200);max-width:1100px}
+.small{font-size:14px;line-height:1.45;color:var(--a400)}
+b{color:var(--a100);font-weight:600}
+.row{display:grid;grid-template-columns:200px 1fr 330px;gap:32px;align-items:center;padding:18px 0;border-top:1px solid var(--a800)}
+.name{font:600 17px/1.3 var(--sys)}
+.rec{display:inline-block;margin-top:6px;font:600 13px/1 var(--sys);color:var(--sprout);background:var(--sprout950);padding:5px 9px;border-radius:6px}
+.spec{display:flex;align-items:baseline;gap:36px;white-space:nowrap;overflow:hidden}
+.panel{background:var(--a900);border:1px solid var(--a800);border-radius:22px;padding:26px 28px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:15px;font:600 14px/1 var(--sys);background:var(--sprout950);color:var(--sprout)}
+ul{padding-left:20px} li{font:400 16px/1.5 var(--sys);color:var(--a300);margin-top:6px}
+</style>
+</head>
+<body>
+
+<section class="page">
+  <h1>Primary typeface: five traditional options</h1>
+  <p class="lede">Bricolage Grotesque is out. Each option below would replace it for headlines, store names and the wordmark. The interface text stays in the system font (SF Pro on Apple devices), and timecodes stay in IBM Plex Mono. Same sample in every row so you can compare like for like.</p>
+  <div style="margin-top:34px">
+    <div class="row">
+      <div><div class="name">A · Overpass</div><div class="rec">My pick</div></div>
+      <div class="spec" style="font-family:'Overpass'"><span style="font-weight:800;font-size:46px;letter-spacing:-.015em">Keep the promise.</span><span style="font-weight:700;font-size:30px">Kroger · S Loop 288</span></div>
+      <p class="small">Based on Highway Gothic, the lettering on US road signs, which was drawn to be read at speed from a distance.</p>
+    </div>
+    <div class="row">
+      <div><div class="name">B · IBM Plex Sans</div></div>
+      <div class="spec" style="font-family:'IBM Plex Sans'"><span style="font-weight:700;font-size:46px;letter-spacing:-.02em">Keep the promise.</span><span style="font-weight:600;font-size:30px">Kroger · S Loop 288</span></div>
+      <p class="small">Engineered, sober, very trustworthy. Same family as the Plex Mono we already use for evidence.</p>
+    </div>
+    <div class="row">
+      <div><div class="name">C · Libre Franklin</div></div>
+      <div class="spec" style="font-family:'Libre Franklin'"><span style="font-weight:800;font-size:46px;letter-spacing:-.025em">Keep the promise.</span><span style="font-weight:600;font-size:30px">Kroger · S Loop 288</span></div>
+      <p class="small">A revival of Franklin Gothic, the classic American newspaper and signage sans. Sturdy and familiar.</p>
+    </div>
+    <div class="row">
+      <div><div class="name">D · Source Sans 3</div></div>
+      <div class="spec" style="font-family:'Source Sans 3'"><span style="font-weight:800;font-size:46px;letter-spacing:-.015em">Keep the promise.</span><span style="font-weight:600;font-size:30px">Kroger · S Loop 288</span></div>
+      <p class="small">Adobe's humanist sans, made for interfaces. Friendly and quiet; the least distinctive of the five.</p>
+    </div>
+    <div class="row" style="border-bottom:1px solid var(--a800)">
+      <div><div class="name">E · SF Pro everywhere</div></div>
+      <div class="spec" style="font-family:var(--sys)"><span style="font-weight:700;font-size:46px;letter-spacing:-.025em">Keep the promise.</span><span style="font-weight:600;font-size:30px">Kroger · S Loop 288</span></div>
+      <p class="small">The most Apple-native: one family for everything. Personality has to come from colour and the icon alone.</p>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute type options</span><span>1</span></div>
+</section>
+
+<script>
+const opts=[
+ {k:'A',name:'Overpass',fam:"'Overpass'",h:800,s:700,ls:'-.015em',
+  why:['Its roots are in Highway Gothic, the FHWA road-sign alphabet. A route app set in road-sign type is a connection people notice without being told.','It was drawn for legibility at a distance and at speed, which is exactly the driver problem.','Wide, open letters stay readable on a dash-mounted iPad in glare.'],
+  watch:['Slightly wide, so long store names wrap sooner; titles may need to drop one size on phone.','Its middle dot has almost no space on the right ("Kroger ·S Loop" above), so separators in Overpass text get a wider space or a thin divider instead.','Less common in product UI, so it reads as chosen rather than default.'],
+  lic:'Open Font License · variable 100–900 · Google Fonts, self-hosted for offline'},
+ {k:'B',name:'IBM Plex Sans',fam:"'IBM Plex Sans'",h:700,s:600,ls:'-.02em',
+  why:['One superfamily with the Plex Mono we already use for timecodes, so the system is two families, not three.','Engineered and neutral, the most "work tool" of the five; very trustworthy for the manager side.','Excellent hinting and real tabular figures.'],
+  watch:['Widely used in enterprise software, so it is less distinctive.','A little cool and corporate; warmth has to come from colour and copy.'],
+  lic:'Open Font License · 100–700 · Google Fonts'},
+ {k:'C',name:'Libre Franklin',fam:"'Libre Franklin'",h:800,s:600,ls:'-.025em',
+  why:['Franklin Gothic is about as traditional as American sans serifs get: newspapers, transit, public notices.','Heavy weights look confident and serious at headline sizes.','Public Sans, the US government typeface, is built on it, so it carries an institutional, trustworthy feel.'],
+  watch:['The heavy weights get dense at small sizes; keep it to 22 px and up.','Some will read it as editorial rather than app-like.'],
+  lic:'Open Font License · 100–900 · Google Fonts'},
+ {k:'D',name:'Source Sans 3',fam:"'Source Sans 3'",h:800,s:600,ls:'-.015em',
+  why:['Built by Adobe for UI text; very readable at every size.','Humanist shapes feel friendly, which suits a food bank audience.','Narrower than Overpass, so long store names fit.'],
+  watch:['The least distinctive option; FreshRoute could look generic.','Next to the system font, the difference is subtle.'],
+  lic:'Open Font License · 200–900 · Google Fonts'},
+ {k:'E',name:'SF Pro everywhere',fam:'var(--sys)',h:700,s:600,ls:'-.025em',
+  why:['Feels most native on iPad and iPhone; it is literally the system font.','Zero bytes to load and perfect Dynamic Type behaviour.','Only two families in the whole product (SF Pro and Plex Mono).'],
+  watch:['Windows managers see Segoe UI and Android sees Roboto, so the brand looks different off Apple devices.','No typographic personality of its own; the case study has less to say about type.','The wordmark cannot use it: SF Pro is not licensed for logos.'],
+  lic:'System font, not shipped · the wordmark would use option B or C instead'}
+];
+opts.forEach((o,i)=>{
+ const s=document.createElement('section'); s.className='page';
+ s.innerHTML=`
+  <div style="display:flex;justify-content:space-between;align-items:baseline">
+    <h1 style="font-family:${o.fam};font-weight:${o.h};letter-spacing:${o.ls};font-size:64px">${o.k} · ${o.name}</h1>
+    <span class="small">${o.lic}</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:48px;margin-top:22px">
+    <div>
+      <div style="display:flex;align-items:center;gap:18px">
+        <svg width="64" height="64" viewBox="0 0 1024 1024" style="border-radius:15px"><rect width="1024" height="1024" fill="#141B18"/><path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/><path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="#B8F25E" stroke-width="100" stroke-linecap="round"/><g transform="translate(588 218) rotate(-12)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="#B8F25E"/></g></svg>
+        <span style="font-family:${o.k==='E'?"'IBM Plex Sans'":o.fam};font-weight:${o.h};font-size:44px;letter-spacing:${o.ls}">FreshRoute</span>
+      </div>
+      <div style="font-family:${o.fam};font-weight:${o.h};font-size:72px;line-height:1;letter-spacing:${o.ls};margin-top:40px">Drive report</div>
+      <div style="font-family:${o.fam};font-weight:${o.s};font-size:30px;line-height:1.2;margin-top:14px;color:var(--a200)">Van 2 · Sam's Club, Kroger, Walmart University Dr</div>
+      <p style="margin-top:18px;max-width:640px">Arrived at North Loop Food Pantry at 10:19, 6 minutes after the 10:13 promise. A train at Mingo Rd added 7 minutes. Cold items were out of the fridge for 0:58.</p>
+      <div class="panel" style="margin-top:30px;display:flex;align-items:center;gap:28px">
+        <div><div style="font-family:${o.fam};font-weight:${o.s};font-size:26px">Kroger · S Loop 288</div><div class="small" style="margin-top:4px">Stop 2 of 3 · window closes 10:30</div></div>
+        <div style="margin-left:auto;text-align:right"><div style="font:700 44px/1 var(--sys);font-variant-numeric:tabular-nums">10:11</div><span class="chip" style="margin-top:8px">On time</span></div>
+      </div>
+      <p class="small" style="margin-top:10px">The live ETA stays in the system font with tabular figures in every option, so ticking digits don't shift.</p>
+    </div>
+    <div>
+      <div style="font-family:${o.fam};font-weight:400;font-size:22px;line-height:1.35;color:var(--a300)">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 · 10:13 · 4.2 mi</div>
+      <h2 style="font:600 18px/1.3 var(--sys);margin-top:32px">Why it fits</h2>
+      <ul>${o.why.map(w=>`<li>${w}</li>`).join('')}</ul>
+      <h2 style="font:600 18px/1.3 var(--sys);margin-top:24px">Watch out for</h2>
+      <ul>${o.watch.map(w=>`<li>${w}</li>`).join('')}</ul>
+    </div>
+  </div>
+  <div class="folio"><span>FreshRoute type options</span><span>${i+2}</span></div>`;
+ document.body.appendChild(s);
+});
+</script>
+</body>
+</html>

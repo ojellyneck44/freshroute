@@ -1,0 +1,16 @@
+name = "freshroute"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-06-01"
+
+[vars]
+# Join code a food bank gives its drivers and managers. Change it with `wrangler pages secret put BANK_CODE` for real use.
+BANK_CODE = "DENTON-DEMO"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "freshroute"
+database_id = "2ddacaaa-26ed-4723-90e2-b76e4eb6164d"
+
+[[r2_buckets]]
+binding = "VIDEO"
+bucket_name = "freshroute-video"
