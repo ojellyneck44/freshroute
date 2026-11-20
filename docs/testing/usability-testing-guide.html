@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FreshRoute usability testing guide</title>
+<title>Test FreshRoute on your own</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;700;800&display=block" rel="stylesheet">
@@ -67,263 +67,247 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
   </div>
   <div>
     <div class="kicker">Group guide · November 2026</div>
-    <h1>Usability testing<br>FreshRoute</h1>
-    <p class="lede" style="margin-top:12pt">How to run your own sessions with pantry volunteers and staff: who does what, what to say, the tasks, a real drive in your own car, and how to turn your notes into fixes.</p>
+    <h1>Test FreshRoute<br>on your own</h1>
+    <p class="lede" style="margin-top:12pt">For the four of us. Each person tests the app alone, on their own time, with their own phone or iPad and their own car. Nobody else to schedule. About 90 minutes each, then one group meeting to put it together.</p>
   </div>
   <div>
     <ol class="toc">
-      <li><b>1</b>The plan on one page</li>
-      <li><b>2</b>Before test day</li>
-      <li><b>3</b>Running a session, step by step</li>
-      <li><b>4</b>Driver tasks</li>
-      <li><b>5</b>Pantry tasks</li>
-      <li><b>6</b>The real drive, in a car</li>
-      <li><b>7</b>After the sessions: scoring and fixing</li>
-      <li><b>8</b>Printouts: checklist and note sheet</li>
+      <li><b>1</b>How this works</li>
+      <li><b>2</b>Set up your device</li>
+      <li><b>3</b>Part A: at home</li>
+      <li><b>4</b>Part B: your drive</li>
+      <li><b>5</b>Part C: write it up</li>
+      <li><b>6</b>The group meeting</li>
+      <li><b>7</b>Printouts: checklist and problem log</li>
     </ol>
-    <p class="small muted" style="margin-top:14pt">App: freshroute.pages.dev · Test mode: hold the FreshRoute logo for a second · The orders, store schedules and donations in the app are sample data. The stores are real places.</p>
+    <p class="small muted" style="margin-top:14pt">App: freshroute.pages.dev · Test mode: hold the FreshRoute logo for a second · The store schedules, donations and food bank orders in the app are sample data. The stores are real places.</p>
   </div>
 </section>
 
 <section class="section">
   <div class="kicker">1</div>
-  <h2>The plan on one page</h2>
-  <p>You're checking two things: can a volunteer plan and run a pickup run without help, and can someone at the pantry tell when food is arriving and check it in? Every session gives you the same four numbers per task, so sessions can be compared.</p>
+  <h2>How this works</h2>
+  <p>Each of us plays both users: the volunteer who drives pickups, and the person at the pantry waiting for food. You time yourself with the test panel built into the app, talk out loud while a recording runs, and write down every problem you hit. At the end we compare notes.</p>
 
-  <div class="grid2">
-    <div class="box">
-      <h3>What you measure</h3>
-      <ul>
-        <li><b>Completed:</b> finished without help</li>
-        <li><b>With help:</b> finished after a hint</li>
-        <li><b>Gave up:</b> stopped or ran out of time</li>
-        <li><b>Seconds</b> from "Start task" to the outcome</li>
-        <li><b>SUS score</b> (0 to 100) from the 10-question survey at the end</li>
-        <li><b>Notes:</b> where they hesitated, and what they said, word for word</li>
-      </ul>
-    </div>
-    <div class="box">
-      <h3>Who does what (rotate each session)</h3>
-      <ul>
-        <li><b>Facilitator:</b> reads the script and tasks, runs the test panel, stays neutral.</li>
-        <li><b>Note-taker:</b> writes down what happens and quotes. Says nothing.</li>
-        <li><b>Participant:</b> uses the iPad and thinks out loud.</li>
-        <li><b>In the car only, the safety passenger:</b> sits beside the driver and handles the iPad while the car moves.</li>
-      </ul>
-    </div>
+  <table>
+    <tr><th style="width:22%">Part</th><th>What you do</th><th style="width:14%">Time</th></tr>
+    <tr><td><b>Set up</b></td><td>Install the app, allow permissions, turn on test mode.</td><td>10 min</td></tr>
+    <tr><td><b>A. At home</b></td><td>The pantry tasks, then a simulated drive with the driver tasks. Sitting down, nothing moving.</td><td>30 min</td></tr>
+    <tr><td><b>B. Your drive</b></td><td>A real 2-store route in your own car, in Denton, in daylight.</td><td>30 to 45 min</td></tr>
+    <tr><td><b>C. Write-up</b></td><td>The survey, export your results, fill in the problem log.</td><td>15 min</td></tr>
+    <tr><td><b>Group meeting</b></td><td>All four results together; agree what to fix first.</td><td>45 min</td></tr>
+  </table>
+
+  <h3>What each person hands in</h3>
+  <ul class="check">
+    <li>Your results file, named with your initials, for example <code>SM-results.csv</code></li>
+    <li>Your problem log (page 9), filled in</li>
+    <li>Your screen recording from Part A, if you made one</li>
+    <li>The report link from your Part B drive (the app keeps the video and sound)</li>
+  </ul>
+  <p>Put them in one shared folder, for example <code>FreshRoute testing</code>, before the group meeting.</p>
+
+  <div class="box warn">
+    <h3>Be honest about what this test is</h3>
+    <p style="margin:0">We know the app, so we'll breeze past things a newcomer would get stuck on. This round is best at catching bugs, confusing words and anything that breaks on a real road. To make it fairer: write down your first reaction to every screen, even if you've seen it before; don't look anything up in the code or docs mid-task; and count anything you had to guess as "with help". A round with real pantry volunteers can come later.</p>
   </div>
 
-  <h3>Who to test with</h3>
-  <p>Aim for <b>5 people per group</b>. Five people usually surface most of the big problems; after that you mostly see the same ones again.</p>
-  <table>
-    <tr><th style="width:28%">Group</th><th>Who</th><th style="width:22%">Tasks</th></tr>
-    <tr><td><b>Volunteer drivers</b></td><td>People who pick up food for a pantry, or would. Cody's pantry volunteers first.</td><td>D1 to D6</td></tr>
-    <tr><td><b>Pantry staff</b></td><td>Whoever receives the food bank truck or runs the pantry day to day.</td><td>P1 to P7</td></tr>
-  </table>
-  <p class="small muted">Classmates are fine for a practice run, but mark them as "proxy" in the participant name (for example <code>P3-proxy</code>) and keep their results separate. They know apps; they don't know pantries.</p>
-
-  <h3>Time: 45 minutes per session, plus 15 between sessions to reset and save notes</h3>
-  <table>
-    <tr><th>Part</th><th style="width:18%">Minutes</th></tr>
-    <tr><td>Welcome, consent, how thinking aloud works</td><td>5</td></tr>
-    <tr><td>Tasks (6 for drivers, 7 for pantry staff)</td><td>25</td></tr>
-    <tr><td>Survey (10 questions in the app)</td><td>5</td></tr>
-    <tr><td>Wrap-up questions</td><td>10</td></tr>
-  </table>
+  <h3>Split the order</h3>
+  <p>Two of us start Part A with the pantry tasks, two start with the driver tasks. Whatever you do first, you learn from, so splitting the order keeps that from skewing every result the same way.</p>
 </section>
 
 <section class="section">
   <div class="kicker">2</div>
-  <h2>Before test day</h2>
+  <h2>Set up your device</h2>
   <ol class="steps">
-    <li><b>Book people.</b> Ask Cody for 5 volunteers and 2 to 5 staff. Offer 45 minutes at the pantry. Ask each one: <span class="say">"Do you pick up or receive food for the pantry? How often? Do you use a phone or tablet for it now?"</span> Write the answers down; they go next to the results.</li>
-    <li><b>Pick one iPad for testing</b> and charge it. Test results stay on that iPad until you export them, so don't switch iPads mid-day.</li>
-    <li><b>Turn on test mode.</b> Open FreshRoute from the Home Screen icon and <b>press and hold the FreshRoute logo for a second</b> (on Welcome, or top left on the pantry screens), then tap OK. Drivers can also use the <b>Test mode</b> switch in Preferences. The test panel appears and stays on, even after closing the app, until you turn it off the same way. Participants won't see the logo trick unless you show them.</li>
-    <li><b>Allow the camera, microphone, location and motion</b> once, yourself, so the participant isn't greeted by permission pop-ups. Do one full practice run: Welcome, Try the demo pantry, a simulated drive at 8×.</li>
-    <li><b>Check the food bank delivery.</b> In the demo, a new food bank truck comes every 2 hours. For about the first hour of each 2-hour block it's on the road; after that it's at the door. Pantry tasks P1 to P3 work either way, but the wording on screen changes, so note which state it was in.</li>
-    <li><b>Print section 8</b>: one checklist per day, one note sheet per participant.</li>
-    <li><b>Decide where notes go</b>, for example a shared folder named <code>FreshRoute testing</code> with one file per participant: <code>P1-driver.pdf</code>, and the CSV export at the end of the day.</li>
+    <li><b>Pick your device.</b> For the drive you need GPS: an iPhone, or an iPad with cellular. A Wi-Fi-only iPad has no GPS and loses its location once you leave Wi-Fi. It's fine for Part A, but use your phone for Part B. (FreshRoute is designed for iPad; on a phone, note anything that looks cramped or cut off as a problem.)</li>
+    <li><b>Add it to your Home Screen.</b> In Safari, open <code>freshroute.pages.dev</code>, tap Share, then <b>Add to Home Screen</b>, with Open as Web App on. From now on, open FreshRoute from that icon.</li>
+    <li><b>Turn on test mode.</b> On the Welcome screen, <b>press and hold the FreshRoute logo for a second</b> and tap OK. A testing panel appears in the corner. It stays on, even after you close the app, until you hold the logo again.</li>
+    <li><b>Type your initials</b> in the panel's Participant box, for example <code>SM</code>. That's how we tell our four results apart.</li>
+    <li><b>Allow everything once.</b> Camera, microphone, location and motion. If you said no to one by accident: Settings, Apps, Safari (or Privacy &amp; Security, Location Services, for location).</li>
+    <li><b>Optional, but worth it: record your screen</b> during Part A. Open Control Center, long-press the record button, turn the microphone on, and talk out loud as you go. Watching it back is where most of the good notes come from.</li>
   </ol>
-
-  <div class="box warn">
-    <h3>Say this to everyone, every time</h3>
-    <p style="margin:0">The stores are real, but their donation schedules and items in the app are made up for the prototype. Don't send anyone to a store's back door asking for a pickup. The food bank orders and truck are sample data too.</p>
+  <div class="box green">
+    <h3>How to use the test panel on yourself</h3>
+    <ol style="margin:0">
+      <li>Pick the task in the panel and read it once.</li>
+      <li>Tap <b>Start task</b>, then hide the panel with the X so it isn't in your way.</li>
+      <li>Do the task. Say what you're looking for and what you expect, out loud.</li>
+      <li>Open the panel again (flask button) and pick an outcome: <b>Completed</b> (no trouble), <b>With help</b> (you had to guess, retry, or remember how it works), <b>Gave up</b>. Add one line of notes.</li>
+    </ol>
   </div>
+  <p>Before Part A, use the Log tab's <b>Reset app for next participant</b> once, so you start from a clean Welcome screen. It keeps your results.</p>
 </section>
 
 <section class="section">
   <div class="kicker">3</div>
-  <h2>Running a session, step by step</h2>
-  <ol class="steps">
-    <li><b>Reset the app.</b> In the test panel: Log tab, then <b>Reset app for next participant</b>. It wipes the last person's setup, route and receipts but keeps the test log. The app goes back to Welcome.</li>
-    <li><b>Set the participant name</b> at the top of the test panel: <code>P1</code>, <code>P2</code>… No real names anywhere in the app or the export.</li>
-    <li><b>Welcome and consent.</b> Read:
-      <div class="script">"Thanks for helping. We're testing the app, not you. There are no wrong answers, and if something is confusing, that's exactly what we need to find. Please say what you're thinking as you go, even small things like 'I'm looking for…'. I'll read you some tasks and mostly stay quiet. [Name] will take notes. Is it OK if we write down what you say? We won't use your name. You can stop at any time."</div>
-      If you want to record the session's screen or audio, ask separately, and don't record if they say no.</li>
-    <li><b>Hand over the iPad</b> on the screen the task starts from. Hide the test panel (the X) so it doesn't distract.</li>
-    <li><b>Read the task out loud</b>, exactly as written in the panel, then tap <b>Start task</b>. Don't explain or rephrase.</li>
-    <li><b>Stay quiet.</b> If they ask you something, answer with a question:
-      <div class="script">"What would you try if I weren't here?" · "What are you looking for?" · "What do you expect that to do?"</div>
-      Give a hint only after about 2 minutes of being stuck, or if they're getting upset. A hint means the task is <b>With help</b>.</li>
-    <li><b>End the task.</b> Tap <b>Completed</b>, <b>With help</b> or <b>Gave up</b>. Type one line in the notes box first if something stood out. The panel moves to the next task.</li>
-    <li><b>Survey.</b> After the last task, open the Survey tab and hand them the iPad: 10 statements, 1 to 5. Don't comment on their answers.</li>
-    <li><b>Wrap-up questions</b> (note-taker writes the answers):
-      <ul>
-        <li>"What was the hardest part?"</li>
-        <li>"Was anything different from how you do this today?"</li>
-        <li>"If you could change one thing, what would it be?"</li>
-        <li>Drivers: "How would you feel about recording video and sound on a drive?"</li>
-        <li>Pantry staff: "Would you trust the arrival time? What would make you trust it more?"</li>
-      </ul></li>
-    <li><b>Thank them</b>, then take 15 minutes: tidy the notes, and reset the app before the next person.</li>
-  </ol>
+  <h2>Part A: at home</h2>
+  <p>Do one set, reset the app (Log tab), then do the other set. On "Before you drive", turn on <b>Simulate the drive</b> and pick 8×: the van moves on its own, and every time it records stays realistic. Write notes as things happen, not at the end.</p>
+
+  <h3>Pantry tasks (join with "I run a pantry", then "Try the demo pantry")</h3>
+  <table>
+    <tr><th style="width:6%"></th><th style="width:38%">Task</th><th>Done when</th></tr>
+    <tr><td class="id">P1</td><td>Find out when the food bank truck will get here.</td><td>You can say the arrival time, or that it's already at the door.</td></tr>
+    <tr><td class="id">P2</td><td>Find out what the truck looks like.</td><td>You can read the description.</td></tr>
+    <tr><td class="id">P3</td><td>Receive the delivery. One case of apples arrived crushed.</td><td>Apples marked Damaged, then signed.</td></tr>
+    <tr><td class="id">P4</td><td>Send the credit request for yesterday's delivery.</td><td>Marked as sent.</td></tr>
+    <tr><td class="id">P5</td><td>Start a sample pickup run and find out when it will be back.</td><td>You can say its return time.</td></tr>
+    <tr><td class="id">P6</td><td>Find how long cold food was out of the fridge on the last pickup run.</td><td>You can say the time.</td></tr>
+    <tr><td class="id">P7</td><td>Read what drivers said about a store.</td><td>You read a note, or found there are none. If none, write down what you expected to see.</td></tr>
+  </table>
+
+  <h3>Driver tasks (join with "I drive pickups", then "Try the demo pantry")</h3>
+  <table>
+    <tr><th style="width:6%"></th><th style="width:38%">Task</th><th>Done when</th></tr>
+    <tr><td class="id">D1</td><td>Join the demo pantry as a driver and set up your pickup runs.</td><td>You're on the Pickups screen.</td></tr>
+    <tr><td class="id">D2</td><td>Find a store that is open now and has cold items, and add it to your route.</td><td>It's in your route.</td></tr>
+    <tr><td class="id">D3</td><td>Add a second store, then start the drive.</td><td>Navigation is running.</td></tr>
+    <tr><td class="id">D4</td><td>Find out whether you will be back at the pantry on time.</td><td>You can say the time and whether you're on time.</td></tr>
+    <tr><td class="id">D5</td><td>At the store, record what you loaded.</td><td>You tapped Loaded.</td></tr>
+    <tr><td class="id">D6</td><td>Finish the drive and say what slowed you down.</td><td>The drive report is on screen.</td></tr>
+  </table>
 </section>
 
 <section class="section">
   <div class="kicker">4</div>
-  <h2>Driver tasks</h2>
-  <p>Start on the Welcome screen. For a session in a room, turn on <b>Simulate the drive</b> on the "Before you drive" screen and pick 8×: the van moves by itself, and the times it records (arrival, cold timer, report) are still realistic.</p>
-  <table>
-    <tr><th style="width:6%"></th><th style="width:30%">Read aloud</th><th style="width:30%">Done when</th><th>Watch for</th></tr>
-    <tr><td class="id">D1</td><td class="say">Join the demo pantry as a driver and set up your pickup runs.</td><td>They reach the Pickups screen, with their name, vehicle and the recording agreement filled in.</td><td>Do they read the recording terms or skip them? Do they know what to type for "Your vehicle"?</td></tr>
-    <tr><td class="id">D2</td><td class="say">Find a store that is open now and has cold items, and add it to your route.</td><td>A store with "Open now" and "Cold" is in the route (Walmart Supercenter, Sprouts Farmers Market or Natural Grocers).</td><td>Do they use the filters, the map or the list? Do they understand the map key?</td></tr>
-    <tr><td class="id">D3</td><td class="say">Add a second store, then start the drive.</td><td>Navigation is running with 2 stops.</td><td>Do they find the Route tab and "Check and start"? Anything confusing on the "Before you drive" checklist?</td></tr>
-    <tr><td class="id">D4</td><td class="say">Find out whether you will be back at the pantry on time.</td><td>They say the time and "on time", or how many minutes behind.</td><td>Do they tap the ring? Can they explain the ring colours in their own words?</td></tr>
-    <tr><td class="id">D5</td><td class="say">At the store, record what you loaded.</td><td>"Loaded" is tapped with counts.</td><td>With the simulator, the pickup screen opens when the van arrives. Do they adjust the counts or just accept them?</td></tr>
-    <tr><td class="id">D6</td><td class="say">Finish the drive and say what slowed you down.</td><td>The drive report is on screen.</td><td>Do they find "I'm back at the pantry"? What do they write as feedback?</td></tr>
-  </table>
-  <div class="box green">
-    <h3>Tip</h3>
-    <p style="margin:0">At 8×, the van covers the roads between stops in a minute or two, then waits at each store until the participant taps Loaded. The simulator panel on the navigation screen shows "Drive time": the app's clock for that drive, which runs 8 times faster than the real one.</p>
+  <h2>Part B: your drive</h2>
+  <p>This is the part the simulator can't fake: real GPS, sun on the screen, a turn you miss, a parking lot bigger than the app expects. You're alone, so the app's own recording is your note-taker: it records video and sound once the drive starts, so talk out loud.</p>
+
+  <div class="box warn">
+    <h3>Safety rules (not optional)</h3>
+    <ul style="margin:0">
+      <li><b>Don't touch the screen while the car is moving.</b> Set everything up while parked. While driving, only glance at the next turn, like any navigation app. Texas bans reading or typing on a phone while driving; treat the app the same way.</li>
+      <li>If you need to tap anything, <b>pull over and park first</b>. Missed a turn? Keep driving; the app plans a new route by itself.</li>
+      <li>Phone or iPad in a <b>mount</b>, plugged in. Never on your lap or the seat.</li>
+      <li>Daylight, dry weather, streets you know, no highways. If anyone rides along, tell them sound is recorded.</li>
+      <li>The stores are real but their donation schedules in the app are made up. Park in the lot; don't go to the receiving door or talk to staff about a pickup.</li>
+    </ul>
+  </div>
+
+  <h3>Before you start (parked)</h3>
+  <ol class="steps">
+    <li><b>Start near the pantry pin</b> (the house pin, around East McKinney St in Denton), in a public lot. The route and promised time start there. The pantry is made up, so don't park at its address.</li>
+    <li><b>Plan 2 nearby stores</b> from the always-open demo stores: Kroger on W University Dr, Walmart Supercenter on S Loop 288, ALDI on Ector St, Sprouts on Teasley Ln, or Natural Grocers on E Sherman Dr. Two close together keeps it to about half an hour.</li>
+    <li>On "Before you drive": <b>Simulate the drive off</b>, check location, allow motion, pick your cameras, sound on. Tap <b>Start drive</b> and say the promised time out loud, so it's on the recording.</li>
+  </ol>
+
+  <h3>While driving, notice (say it out loud)</h3>
+  <p>Does each turn come early enough, and can you read the distance in a glance? If you leave the route, does a new one appear within about 15 seconds? Is the screen readable in sun, and does it ever dim? Does the arrival time move in ways that make sense?</p>
+
+  <div class="grid2">
+    <div><h3>At each store (parked)</h3>
+    <p>The pickup screen should open by itself in the lot. If not, tap "I've arrived" and note it (big lots can be outside the 70-metre arrival zone). Enter counts, tap Loaded, drive on.</p></div>
+    <div><h3>At the end (parked)</h3>
+    <p>Finish the drive near the pantry pin. Check the report against what really happened: times, the cold timer, and the video's sound and bump markers. Copy its link for the folder.</p></div>
   </div>
 </section>
 
 <section class="section">
   <div class="kicker">5</div>
-  <h2>Pantry tasks</h2>
-  <p>Start on the Welcome screen. The participant joins with <b>I run a pantry</b>, then <b>Try the demo pantry</b> (not timed: do it before P1).</p>
+  <h2>Part C: write it up</h2>
+  <ol class="steps">
+    <li><b>Do the survey.</b> Test panel, Survey tab: 10 statements, 1 to 5. Answer for the whole app, both parts. The panel works out your score (0 to 100).</li>
+    <li><b>Export.</b> Log tab, <b>Export CSV</b>. Rename the file with your initials (<code>SM-results.csv</code>) and put it in the shared folder.</li>
+    <li><b>Watch your recordings</b> at 1.5× speed: the Part A screen recording and the Part B drive video. Every time you hesitated, said "huh", or did something twice, that's a problem for the log.</li>
+    <li><b>Fill in the problem log</b> (page 9). One row per problem: where it happened, what happened, how bad. Use the scale below.</li>
+    <li><b>Mark your top 3</b>: the problems you'd fix first if you could only fix three.</li>
+  </ol>
+
+  <h3>How bad is it?</h3>
   <table>
-    <tr><th style="width:6%"></th><th style="width:30%">Read aloud</th><th style="width:30%">Done when</th><th>Watch for</th></tr>
-    <tr><td class="id">P1</td><td class="say">Find out when the food bank truck will get here.</td><td>They say the arrival time, or that it's already at the door.</td><td>Do they read the ring, the sentence or the map first? Do they understand "inside your window"?</td></tr>
-    <tr><td class="id">P2</td><td class="say">Find out what the truck looks like.</td><td>They read the "Look for" line.</td><td>Did they notice it during P1 already?</td></tr>
-    <tr><td class="id">P3</td><td class="say">Receive the delivery. One case of apples arrived crushed.</td><td>Gala apples marked Damaged (1 case), temperature and name entered, then "Sign and finish".</td><td>Do they look for the apples or scroll past them? Do they understand why a temperature is asked for?</td></tr>
-    <tr><td class="id">P4</td><td class="say">Send the credit request for yesterday's delivery.</td><td>"Send credit request" tapped on yesterday's order.</td><td>Do they find the Receiving tab? Do they notice the claim deadline?</td></tr>
-    <tr><td class="id">P5</td><td class="say">Start a sample pickup run and find out when it will be back.</td><td>They read the arrival time on the volunteer run card.</td><td>The sample runs at 8×; do they notice the "Simulated at 8×" label?</td></tr>
-    <tr><td class="id">P6</td><td class="say">Find how long cold food was out of the fridge on the last pickup run.</td><td>They read "Cold food out" in Pickup runs, or on the run's report.</td><td>Do they go to Pickup runs, or try the Incoming card?</td></tr>
-    <tr><td class="id">P7</td><td class="say">Read what drivers said about a store.</td><td>They open Stores and read a note.</td><td>If no store has notes yet, that empty screen is the finding: write down what they expected.</td></tr>
+    <tr><th style="width:8%">Score</th><th>Meaning</th></tr>
+    <tr><td class="id">1</td><td>Cosmetic: looks off, didn't slow you down</td></tr>
+    <tr><td class="id">2</td><td>Minor: slowed you down, you worked it out</td></tr>
+    <tr><td class="id">3</td><td>Major: you had to guess, retry or remember how it works</td></tr>
+    <tr><td class="id">4</td><td>Blocker: you couldn't finish, or it was unsafe on the road</td></tr>
   </table>
+
+  <div class="box green">
+    <h3>Good problem notes</h3>
+    <p style="margin:0"><b>Where:</b> Receive delivery. <b>What happened:</b> I scrolled past Gala apples twice because the list isn't in the same order as the paper invoice. <b>Score:</b> 3.<br>
+    Not: "receiving was confusing."</p>
+  </div>
 </section>
 
 <section class="section">
   <div class="kicker">6</div>
-  <h2>The real drive, in a car</h2>
-  <p>This is the one test the simulator can't replace: GPS, glare, a mount, a real turn you miss. Do it with your group before you do it with a participant.</p>
+  <h2>The group meeting</h2>
+  <p>Once all four folders are in. One person shares their screen and keeps the merged list; everyone else reads out their log.</p>
+  <ol class="steps">
+    <li><b>Results table (10 min).</b> Open the four CSV files. For each task, count how many of us got Completed, With help or Gave up, and the middle time. Note the four survey scores (around 68 is average for software; above 80 is good).</li>
+    <li><b>Merge problems (20 min).</b> Read problems out one at a time. If someone else hit the same thing, merge them and note how many of us hit it. Keep the highest score anyone gave it.</li>
+    <li><b>Rank (10 min).</b> Sort by score, then by how many of us hit it. Anything rated 4, and anything unsafe on the road, goes first no matter what.</li>
+    <li><b>Decide (5 min).</b> Pick what gets fixed before the next round, and who checks each fix. Write down what we're not fixing and why.</li>
+  </ol>
 
-  <div class="box warn">
-    <h3>Safety rules (not optional)</h3>
-    <ul style="margin:0">
-      <li>Nobody touches the iPad while the car is moving except the <b>safety passenger</b>. Texas bans reading or typing on a phone while driving; treat the iPad the same way.</li>
-      <li>Set up the route and do every task <b>while parked</b>. While moving, the driver only glances at the next turn, the way they would with any navigation app.</li>
-      <li>The iPad is in a <b>mount</b>, not on a lap or seat. Daylight, a route you know, no highway for the first run.</li>
-      <li>The app records video and sound once the drive starts: tell everyone in the car before you start.</li>
-      <li>Park in the store lot for the pickup step. Don't go to the receiving door (the schedules are made up).</li>
-    </ul>
-  </div>
-
-  <h3>Before you leave</h3>
-  <ul class="check">
-    <li>Check your iPad model. A Wi-Fi-only iPad has no GPS, so location drops once you leave Wi-Fi. Use a cellular iPad, or run the app on an iPhone for this test.</li>
-    <li>Plug the iPad into the car. Turn on Do Not Disturb.</li>
-    <li>Open FreshRoute from the Home Screen icon and plan 2 stops close together, for example Kroger on University Dr and ALDI on Ector St (both demo stores are always open).</li>
-    <li>On "Before you drive", leave <b>Simulate the drive off</b>, check location, allow motion, pick the cameras.</li>
-  </ul>
-
-  <h3>On the road, the safety passenger notes</h3>
-  <ul>
-    <li>Did the next-turn instruction come early enough? Was the distance readable at a glance?</li>
-    <li>Any missed turn: did a new route appear within about 15 seconds?</li>
-    <li>Did the arrival screen open by itself at each store? (Stores have a 70-metre arrival zone; big lots might need "I've arrived".)</li>
-    <li>Glare, text size and brightness in daylight. Did the screen ever turn off?</li>
-    <li>Anything the driver said out loud.</li>
-  </ul>
-
-  <h3>After</h3>
-  <p>Finish the drive at the pantry and open the report together. Compare the report's drive time and arrival times with what you remember. Check the video has sound and that the hard-brake or bump markers match real moments.</p>
+  <h3>Merged results, to copy</h3>
+  <table>
+    <tr><th>Task</th><th>Completed</th><th>With help</th><th>Gave up</th><th>Middle time</th><th>Main problem</th></tr>
+    <tr><td class="id">P1</td><td>_ / 4</td><td></td><td></td><td>___ s</td><td></td></tr>
+    <tr><td class="id">P2</td><td>_ / 4</td><td></td><td></td><td>___ s</td><td></td></tr>
+    <tr><td class="id">…</td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="id">Drive</td><td colspan="5">What broke or surprised on the real road (from all four drives):</td></tr>
+  </table>
+  <p class="small muted">For the case study: the merged table, the top problems with one quote or screenshot each, and what changed because of them.</p>
 </section>
 
 <section class="section">
   <div class="kicker">7</div>
-  <h2>After the sessions: scoring and fixing</h2>
-  <ol class="steps">
-    <li><b>Export.</b> Test panel, Log tab, <b>Export CSV</b>. One file has every task row and every SUS score. Save it to the shared folder the same day.</li>
-    <li><b>Count.</b> For each task, out of everyone who tried it: how many Completed, With help, Gave up; and the middle (median) time.</li>
-    <li><b>Read the SUS scores.</b> The panel already does the maths. Around 68 is average for software; above 80 is good; below 50 means people struggled.</li>
-    <li><b>Sort the notes.</b> Write each problem on its own sticky note (one problem, one participant). Group the ones that are the same problem. Count how many people hit each one.</li>
-    <li><b>Rate each problem</b> on this scale, then fix from the top:
-      <table style="margin-top:4pt">
-        <tr><th style="width:8%">0</th><td>Not a usability problem</td></tr>
-        <tr><th>1</th><td>Cosmetic: fix if there's time</td></tr>
-        <tr><th>2</th><td>Minor: slows people down</td></tr>
-        <tr><th>3</th><td>Major: people needed help; fix before the next round</td></tr>
-        <tr><th>4</th><td>Blocks the task: fix first</td></tr>
-      </table></li>
-    <li><b>Write it up</b> in this order: what you tested and with whom; the results table; the top problems with a quote each; what you'll change. One quote beats three sentences of summary.</li>
-    <li><b>Test again</b> after fixing, with new people, so you can see whether the numbers moved.</li>
-  </ol>
-  <h3>Results table to copy</h3>
-  <table>
-    <tr><th>Task</th><th>Completed</th><th>With help</th><th>Gave up</th><th>Median time</th><th>Biggest problem seen</th></tr>
-    <tr><td class="id">D1</td><td>_ / 5</td><td></td><td></td><td>___ s</td><td></td></tr>
-    <tr><td class="id">D2</td><td>_ / 5</td><td></td><td></td><td>___ s</td><td></td></tr>
-    <tr><td class="id">…</td><td></td><td></td><td></td><td></td><td></td></tr>
-  </table>
-</section>
-
-<section class="section">
-  <div class="kicker">8</div>
-  <h2>Day-of checklist</h2>
+  <h2>Your checklist</h2>
+  <h3>Set up</h3>
   <ul class="check">
-    <li>iPad charged, charger and stand in the bag</li>
-    <li>FreshRoute open from the Home Screen icon, test mode on (hold the logo), test panel visible</li>
-    <li>Camera, microphone, location and motion already allowed</li>
-    <li>One full practice run done today</li>
-    <li>Note sheets printed, one per participant, and pens</li>
-    <li>Roles decided: facilitator, note-taker</li>
-    <li>For a car test: mount, car charger, safety passenger, cellular iPad or iPhone</li>
+    <li>FreshRoute on my Home Screen, opened from the icon</li>
+    <li>Test mode on (held the logo), my initials in Participant</li>
+    <li>Camera, microphone, location and motion allowed</li>
+    <li>Reset app once before starting</li>
   </ul>
-  <h3>Between participants</h3>
+  <h3>Part A: at home</h3>
   <ul class="check">
-    <li>Log tab, Reset app for next participant</li>
-    <li>New participant name in the panel (P2, P3…)</li>
-    <li>Notes from the last session written up</li>
+    <li>Screen recording on, microphone on (optional)</li>
+    <li>First set of tasks done (pantry or driver, whichever is mine first)</li>
+    <li>Reset app, second set done</li>
   </ul>
-  <h3>End of day</h3>
+  <h3>Part B: my drive</h3>
   <ul class="check">
-    <li>Export CSV and save it to the shared folder</li>
-    <li>Note sheets photographed or scanned</li>
-    <li>Top 3 problems written down while they're fresh</li>
+    <li>Phone or cellular iPad in a mount, plugged in, Do Not Disturb on</li>
+    <li>Daylight, dry, no highways</li>
+    <li>Parked near the pantry pin, 2 demo stores in the route, simulation off</li>
+    <li>Said the promised time out loud at the start</li>
+    <li>Didn't touch the screen while moving</li>
+    <li>Checked the report and video at the end, copied the link</li>
+  </ul>
+  <h3>Part C: write-up</h3>
+  <ul class="check">
+    <li>Survey done</li>
+    <li>CSV exported and renamed with my initials</li>
+    <li>Recordings watched, problem log filled in, top 3 marked</li>
+    <li>Everything in the shared folder before the meeting</li>
   </ul>
 </section>
 
 <section class="section">
-  <h2>Note sheet</h2>
-  <p class="muted">Participant: ______ &nbsp; Group: driver / pantry &nbsp; Date: ________ &nbsp; Note-taker: __________</p>
-  <p class="muted small">Today they: pick up or receive food ______ times a month · use a phone or tablet for it now? yes / no</p>
+  <h2>Problem log</h2>
+  <p class="muted">Name: ______ &nbsp; Device: phone / iPad (cellular / Wi-Fi) &nbsp; Date: ________ &nbsp; Survey score: _____</p>
   <table class="sheet">
-    <tr><th style="width:8%">Task</th><th style="width:24%">Outcome</th><th>What happened, and what they said (word for word)</th></tr>
-    <tr><td class="id">1</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">2</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">3</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">4</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">5</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">6</td><td>done · help · gave up</td><td></td></tr>
-    <tr><td class="id">7</td><td>done · help · gave up</td><td></td></tr>
+    <tr><th style="width:5%">Top 3</th><th style="width:20%">Where (screen or task)</th><th>What happened</th><th style="width:9%">Score 1 to 4</th></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>
   </table>
   <table class="sheet">
-    <tr><th>Wrap-up answers</th></tr>
-    <tr><td class="big"><span class="muted small">Hardest part:</span></td></tr>
-    <tr><td class="big"><span class="muted small">Different from today:</span></td></tr>
-    <tr><td class="big"><span class="muted small">One thing to change / recording or trusting the time:</span></td></tr>
+    <tr><th>On the road</th></tr>
+    <tr><td class="big"><span class="muted small">What the real drive showed that the simulator didn't:</span></td></tr>
   </table>
 </section>
 
