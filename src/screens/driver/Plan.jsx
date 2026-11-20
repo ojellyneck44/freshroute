@@ -1,6 +1,7 @@
 import {useEffect, useMemo, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Badge} from '@astryxdesign/core';
 import {ArrowLeft, Plus, Check, ChevronUp, ChevronDown, X, Settings, Snowflake, FileText, MapPin} from 'lucide-react';
+import {destPin} from '../../components/pins.js';
 import MapView from '../../components/MapView.jsx';
 import {stores, storeById, nextWindow, totalLb, needsCold, isDemoOpen, BANK} from '../../data/stores.js';
 import {useAppState, setState, navigate} from '../../lib/state.js';
@@ -62,14 +63,17 @@ export default function Plan() {
       if (filter === 'cold') return needsCold(s.items);
       return true;
     });
-    return filtered.sort((a, b) => (a.w?.start ?? Infinity) - (b.w?.start ?? Infinity));
+    // Donation stores first; the food bank warehouse is an order pickup in Fort Worth, so it goes last.
+    return filtered.sort((a, b) => (a.s.warehouse - b.s.warehouse) || (a.w?.start ?? Infinity) - (b.w?.start ?? Infinity));
   }, [filter, now]);
 
   const promise = plan ? promiseFor(plan.route, plan.stops.length, now.getTime()) : null;
   const markers = [
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
+    destPin('pantry', 'bank', BANK.lon, BANK.lat, BANK.name),
     ...stores.map((s) => {
       const i = ids.indexOf(s.id);
+      // The food bank warehouse keeps its own pin until it's a numbered stop (a new id, since a pin's anchor is fixed).
+      if (s.warehouse && i < 0) return destPin('foodbank', s.id + '-pin', s.lon, s.lat, `${s.name}. ${windowText(nextWindow(s, now), now)}`, {fit: false, onClick: () => (setSel(s.id), setTab('pickups'))});
       return {
         id: s.id, lon: s.lon, lat: s.lat, fit: !s.warehouse || i >= 0, // the Fort Worth warehouse would zoom the map out of Denton
         className: i >= 0 ? `stopnum${sel === s.id ? ' pin sel' : ''}` : `pin ${pinClass(nextWindow(s, now), now)}${sel === s.id ? ' sel' : ''}`,
@@ -89,7 +93,8 @@ export default function Plan() {
           ['pin today', 'Opens later today'],
           ['pin later', 'Not today'],
           ...(ids.length ? [['stopnum', 'Your stops, in order'], ['line', 'Your planned route']] : []),
-          ['pin bank', 'P: your pantry, start and finish'],
+          ['dest pantry', 'Your pantry: start and finish'],
+          ['dest foodbank', 'Food bank warehouse (order pickup)'],
         ]}} />
       <aside className={`sheet${selStore ? ' tall' : ''}`} aria-label="Plan pickups">
         {selStore ? (

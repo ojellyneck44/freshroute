@@ -8,16 +8,19 @@ const FLAG = 'freshroute:test';
 const LOG = 'freshroute:testlog';
 
 export const TASKS = [
-  {id: 'D1', who: 'Driver', text: 'Join as a driver and set up your van'},
-  {id: 'D2', who: 'Driver', text: 'Find a store with cold items that is open today and add it to your route'},
-  {id: 'D3', who: 'Driver', text: 'Build a 3-stop route and start the drive'},
-  {id: 'D4', who: 'Driver', text: 'Check whether you will make it on time'},
-  {id: 'D5', who: 'Driver', text: 'Record a pickup with item counts'},
+  {id: 'D1', who: 'Driver', text: 'Join the demo pantry as a driver and set up your pickup runs'},
+  {id: 'D2', who: 'Driver', text: 'Find a store that is open now and has cold items, and add it to your route'},
+  {id: 'D3', who: 'Driver', text: 'Add a second store, then start the drive'},
+  {id: 'D4', who: 'Driver', text: 'Find out whether you will be back at the pantry on time'},
+  {id: 'D5', who: 'Driver', text: 'At the store, record what you loaded'},
   {id: 'D6', who: 'Driver', text: 'Finish the drive and say what slowed you down'},
-  {id: 'M1', who: 'Manager', text: 'Find Van 2 and when it will arrive'},
-  {id: 'M2', who: 'Manager', text: 'Watch the latest footage from the van'},
-  {id: 'M3', who: 'Manager', text: 'In a drive report, find the hard-brake moment'},
-  {id: 'M4', who: 'Manager', text: 'Read what drivers said about a store'},
+  {id: 'P1', who: 'Pantry', text: 'Find out when the food bank truck will get here'},
+  {id: 'P2', who: 'Pantry', text: 'Find out what the truck looks like'},
+  {id: 'P3', who: 'Pantry', text: 'Receive the delivery. One case of apples arrived crushed'},
+  {id: 'P4', who: 'Pantry', text: "Send the credit request for yesterday's delivery"},
+  {id: 'P5', who: 'Pantry', text: 'Start a sample pickup run and find out when it will be back'},
+  {id: 'P6', who: 'Pantry', text: 'In a finished pickup run, find the moment of a hard brake'},
+  {id: 'P7', who: 'Pantry', text: 'Read what drivers said about a store'},
 ];
 const SUS = [
   'I think that I would like to use FreshRoute frequently.',
@@ -124,7 +127,7 @@ export function Facilitator() {
           <p className="muted" style={{margin: 0}}>Read aloud: “{TASKS.find((t) => t.id === task)?.text}.”</p>
           {start ? (
             <>
-              <div className="spread"><span className="num mono">{Math.floor((now - start) / 1000)} s</span><Badge variant="warning" label="Timing" /></div>
+              <div className="spread"><span className="num mono">{Math.floor((now - start) / 1000)} s</span><Badge variant="orange" label="Timing" /></div>
               <textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes: where they hesitated, what they said" aria-label="Observation notes" />
               <div className="row wrap">
                 <Button variant="primary" label="Completed" onClick={() => finish('success')} />

@@ -1,3 +1,4 @@
+import {PIN_HTML} from './pins.js';
 import {useEffect, useRef} from 'react';
 import * as maplibregl from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
@@ -113,13 +114,14 @@ export default function MapView({route, split = 0, trail, state = 'on-time', mar
           e.stopPropagation();
           entry?.onClick?.();
         });
-        const marker = new maplibregl.Marker({element: node}).setLngLat([x.lon, x.lat]).addTo(m);
+        const marker = new maplibregl.Marker({element: node, anchor: x.anchor || 'center'}).setLngLat([x.lon, x.lat]).addTo(m);
         entry = {marker, node, base: node.className}; // keep MapLibre's own positioning classes
         mk.current.set(x.id, entry);
       }
       entry.onClick = x.onClick;
       entry.node.className = `${entry.base} ${x.className || 'pin'}`;
-      entry.node.textContent = x.text ?? '';
+      if (x.html) entry.node.innerHTML = x.html; // trusted: built from constants in pins.js
+      else entry.node.textContent = x.text ?? '';
       if (x.label) entry.node.setAttribute('aria-label', x.label);
       if (x.style) Object.assign(entry.node.style, x.style);
       entry.marker.setLngLat([x.lon, x.lat]);
@@ -155,7 +157,7 @@ export default function MapView({route, split = 0, trail, state = 'on-time', mar
           <strong>{legend.title}</strong>
           <ul>
             {legend.items.map(([cls, text]) => (
-              <li key={text}><span className={`key ${cls}`} aria-hidden="true">{cls === 'stopnum' ? '1' : ''}</span>{text}</li>
+              <li key={text}>{cls.startsWith('dest ') ? <span className={`key ${cls}`} aria-hidden="true" dangerouslySetInnerHTML={{__html: PIN_HTML[cls.slice(5)]}} /> : <span className={`key ${cls}`} aria-hidden="true">{cls === 'stopnum' ? '1' : ''}</span>}{text}</li>
             ))}
           </ul>
         </div>

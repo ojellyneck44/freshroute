@@ -7,11 +7,15 @@
   /* iPadOS 26 blurs content under the status bar, so top UI starts below the bar, not at its edge. */
   --size-legend: calc(var(--space-4xl) * 5);
   --size-receive-side: calc(var(--space-4xl) * 8);
+  --size-dest-w: 34px;
+  --size-dest-h: 41px;
   --top-safe: calc(env(safe-area-inset-top, 0px) + var(--space-lg));
   color-scheme: dark;
   --fr-sprout: light-dark(#3C7A0C, #B4EC6A);
   --fr-sprout-hover: light-dark(#33690A, #C8F48C);
   --fr-on-sprout: light-dark(#FFFFFF, #16181B);
+  --fr-on-frost: light-dark(#FFFFFF, #16181B);
+  --fr-shadow-pin: rgba(0, 0, 0, 0.35);
   --fr-sprout-tint: light-dark(#E3F3CF, #2A3820);
   --fr-apricot: light-dark(#9A5800, #FFBE5C);
   --fr-apricot-tint: light-dark(#FBEBD3, #3D301A);

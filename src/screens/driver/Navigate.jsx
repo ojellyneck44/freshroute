@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, TextArea, Dialog} from '@astryxdesign/core';
 import {ArrowUp, ArrowUpRight, ArrowUpLeft, CornerUpRight, CornerUpLeft, RotateCcw, Flag, X, Share2, WifiOff, PackageCheck, SkipForward, ChevronLeft} from 'lucide-react';
+import {destPin} from '../../components/pins.js';
 import MapView from '../../components/MapView.jsx';
 import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
@@ -92,7 +93,7 @@ export default function Navigate() {
   const coldMs = drive.coldStartAt ? now - drive.coldStartAt : 0;
   const markers = [
     ...drive.stops.map((s, i) => ({id: s.storeId, lon: s.lon, lat: s.lat, className: `stopnum${s.departedAt ? ' done' : ''}`, text: String(i + 1), label: `Stop ${i + 1}: ${s.name}`})),
-    {id: 'bank', lon: drive.dest.lon, lat: drive.dest.lat, className: 'pin bank', text: 'P', label: drive.dest.name},
+    destPin('pantry', 'bank', drive.dest.lon, drive.dest.lat, drive.dest.name),
   ];
   const offline = !navigator.onLine || pending() > 20;
 
@@ -100,7 +101,7 @@ export default function Navigate() {
     <main className="mapshell" data-screen tabIndex={-1}>
       <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
       <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
-        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['pin bank', 'P: drop-off at your pantry']]}} />
+        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['dest pantry', 'Drop-off at your pantry']]}} />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
         {session.stream ? <span className="rec"><i aria-hidden="true" />Recording</span> : <div className="cam-off">Camera off</div>}

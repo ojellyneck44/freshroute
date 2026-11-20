@@ -4,6 +4,7 @@ import {Button, Banner, Badge} from '@astryxdesign/core';
 import {Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
 import {DeliveryCard, Receive, Receiving, useParentDelivery} from './Receiving.jsx';
 import {PARENT, HUB} from '../../data/deliveries.js';
+import {destPin} from '../../components/pins.js';
 import MapView from '../../components/MapView.jsx';
 import Ring from '../../components/Ring.jsx';
 import Footage, {eventText} from '../../components/Footage.jsx';
@@ -136,8 +137,9 @@ function Live() {
     }
   };
   const markers = [
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
-    {id: 'hub', lon: HUB.lon, lat: HUB.lat, className: 'pin later', label: HUB.name},
+    destPin('pantry', 'bank', BANK.lon, BANK.lat, BANK.name),
+    destPin('hub', 'hub', HUB.lon, HUB.lat, `${HUB.name}, shared stop`),
+    destPin('foodbank', 'parent-wh', PARENT.lon, PARENT.lat, `${PARENT.name} warehouse`),
     ...(parent.pos && !parent.receipt ? [{id: 'parent', lon: parent.pos[0], lat: parent.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck, ${phaseLabel(parent)}`}] : []),
     ...active.filter((d) => d.last).map((d) => ({id: d.id, lon: d.last.lon, lat: d.last.lat, className: 'truck-dot', style: {background: STATE_VAR[etaState(forecastOf(d), d.promiseAt).key]}, label: `${d.van}, ${etaState(forecastOf(d), d.promiseAt).label}`, onClick: () => navigate(`/bank/truck/${d.id}`)})),
   ];
@@ -194,7 +196,7 @@ function Live() {
         </section>
         <section className="mapbox" aria-label="Map of trucks">
           <MapView markers={markers} route={parent.receipt || parent.phase === 'here' ? null : parent.coords} split={parent.split || 0} fitKey={`${active.map((d) => d.id).join(',') || 'none'}|${parent.coords ? 'road' : ''}`} label="Map of food coming to the pantry" legendAt="bl"
-            legend={{title: 'Food on its way to you', items: [['truck parent', `${PARENT.name} truck`], ...(parent.phase === 'here' ? [] : [['line', 'Its road to you']]), ['pin later', HUB.name + ' (shared stop)'], ['truck', 'Volunteer van: green on time, amber slipping, red late'], ['pin bank', 'P: your pantry']]}} />
+            legend={{title: 'Food on its way to you', items: [['truck parent', `${PARENT.name} truck`], ...(parent.phase === 'here' ? [] : [['line', 'Its road to you']]), ['dest foodbank', `${PARENT.name} warehouse`], ['dest hub', `${HUB.name} (shared stop)`], ['truck', 'Volunteer vehicle: green on time, amber slipping, red late'], ['dest pantry', 'Your pantry']]}} />
         </section>
       </div>
     </>
@@ -223,7 +225,7 @@ function TruckDetail({id}) {
   const coords = d.routeCoords || [];
   const markers = [
     ...(d.stops || []).map((s, i) => ({id: s.storeId, lon: s.lon, lat: s.lat, className: `stopnum${s.departedAt ? ' done' : ''}`, text: String(i + 1), label: s.name})),
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
+    destPin('pantry', 'bank', BANK.lon, BANK.lat, BANK.name),
   ];
   const copyLink = (s) => {
     const url = `${location.origin}/s/${d.id}/${s.storeId}`;
@@ -244,7 +246,7 @@ function TruckDetail({id}) {
           <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={d.deliveredAt || simNow(d)} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} speed={d.clock?.speed || 1} />
           {d.segments?.length > 0 && <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>}
           <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" legendAt="bl"
-            legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['pin bank', 'Drop-off at the pantry']]}} /></div>
+            legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['dest pantry', 'Drop-off at your pantry']]}} /></div>
         </section>
         <section className="stack">
           <div className="panel stack" style={{alignItems: 'center', textAlign: 'center'}}>
