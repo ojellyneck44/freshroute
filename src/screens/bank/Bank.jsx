@@ -201,7 +201,7 @@ function TruckDetail({id}) {
     <>
       <div className="main-head">
         <div>
-          <Button variant="ghost" label="All trucks" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} />
+          <div className="back"><Button variant="ghost" label="All trucks" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
           <h1 style={{marginTop: 'var(--space-sm)'}}>{d.van}<span className="sep">·</span>{d.driver}</h1>
           <div className="muted">{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}</div>
         </div>

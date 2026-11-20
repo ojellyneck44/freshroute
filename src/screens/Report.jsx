@@ -68,7 +68,7 @@ export default function Report({id, back}) {
   return (
     <Root className="overlay-inner" tabIndex={-1} style={{maxWidth: 'var(--size-content)'}}>
       <div className="spread">
-        <Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(back)} />
+        <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(back)} /></div>
         {!String(d.id).startsWith('local-') && <Button variant="ghost" label="Share with the food bank" icon={<Share2 size={18} />} onClick={share} />}
       </div>
       <header className="stack" style={{margin: 'var(--space-lg) 0 var(--space-xl)', gap: 'var(--space-sm)'}}>

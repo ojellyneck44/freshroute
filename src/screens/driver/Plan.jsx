@@ -15,6 +15,8 @@ const windowText = (w, now = new Date()) => {
   return `${sameDay ? 'Today' : day(w.start)} ${clock(w.start)} to ${clockAmPm(w.end)}`;
 };
 const pinClass = (w, now = new Date()) => (!w ? 'later' : w.isOpen ? 'open' : w.start.toDateString() === now.toDateString() ? 'today' : 'later');
+// '07:30' -> '7:30 AM', to match the rest of the app.
+const hm = (t) => clockAmPm(new Date(2000, 0, 1, ...t.split(':').map(Number)));
 const STORAGE = {cold: 'Chilled', frozen: 'Frozen', cool: 'Cool, dry', dry: 'Dry'};
 
 // D2 to D6: map of donation stores, store details, and the route tray.
@@ -81,7 +83,7 @@ export default function Plan() {
   const selStore = sel && storeById(sel);
   return (
     <main className="mapshell" tabIndex={-1}>
-      <MapView route={plan?.route.coords} markers={markers} fitKey={`${ids.join(',') || 'all'}|${plan ? 'planned' : ''}`} padding={{top: 60, bottom: 60, left: innerWidth > 820 ? 440 : 40, right: 60}} label="Map of donation stores" />
+      <MapView route={plan?.route.coords} markers={markers} fitKey={`${ids.join(',') || 'all'}|${plan ? 'planned' : ''}`} padding={{top: 60, bottom: 60, left: innerWidth > 820 ? 440 : 40, right: 60}} focus={sel ? storeById(sel) : null} label="Map of donation stores" />
       <aside className={`sheet${selStore ? ' tall' : ''}`} aria-label="Plan pickups">
         {selStore ? (
           <StoreDetail store={selStore} now={now} added={inRoute(selStore.id)} onToggle={() => toggle(selStore.id)} onBack={() => setSel(null)} vanCold={profile.cold} />
@@ -151,14 +153,14 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
   return (
     <>
       <div className="sheet-head">
-        <Button variant="ghost" label="All pickups" icon={<ArrowLeft size={18} />} onClick={onBack} />
+        <div className="back"><Button variant="ghost" label="All pickups" icon={<ArrowLeft size={18} />} onClick={onBack} /></div>
         <div>
           <h1 style={{fontSize: 'var(--fs-title1)'}}>{store.name}</h1>
           <div className="muted">{store.address}, Denton</div>
         </div>
         <div className="row wrap" style={{gap: 'var(--space-xs)'}}>
           <span className={`chip ${w?.isOpen ? 'sprout' : ''}`}>{windowText(w, now)}</span>
-          {store.schedule.map((s, i) => <span key={i} className="chip">{s.days.map((d) => days[d]).join(', ')} {s.start} to {s.end}</span>)}
+          {store.schedule.map((s, i) => <span key={i} className="chip">Every {s.days.map((d) => days[d]).join(', ')}, {hm(s.start)} to {hm(s.end)}</span>)}
         </div>
       </div>
       <div className="sheet-body stack" style={{gap: 'var(--space-xl)'}}>
@@ -263,7 +265,7 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
             <div>
               <div className="label">If you leave now</div>
               <div className="big-delta num">Back by {clockAmPm(promise.final)}</div>
-              <div className="muted num" style={{fontSize: 'var(--fs-label)'}}>{miles(plan.route.distance)} · {duration(plan.route.duration * 1000)} driving · {route.length} stops</div>
+              <div className="muted num" style={{fontSize: 'var(--fs-label)'}}>{miles(plan.route.distance)} · {duration(plan.route.duration * 1000)} driving · {route.length} {route.length === 1 ? 'stop' : 'stops'}</div>
             </div>
             <Badge variant="neutral" label="Estimate" />
           </div>

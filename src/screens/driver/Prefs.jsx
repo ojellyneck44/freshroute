@@ -10,7 +10,7 @@ export default function Prefs() {
   return (
     <main className="center-page" tabIndex={-1} style={{placeItems: 'start center'}}>
       <div className="form">
-        <Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} />
+        <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} /></div>
         <h1>Preferences</h1>
         <TextInput label="Your name" value={profile.name} onChange={(name) => setProfile({name})} autoComplete="name" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
@@ -19,7 +19,7 @@ export default function Prefs() {
             {['Van 1', 'Van 2', 'Box truck', 'Own car'].map((v) => <SegmentedControlItem key={v} value={v} label={v} />)}
           </SegmentedControl>
         </div>
-        <Switch label="This vehicle has cold storage" value={profile.cold} onChange={(cold) => setProfile({cold})} labelSpacing="spread" />
+        <Switch label="This vehicle has cold storage" value={profile.cold} onChange={(cold) => setProfile({cold})} labelSpacing="spread" labelPosition="start" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
           <span className="label">Appearance</span>
           <SegmentedControl label="Appearance" value={prefs.theme} onChange={(theme) => setPrefs({theme})} layout="fill">

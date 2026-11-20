@@ -16,7 +16,7 @@ const line = (coords) => (coords && coords.length > 1 ? {type: 'Feature', geomet
  * markers: [{id, lon, lat, className, text, label, onClick}]; puck: {lon, lat, hdg}.
  * follow: 'nav' (heading-up, tilted, follows the puck) | 'fit' (fit everything once) | null.
  */
-export default function MapView({route, split = 0, trail, state = 'on-time', markers = [], puck, follow = 'fit', fitKey, padding, label = 'Map'}) {
+export default function MapView({route, split = 0, trail, state = 'on-time', markers = [], puck, follow = 'fit', fitKey, padding, focus, label = 'Map'}) {
   const el = useRef(null);
   const map = useRef(null);
   const ready = useRef(false);
@@ -91,6 +91,12 @@ export default function MapView({route, split = 0, trail, state = 'on-time', mar
 
   useEffect(draw, [route, split, trail, state]);
   useEffect(fit, [fitKey]);
+
+  // Fly to a chosen place (e.g. the store whose details are open).
+  useEffect(() => {
+    if (!focus || !map.current) return;
+    map.current.easeTo({center: [focus.lon, focus.lat], zoom: Math.max(map.current.getZoom(), 14), padding: padding || 60, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600});
+  }, [focus?.lon, focus?.lat]);
 
   // Markers (diffed by id so they don't flicker).
   useEffect(() => {

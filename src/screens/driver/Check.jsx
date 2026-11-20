@@ -93,11 +93,11 @@ export default function Check() {
   return (
     <main className="overlay" tabIndex={-1} style={{animation: 'none'}}>
       <div className="overlay-inner">
-        <Button variant="ghost" label="Back to route" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} />
+        <div className="back"><Button variant="ghost" label="Back to route" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} /></div>
         <div className="progress-grid">
           <section className="stack" aria-labelledby="ready">
             <h1 id="ready">Before you drive</h1>
-            <div className="video" style={{aspectRatio: '4 / 3', maxHeight: '36vh'}}>
+            <div className="video" style={{aspectRatio: 'auto', height: 'min(36vh, calc(var(--size-progress-col) * 0.75))'}}>
               <video ref={video} autoPlay playsInline muted aria-label="Camera preview" />
               {camState === 'on' && <span className="rec live" style={{position: 'absolute'}}><i aria-hidden="true" />Preview</span>}
               {camState !== 'on' && <div className="cam-off muted" style={{position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: 'var(--space-lg)', textAlign: 'center'}}>{camState === 'error' ? camErr : cam === 'usb' && !usbId ? 'Pick your USB-C camera below.' : 'Starting camera…'}</div>}
@@ -138,8 +138,8 @@ export default function Check() {
               {promise ? (
                 <>
                   <div className="big-delta num">Back by {clockAmPm(promise.final)}</div>
-                  <ol className="stack" style={{margin: 0, paddingLeft: 'var(--space-lg2)', gap: 'var(--space-2xs)'}}>
-                    {route.map((r, i) => <li key={r.storeId} className="num">{storeById(r.storeId).name}, {storeById(r.storeId).address} · {clock(promise.stops[i])}</li>)}
+                  <ol className="stack" style={{margin: 0, padding: 0, listStyle: 'none', gap: 'var(--space-2xs)'}}>
+                    {route.map((r, i) => <li key={r.storeId} className="num">{i + 1}. {storeById(r.storeId).name}, {storeById(r.storeId).address} · {clock(promise.stops[i])}</li>)}
                   </ol>
                   <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>This time locks when you start. The food bank sees it next to your live forecast.</p>
                 </>
@@ -148,7 +148,7 @@ export default function Check() {
               )}
             </div>
             <div className="panel stack">
-              <Switch label="Simulate the drive (for testing)" description="Moves the van along the route without driving. Use it on a laptop or for user testing." value={sim > 0} onChange={(v) => setSim(v ? 4 : 0)} labelSpacing="spread" />
+              <Switch label="Simulate the drive (for testing)" description="Moves the van along the route without driving. Use it on a laptop or for user testing." value={sim > 0} onChange={(v) => setSim(v ? 4 : 0)} labelSpacing="spread" labelPosition="start" />
               {sim > 0 && (
                 <SegmentedControl label="Simulation speed" value={String(sim)} onChange={(v) => setSim(Number(v))} layout="fill" size="sm">
                   {[1, 2, 4, 8].map((x) => <SegmentedControlItem key={x} value={String(x)} label={`${x}×`} />)}

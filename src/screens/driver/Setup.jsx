@@ -23,7 +23,7 @@ export default function Setup() {
   return (
     <main className="center-page" tabIndex={-1}>
       <div className="form">
-        <Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => (setState({role: null}), navigate('/'))} />
+        <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => (setState({role: null}), navigate('/'))} /></div>
         <h1>Set up your van</h1>
         <TextInput label="Your name" value={name} onChange={setName} autoComplete="given-name" placeholder="First and last name" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
@@ -32,7 +32,7 @@ export default function Setup() {
             {['Van 1', 'Van 2', 'Box truck', 'Own car'].map((v) => <SegmentedControlItem key={v} value={v} label={v} />)}
           </SegmentedControl>
         </div>
-        <Switch label="This vehicle has cold storage" description="Pickups with chilled or frozen food are marked for you either way." value={cold} onChange={setCold} labelSpacing="spread" />
+        <Switch label="This vehicle has cold storage" description="Pickups with chilled or frozen food are marked for you either way." value={cold} onChange={setCold} labelSpacing="spread" labelPosition="start" />
         <section className="stack" aria-labelledby="rec">
           <h3 id="rec">Recording during drives</h3>
           <div className="consent" tabIndex={0} aria-label="Recording terms">
