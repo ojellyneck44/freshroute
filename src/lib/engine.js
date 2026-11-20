@@ -137,7 +137,7 @@ export function resumeDrive() {
 let watchId = null, simTimer = null, postTimer = null, patchTimer = null, buffer = [];
 function begin() {
   const cum = cumulative(drive.route.coords);
-  live = {cum, along: live.along ?? 0, idx: 0, pos: null, spd: 0, hdg: 0, hdgRate: 0, forecast: drive.promiseAt, stepI: 0, offRoute: false};
+  live = {cum, along: drive.simAlong ?? live.along ?? 0, idx: 0, pos: null, spd: 0, hdg: 0, hdgRate: 0, forecast: drive.promiseAt, stepI: 0, offRoute: false};
   if (drive.sim) startSim();
   else if ('geolocation' in navigator) {
     watchId = navigator.geolocation.watchPosition(
@@ -250,6 +250,7 @@ function update(t = Date.now()) {
     const tr = (drive.trail ||= []);
     if (!tr.length || t - tr[tr.length - 1].t >= 10000) {
       tr.push(pt);
+      drive.simAlong = drive.sim ? live.along : undefined; // so a reload mid-simulation carries on from here
       persist();
     }
   }
