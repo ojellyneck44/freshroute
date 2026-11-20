@@ -13,12 +13,7 @@ export default function Prefs() {
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} /></div>
         <h1>Preferences</h1>
         <TextInput label="Your name" value={profile.name} onChange={(name) => setProfile({name})} autoComplete="name" />
-        <div className="stack" style={{gap: 'var(--space-sm)'}}>
-          <span className="label">Vehicle</span>
-          <SegmentedControl label="Vehicle" value={profile.van} onChange={(van) => setProfile({van})} layout="fill">
-            {['Van 1', 'Van 2', 'Box truck', 'Own car'].map((v) => <SegmentedControlItem key={v} value={v} label={v} />)}
-          </SegmentedControl>
-        </div>
+        <TextInput label="Your vehicle" value={profile.van} onChange={(van) => setProfile({van})} placeholder="e.g. Silver Honda Odyssey, plate ends 4KD" description="Stores and the pantry use this to spot you at the dock." />
         <Switch label="This vehicle has cold storage" value={profile.cold} onChange={(cold) => setProfile({cold})} labelSpacing="spread" labelPosition="start" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
           <span className="label">Appearance</span>
@@ -30,7 +25,7 @@ export default function Prefs() {
           <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>Auto uses Daylight between sunrise and sunset, so the screen stays readable with sun on the windshield.</p>
         </div>
         <div className="panel stack">
-          <div className="label">Food bank</div>
+          <div className="label">Pantry join code</div>
           <strong>{code}</strong>
           <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>You agreed to drive recording on {profile.consent ? 'this device' : 'no device yet'}. Video, sound (if on), location and motion markers are shared with your food bank during drives only.</p>
         </div>

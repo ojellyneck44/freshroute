@@ -133,7 +133,7 @@ export default function Check() {
           <section className="stack">
             <ul style={{listStyle: 'none', margin: 0, padding: 0}}>
               <Item ok={camState === 'on'} icon={Camera} title="Camera">
-                <span className="muted">{camState === 'on' ? `Recording starts when you start the drive${feeds?.sound ? ', with sound' : ''}.` : 'Needed for the food bank to see the drive.'}</span>
+                <span className="muted">{camState === 'on' ? `Recording starts when you start the drive${feeds?.sound ? ', with sound' : ''}.` : 'Needed for the pantry to see the drive.'}</span>
               </Item>
               <Item ok={gps === 'granted' || sim > 0} icon={MapPin} title="Location">
                 {gps === 'denied' ? <Banner status="error" title="Location is off for FreshRoute" description="On iPad: Settings > Privacy & Security > Location Services. Turn it on, then set Safari Websites (or FreshRoute, if you opened it from the Home Screen) to While Using. Then check again." />
@@ -157,7 +157,7 @@ export default function Check() {
                   <ol className="stack" style={{margin: 0, padding: 0, listStyle: 'none', gap: 'var(--space-2xs)'}}>
                     {route.map((r, i) => <li key={r.storeId} className="num">{i + 1}. {storeById(r.storeId).name}, {storeById(r.storeId).address} · {clock(promise.stops[i])}</li>)}
                   </ol>
-                  <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>This time locks when you start. The food bank sees it next to your live forecast.</p>
+                  <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>This time locks when you start. The pantry sees it next to your live forecast.</p>
                 </>
               ) : (
                 <span className="muted">Planning…</span>

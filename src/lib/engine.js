@@ -70,7 +70,7 @@ export async function startDrive({storeIds, plan, sim = 0, camera, sound = true,
   drive = {
     id: null,
     driver: sample ? 'Sample driver' : profile.name || 'Driver',
-    van: sample ? 'Sample van' : profile.van,
+    van: sample ? 'Sample run' : profile.van || 'Volunteer vehicle',
     cold: profile.cold,
     bankName: BANK.name,
     camera: sample ? 'none' : camera || '',

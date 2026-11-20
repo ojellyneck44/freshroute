@@ -92,7 +92,7 @@ export default function Navigate() {
   const coldMs = drive.coldStartAt ? now - drive.coldStartAt : 0;
   const markers = [
     ...drive.stops.map((s, i) => ({id: s.storeId, lon: s.lon, lat: s.lat, className: `stopnum${s.departedAt ? ' done' : ''}`, text: String(i + 1), label: `Stop ${i + 1}: ${s.name}`})),
-    {id: 'bank', lon: drive.dest.lon, lat: drive.dest.lat, className: 'pin bank', text: 'FB', label: drive.dest.name},
+    {id: 'bank', lon: drive.dest.lon, lat: drive.dest.lat, className: 'pin bank', text: 'P', label: drive.dest.name},
   ];
   const offline = !navigator.onLine || pending() > 20;
 
@@ -100,7 +100,7 @@ export default function Navigate() {
     <main className="mapshell" data-screen tabIndex={-1}>
       <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
       <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
-        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['pin bank', 'Food bank drop-off']]}} />
+        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['pin bank', 'P: drop-off at your pantry']]}} />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
         {session.stream ? <span className="rec"><i aria-hidden="true" />Recording</span> : <div className="cam-off">Camera off</div>}
@@ -147,7 +147,7 @@ export default function Navigate() {
             <button className="btn primary drive" onClick={() => arrive(target.i)}>I've arrived</button>
           )
         ) : (
-          <button className="btn primary drive" onClick={() => setOverlay('end')}>I'm at the food bank</button>
+          <button className="btn primary drive" onClick={() => setOverlay('end')}>I'm back at the pantry</button>
         )}
       </div>
 
@@ -178,7 +178,7 @@ function shareLink(drive, s) {
   return url;
 }
 
-// D10: the progress screen. Opens any time, including while driving; the food bank sees the same view.
+// D10: the progress screen. Opens any time, including while driving; the pantry sees the same view.
 function Progress({drive, live, now, onClose}) {
   const st = etaState(live.forecast, drive.promiseAt);
   const progress = live.cum ? live.along / live.cum[live.cum.length - 1] : 0;
@@ -228,7 +228,7 @@ function Progress({drive, live, now, onClose}) {
               </li>
             </ol>
             <h3 style={{marginTop: 'var(--space-lg)'}}>Anything slowing you down?</h3>
-            <p className="muted" style={{margin: 0}}>Optional. The food bank sees the reason next to your arrival time.</p>
+            <p className="muted" style={{margin: 0}}>Optional. The pantry sees the reason next to your arrival time.</p>
             <div className="row wrap">
               {REASONS.map((r) => (
                 <button key={r} className="chip" aria-pressed={(drive.events || []).some((e) => e.kind === 'reason' && e.data?.reason === r)} onClick={() => logEvent('reason', {reason: r})}>{r}</button>
@@ -257,7 +257,7 @@ function Pickup({drive, i, onClose}) {
           <span className="label">Stop {i + 1} of {drive.stops.length}</span>
         </div>
         <h1 id="pk" style={{marginTop: 'var(--space-lg)'}}>{s.name}</h1>
-        <p className="muted" style={{margin: 'var(--space-2xs) 0 var(--space-xl)'}}>Count what you load. The food bank checks these against what arrives.</p>
+        <p className="muted" style={{margin: 'var(--space-2xs) 0 var(--space-xl)'}}>Count what you load. The pantry checks these against what arrives.</p>
         <div className="counts">
           {s.items.map((it) => (
             <div key={it.name} className="count-row">
@@ -274,7 +274,7 @@ function Pickup({drive, i, onClose}) {
             </div>
           ))}
         </div>
-        {hasCold && !drive.coldStartAt && <div style={{marginTop: 'var(--space-lg)'}}><Banner status="info" title="The cold-chain timer starts when you tap Loaded" description="The food bank sees how long chilled food has been out of the fridge." /></div>}
+        {hasCold && !drive.coldStartAt && <div style={{marginTop: 'var(--space-lg)'}}><Banner status="info" title="The cold-chain timer starts when you tap Loaded" description="The pantry sees how long chilled food has been out of the fridge." /></div>}
         <div className="row wrap" style={{marginTop: 'var(--space-xl)'}}>
           <button className="btn primary drive grow" onClick={() => (loaded(i, counts), onClose())}><PackageCheck size={22} aria-hidden="true" />Loaded</button>
           <button className="btn drive" onClick={() => setSkip(true)}><SkipForward size={20} aria-hidden="true" />Nothing to pick up</button>
@@ -283,7 +283,7 @@ function Pickup({drive, i, onClose}) {
       <Dialog isOpen={skip} onOpenChange={setSkip} purpose="form">
         <div className="stack" style={{padding: 'var(--space-xl)'}}>
           <h2>Skip {s.name}?</h2>
-          <p className="muted" style={{margin: 0}}>The food bank and the next driver will see why.</p>
+          <p className="muted" style={{margin: 0}}>The pantry and the next driver will see why.</p>
           <TextArea label="What happened" value={why} onChange={setWhy} placeholder="e.g. No donations today, store closed early" />
           <div className="row" style={{justifyContent: 'flex-end'}}>
             <Button label="Cancel" onClick={() => setSkip(false)} />

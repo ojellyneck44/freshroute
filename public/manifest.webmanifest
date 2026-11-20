@@ -1,7 +1,7 @@
 {
   "name": "FreshRoute",
   "short_name": "FreshRoute",
-  "description": "Food rescue pickups with an arrival time you can trust: live ETA, cold-chain timer and drive footage for food banks.",
+  "description": "Know when the food gets here: food bank deliveries, receiving and volunteer pickups for food pantries.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

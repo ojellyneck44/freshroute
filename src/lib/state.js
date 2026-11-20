@@ -5,7 +5,7 @@ const KEY = 'freshroute:v1';
 const initial = {
   role: null, // 'driver' | 'bank'
   code: '', // food bank join code
-  profile: {name: '', van: 'Van 2', cold: false, consent: false},
+  profile: {name: '', van: '', cold: false, consent: false},
   prefs: {theme: 'auto', camera: '', headsUp: true},
   route: [], // [{storeId}] being planned
   driveId: null, // active drive on this device

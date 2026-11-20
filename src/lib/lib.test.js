@@ -41,3 +41,26 @@ test('nextWindow finds the open or next donation window', () => {
   const wedNoon = new Date(2026, 10, 18, 12, 0);
   assert.equal(nextWindow(kroger, wedNoon).start.getDay(), 5);
 });
+
+import {creditDeadline, deliveryFor, claimsOf, ORDER_LINES} from '../data/deliveries.js';
+test('credit deadline is 3 business days later, skipping the weekend', () => {
+  const thu = new Date(2026, 10, 19, 10).getTime(); // Thu 19 Nov 2026
+  const d = new Date(creditDeadline(thu));
+  assert.equal(d.getDay(), 2); // Fri, Mon, Tue
+  assert.equal(d.getHours(), 17);
+});
+test('the demo delivery moves from road to door within its window', () => {
+  const block = new Date(2026, 10, 20, 12).getTime(); // a 2-hour block start
+  const legs = {legs: [50 * 60000, 18 * 60000]};
+  assert.equal(deliveryFor(block + 5 * 60000, legs).phase, 'road-hub');
+  const late = deliveryFor(block + 110 * 60000, legs);
+  assert.equal(late.phase, 'here');
+  assert.ok(late.etaAt <= late.windowEnd);
+});
+test('claims list short and damaged lines with pounds', () => {
+  const lines = Object.fromEntries(ORDER_LINES.map((l) => [l.name, {status: 'ok', cases: 0}]));
+  lines['Gala apples'] = {status: 'damaged', cases: 1};
+  const c = claimsOf({lines});
+  assert.equal(c.length, 1);
+  assert.equal(c[0].missingLb, 40);
+});

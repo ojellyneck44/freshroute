@@ -5,7 +5,7 @@ import {setState, navigate} from '../lib/state.js';
 import {api} from '../lib/api.js';
 import {Mark, Wordmark} from '../components/Glyphs.jsx';
 
-// D1a: who are you, and which food bank? The join code comes from the food bank.
+// D1a: who are you, and which pantry? The join code comes from the pantry.
 export default function Welcome() {
   const [role, setRole] = useState(null);
   const [code, setCode] = useState('');
@@ -14,16 +14,16 @@ export default function Welcome() {
 
   async function join(useCode = code) {
     setError(null);
-    if (!role) return setError('Choose whether you drive pickups or run a food bank.');
+    if (!role) return setError('Choose whether you drive pickups or run the pantry.');
     const c = useCode.trim().toUpperCase();
-    if (!c) return setError('Enter the join code from your food bank.');
+    if (!c) return setError('Enter the join code from your pantry.');
     setBusy(true);
     try {
       await api('check', {code: c});
     } catch (e) {
       setBusy(false);
       // Offline or no server: still let people try the app on this device.
-      if (e.status === 401) return setError('That join code was not recognised. Check it with your food bank.');
+      if (e.status === 401) return setError('That join code was not recognised. Check it with your pantry.');
     }
     setBusy(false);
     setState({role, code: c});
@@ -35,9 +35,9 @@ export default function Welcome() {
       <div className="welcome">
         <section>
           <Wordmark />
-          <h1>Pickups that arrive when you said they would.</h1>
+          <h1>Know when the food gets here.</h1>
           <p className="muted" style={{fontSize: 'var(--fs-headline)', margin: 0, maxWidth: '34ch'}}>
-            Drivers plan grocery pickups and keep a live arrival time. The food bank sees it, along with the cold-chain timer and footage of the drive.
+            Pantries see the food bank truck coming, check deliveries in at the door, and run their own grocery pickups with a live arrival time, cold-chain timer and drive footage.
           </p>
           <div className="row" style={{marginTop: 'var(--space-2xl)'}} aria-hidden="true">
             <Mark size={120} />
@@ -47,16 +47,16 @@ export default function Welcome() {
           <h2 id="who">Who's using this iPad?</h2>
           <button className="role-btn" aria-pressed={role === 'driver'} onClick={() => setRole('driver')}>
             <span className="ico"><Truck size={24} aria-hidden="true" /></span>
-            <span><span className="store-name">I drive pickups</span><br /><span className="muted">Plan a route, navigate, record counts</span></span>
+            <span><span className="store-name">I drive pickups</span><br /><span className="muted">Volunteer runs to stores or the food bank warehouse</span></span>
           </button>
           <button className="role-btn" aria-pressed={role === 'bank'} onClick={() => setRole('bank')}>
             <span className="ico"><Building2 size={24} aria-hidden="true" /></span>
-            <span><span className="store-name">I run a food bank</span><br /><span className="muted">See trucks, ETAs, footage and reports</span></span>
+            <span><span className="store-name">I run a pantry</span><br /><span className="muted">Incoming deliveries, receiving, credits and reports</span></span>
           </button>
-          <TextInput label="Food bank join code" value={code} onChange={setCode} placeholder="e.g. DENTON-DEMO" autoComplete="off" onEnter={() => join()} description="Your food bank gives you this code. It links you to their trucks." />
+          <TextInput label="Pantry join code" value={code} onChange={setCode} placeholder="e.g. DENTON-DEMO" autoComplete="off" onEnter={() => join()} description="Your pantry gives you this code. It links this iPad to the pantry's deliveries and pickup runs." />
           {error && <Banner status="error" title={error} />}
           <Button variant="primary" size="lg" label="Continue" isLoading={busy} onClick={() => join()} />
-          <Button variant="ghost" label="Try the demo food bank" onClick={() => (setCode('DENTON-DEMO'), join('DENTON-DEMO'))} />
+          <Button variant="ghost" label="Try the demo pantry" onClick={() => (setCode('DENTON-DEMO'), join('DENTON-DEMO'))} />
         </section>
       </div>
     </main>

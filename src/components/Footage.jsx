@@ -14,7 +14,7 @@ export const eventText = (e) => {
     case 'skipped': return `Skipped ${d.name}: ${d.reason}`;
     case 'delay': return `${d.reason}, about ${d.minutes} min`;
     case 'reason': return `Driver: ${d.reason}`;
-    case 'arrived-bank': return 'Arrived at the food bank';
+    case 'arrived-bank': return 'Back at the pantry';
     case 'delivered': return 'Drive finished';
     case 'store-ready': return d.ready ? 'Store marked donations ready' : 'Store marked not ready';
     case 'gap': return `FreshRoute was in the background for ${Math.max(1, Math.round((d.ms || 0) / 1000))} s, so nothing was recorded`;

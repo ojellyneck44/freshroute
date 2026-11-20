@@ -1,6 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, Badge} from '@astryxdesign/core';
-import {Truck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
+import {Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
+import {DeliveryCard, Receive, Receiving, useParentDelivery} from './Receiving.jsx';
+import {PARENT, HUB} from '../../data/deliveries.js';
 import MapView from '../../components/MapView.jsx';
 import Ring from '../../components/Ring.jsx';
 import Footage, {eventText} from '../../components/Footage.jsx';
@@ -16,7 +18,7 @@ const ACTIVE_MS = 3 * 3600 * 1000;
 const isActive = (d) => d.status !== 'delivered' && Date.now() - d.updated < ACTIVE_MS;
 const forecastOf = (d) => d.last?.eta || d.promiseAt;
 const STATE_VAR = {'on-time': 'var(--fr-sprout)', slipping: 'var(--fr-apricot)', late: 'var(--fr-tomato)', unknown: 'var(--fr-text-3)'};
-const STATUS = {'en-route-pickup': 'En route to pickup', 'at-pickup': 'At a pickup', 'en-route-bank': 'En route to food bank', 'arrived-bank': 'At the food bank', delivered: 'Delivered'};
+const STATUS = {'en-route-pickup': 'On the way to a store', 'at-pickup': 'Loading at a store', 'en-route-bank': 'Heading back to the pantry', 'arrived-bank': 'Back at the pantry', delivered: 'Unloaded'};
 
 function usePoll(path, ms = 5000) {
   const [data, setData] = useState(null);
@@ -31,20 +33,21 @@ function usePoll(path, ms = 5000) {
   return [data, err];
 }
 
-// M1 to M6: the food bank's side. Same data as the driver, no driver controls.
+// The pantry's side: food arriving from the food bank and from volunteer pickup runs.
 export default function Bank({path}) {
   const parts = path.split('/');
   const page = parts[2] || 'live';
   const nav = [
-    ['/bank', 'live', 'Trucks', Truck],
-    ['/bank/reports', 'reports', 'Reports', FileText],
+    ['/bank', 'live', 'Incoming', Inbox],
+    ['/bank/receiving', 'receiving', 'Receiving', ClipboardCheck],
+    ['/bank/reports', 'reports', 'Pickup runs', FileText],
     ['/bank/stores', 'stores', 'Stores', Store],
   ];
-  const cur = page === 'truck' ? 'live' : page === 'report' ? 'reports' : page;
+  const cur = page === 'truck' || page === 'receive' ? 'live' : page === 'report' ? 'reports' : page;
   return (
     <div className="shell">
       <a className="skip" href="#content">Skip to content</a>
-      <nav className="side" aria-label="Food bank">
+      <nav className="side" aria-label="Pantry">
         <div style={{padding: 'var(--space-sm) var(--space-md) var(--space-xl)'}}><Wordmark size={28} /></div>
         {nav.map(([href, key, label, I]) => (
           <a key={key} href={href} aria-current={cur === key ? 'page' : undefined} onClick={(e) => (e.preventDefault(), navigate(href))}><I size={20} aria-hidden="true" />{label}</a>
@@ -60,11 +63,13 @@ export default function Bank({path}) {
         </div>
         {page === 'live' && <Live />}
         {page === 'truck' && <TruckDetail id={parts[3]} />}
+        {page === 'receive' && <Receive id={parts[3]} />}
+        {page === 'receiving' && <Receiving />}
         {page === 'reports' && <Reports />}
         {page === 'report' && <Report id={parts[3]} back="/bank/reports" />}
         {page === 'stores' && <Stores />}
       </main>
-      <nav className="tabbar glass dense" aria-label="Food bank">
+      <nav className="tabbar glass dense" aria-label="Pantry">
         {nav.map(([href, key, label, I]) => (
           <a key={key} href={href} aria-current={cur === key ? 'page' : undefined} onClick={(e) => (e.preventDefault(), navigate(href))}><I size={22} aria-hidden="true" />{label}</a>
         ))}
@@ -73,8 +78,8 @@ export default function Bank({path}) {
   );
 }
 
-// Heads-up at 15 and 5 minutes out (Cody: "oh, the truck's here").
-function useHeadsUp(drives) {
+// Heads-up at 15 and 5 minutes out (Cody: "oh, the truck's here"), and at 30 and 10 for the food bank truck.
+function useHeadsUp(drives, parent) {
   const sent = useRef(JSON.parse(sessionStorage.getItem('freshroute:alerts') || '{}'));
   const [alerts, setAlerts] = useState([]);
   useEffect(() => {
@@ -93,15 +98,30 @@ function useHeadsUp(drives) {
         }
       }
     }
+    if (parent && parent.phase !== 'here' && !parent.receipt) {
+      const left = (parent.etaAt - Date.now()) / 60000;
+      for (const m of [10, 30]) {
+        const key = `${parent.id}:${m}`;
+        if (left <= m && left > 0 && !sent.current[key]) {
+          sent.current[`${parent.id}:10`] = sent.current[`${parent.id}:30`] = m === 10 ? 1 : sent.current[`${parent.id}:10`];
+          sent.current[key] = 1;
+          const cold = parent.lines.some((l) => l.storage === 'cold' || l.storage === 'frozen');
+          const msg = `The ${PARENT.name} truck arrives in about ${Math.max(1, Math.round(left))} min (${clockAmPm(parent.etaAt)}).${cold ? ' Bring the pallet blanket for the cold lines.' : ''}`;
+          fresh.push({id: key, msg});
+          if (globalThis.Notification?.permission === 'granted') new globalThis.Notification('FreshRoute', {body: msg, icon: '/icons/icon-192.png', tag: key});
+        }
+      }
+    }
     sessionStorage.setItem('freshroute:alerts', JSON.stringify(sent.current));
     if (fresh.length) setAlerts((a) => [...fresh, ...a].slice(0, 3));
-  }, [drives]);
+  }, [drives, parent?.phase, Math.floor((parent?.etaAt - Date.now()) / 60000)]);
   return [alerts, (id) => setAlerts((a) => a.filter((x) => x.id !== id))];
 }
 
 function Live() {
   const [drives, err] = usePoll('drives');
-  const [alerts, dismiss] = useHeadsUp(drives);
+  const parent = useParentDelivery();
+  const [alerts, dismiss] = useHeadsUp(drives, parent);
   const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
   const [starting, setStarting] = useState(false);
   const {drive: localSim} = useDrive();
@@ -115,7 +135,9 @@ function Live() {
     }
   };
   const markers = [
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'FB', label: BANK.name},
+    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
+    {id: 'hub', lon: HUB.lon, lat: HUB.lat, className: 'pin later', label: HUB.name},
+    ...(parent.pos && !parent.receipt ? [{id: 'parent', lon: parent.pos[0], lat: parent.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck, ${phaseLabel(parent)}`}] : []),
     ...active.filter((d) => d.last).map((d) => ({id: d.id, lon: d.last.lon, lat: d.last.lat, className: 'truck-dot', style: {background: STATE_VAR[etaState(forecastOf(d), d.promiseAt).key]}, label: `${d.van}, ${etaState(forecastOf(d), d.promiseAt).label}`, onClick: () => navigate(`/bank/truck/${d.id}`)})),
   ];
   return (
@@ -123,7 +145,7 @@ function Live() {
       <div className="main-head">
         <div>
           <div className="label">{new Date().toLocaleDateString([], {weekday: 'long', month: 'long', day: 'numeric'})}</div>
-          <h1>Trucks on the road</h1>
+          <h1>Incoming today</h1>
         </div>
         <div className="row wrap">
           {perm === 'default' && <Button label="Turn on arrival alerts" icon={<Bell size={18} />} onClick={() => Notification.requestPermission().then(setPerm)} />}
@@ -133,17 +155,18 @@ function Live() {
       </div>
       <div className="stack" style={{marginBottom: 'var(--space-lg)'}} aria-live="polite">
         {alerts.map((a) => <Banner key={a.id} status="info" title="Heads-up" description={a.msg} isDismissable onDismiss={() => dismiss(a.id)} />)}
-        {err && <Banner status={err.status === 401 ? 'error' : 'warning'} title={err.status === 401 ? 'Your join code is no longer valid' : 'Can\'t reach FreshRoute right now'} description={err.status === 401 ? 'Sign out and join again with the code from your food bank.' : 'Showing the last update. Retrying every few seconds.'} />}
+        {err && <Banner status={err.status === 401 ? 'error' : 'warning'} title={err.status === 401 ? 'Your join code is no longer valid' : 'Can\'t reach FreshRoute right now'} description={err.status === 401 ? 'Sign out and join again with the code from your pantry.' : 'Showing the last update. Retrying every few seconds.'} />}
       </div>
       <div className="trucks">
-        <section className="stack" aria-label="Active trucks">
-          {drives === null && !err && <p className="muted" aria-busy="true">Loading trucks…</p>}
+        <section className="stack" aria-label="Incoming food">
+          <DeliveryCard d={parent} />
+          <h2 className="as-h3" style={{marginTop: 'var(--space-lg)'}}>Volunteer pickup runs</h2>
+          {drives === null && !err && <p className="muted" aria-busy="true">Loading pickup runs…</p>}
           {drives && active.length === 0 && (
             <div className="empty">
-              <h2 className="as-h3">No trucks on the road</h2>
-              <p>When a driver starts a drive, it shows up here with a live arrival time.</p>
-              <Button variant="primary" label={localSim ? 'Sample truck running' : 'Run a sample truck'} icon={<Play size={18} />} isLoading={starting} isDisabled={!!localSim} onClick={sample} />
-              <p className="faint" style={{fontSize: 'var(--fs-sub)'}}>The sample drives three real Denton stops at 8× speed from this browser tab.</p>
+              <p style={{marginTop: 0}}>No volunteers out right now. When one starts a pickup run from stores or the food bank warehouse, it shows up here with a live arrival time.</p>
+              <Button variant="primary" label={localSim ? 'Sample run going' : 'Run a sample pickup run'} icon={<Play size={18} />} isLoading={starting} isDisabled={!!localSim} onClick={sample} />
+              <p className="faint" style={{fontSize: 'var(--fs-sub)'}}>The sample drives three real Denton stores at 8× speed from this browser tab.</p>
             </div>
           )}
           {active.map((d) => {
@@ -168,13 +191,15 @@ function Live() {
           })}
         </section>
         <section className="mapbox" aria-label="Map of trucks">
-          <MapView markers={markers} fitKey={active.map((d) => d.id).join(',') || 'none'} label="Map of trucks and the food bank" legendAt="bl"
-            legend={{title: 'Where each truck is now', items: [['truck', 'Truck: green on time, amber slipping, red late'], ['pin bank', 'Your food bank']]}} />
+          <MapView markers={markers} route={parent.receipt || parent.phase === 'here' ? null : parent.coords} split={parent.split || 0} fitKey={`${active.map((d) => d.id).join(',') || 'none'}|${parent.coords ? 'road' : ''}`} label="Map of food coming to the pantry" legendAt="bl"
+            legend={{title: 'Food on its way to you', items: [['truck parent', `${PARENT.name} truck`], ...(parent.phase === 'here' ? [] : [['line', 'Its road to you']]), ['pin later', HUB.name + ' (shared stop)'], ['truck', 'Volunteer van: green on time, amber slipping, red late'], ['pin bank', 'P: your pantry']]}} />
         </section>
       </div>
     </>
   );
 }
+
+const phaseLabel = (d) => ({'road-hub': 'heading to the shared stop', hub: 'at the shared stop', road: 'on the way to you', here: 'at your door'})[d.phase];
 
 function progressOf(d) {
   if (!d.last || !d.routeDistance) return 0;
@@ -196,7 +221,7 @@ function TruckDetail({id}) {
   const coords = d.routeCoords || [];
   const markers = [
     ...(d.stops || []).map((s, i) => ({id: s.storeId, lon: s.lon, lat: s.lat, className: `stopnum${s.departedAt ? ' done' : ''}`, text: String(i + 1), label: s.name})),
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'FB', label: BANK.name},
+    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
   ];
   const copyLink = (s) => {
     const url = `${location.origin}/s/${d.id}/${s.storeId}`;
@@ -206,7 +231,7 @@ function TruckDetail({id}) {
     <>
       <div className="main-head">
         <div>
-          <div className="back"><Button variant="ghost" label="All trucks" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
+          <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
           <h1 style={{marginTop: 'var(--space-sm)'}}>{d.van}<span className="sep">·</span>{d.driver}</h1>
           <div className="muted">{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}</div>
         </div>
@@ -217,7 +242,7 @@ function TruckDetail({id}) {
           <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={Date.now()} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} />
           {d.segments?.length > 0 && <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>}
           <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" legendAt="bl"
-            legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['pin bank', 'Drop-off at the food bank']]}} /></div>
+            legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['pin bank', 'Drop-off at the pantry']]}} /></div>
         </section>
         <section className="stack">
           <div className="panel stack" style={{alignItems: 'center', textAlign: 'center'}}>
@@ -255,13 +280,13 @@ function Reports() {
   const done = (drives || []).filter((d) => d.status === 'delivered').sort((a, b) => b.startedAt - a.startedAt);
   return (
     <>
-      <div className="main-head"><h1>Drive reports</h1></div>
+      <div className="main-head"><div><h1>Pickup runs</h1><p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>Every finished volunteer run: on-time return, cold food time, counts and video.</p></div></div>
       {err && <Banner status="warning" title="Can't reach FreshRoute right now" description="Retrying." />}
       {drives && done.length === 0 && <div className="empty"><h2 className="as-h3">No finished drives yet</h2><p>Reports appear here as soon as a driver taps Finish drive. You don't need the driver's approval to open them.</p></div>}
       {done.length > 0 && (
         <div style={{overflowX: 'auto'}}>
           <table className="table">
-            <thead><tr><th>Date</th><th>Van and driver</th><th>Stops</th><th>Arrival vs promise</th><th>Cold food out</th><th>Items</th><th>Motion</th></tr></thead>
+            <thead><tr><th>Date</th><th>Vehicle and driver</th><th>Stops</th><th>Back vs promised</th><th>Cold food out</th><th>Items</th><th>Motion</th></tr></thead>
             <tbody>
               {done.map((d) => {
                 const end = d.arrivedBankAt || d.deliveredAt;

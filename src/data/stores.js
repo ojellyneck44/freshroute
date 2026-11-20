@@ -1,3 +1,4 @@
+import {ORDER_LINES} from './deliveries.js';
 // Real Denton, TX grocery stores (locations from OpenStreetMap, 19 Nov 2026).
 // Donation schedules, items and pickup notes are SAMPLE DATA for the prototype.
 // Later these would come from a real system such as a food bank's agency portal,
@@ -176,6 +177,11 @@ export const stores = [
      item('Tomatillos', '3-lb bags', 4, 12, 'cool'),
     ],
     'Back door off the side lot. Staff speak Spanish and English.'),
+  // The parent food bank's warehouse: pantries can pick up their order here instead of waiting for delivery.
+  {...S('tafb-warehouse', 'Tarrant Area Food Bank warehouse', '2525 Cullen St, Fort Worth', 32.7466, -97.353,
+    [{days: [1, 2, 3, 4, 5], start: '06:30', end: '15:30'}],
+    ORDER_LINES.map((l) => item(l.name, `cases of ${l.pack}`, l.cases, l.lb, l.storage)),
+    'Order pickup, not a donation: your pantry\'s order must be placed in the ordering portal 3 business days ahead. Check in at the agency pickup desk, sign the invoice before you leave, and bring the pallet blanket for cold lines. Closed-toe shoes; no phones on the warehouse floor.', true), warehouse: true},
 ];
 
 export const storeById = (id) => stores.find((s) => s.id === id);

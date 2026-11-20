@@ -23,7 +23,7 @@ export async function loadDrive(id) {
 
 const arrivedAt = (d) => d.arrivedBankAt || d.deliveredAt;
 
-// D13 / M4: the drive report. Drivers see it after a drive; the food bank opens it without asking.
+// D13 / M4: the drive report. Drivers see it after a drive; the pantry opens it without asking.
 export default function Report({id, back}) {
   const [d, setD] = useState(null);
   const [err, setErr] = useState(null);
@@ -64,12 +64,12 @@ export default function Report({id, back}) {
     navigator.share ? navigator.share({title: 'Drive report', url}).catch(() => {}) : navigator.clipboard?.writeText(url);
   };
 
-  const Root = back === '/drive' ? 'main' : 'div'; // inside the food bank shell there is already a <main>
+  const Root = back === '/drive' ? 'main' : 'div'; // inside the pantry shell there is already a <main>
   return (
     <Root className="overlay-inner" tabIndex={-1} style={{maxWidth: 'var(--size-content)'}}>
       <div className="spread">
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(back)} /></div>
-        {!String(d.id).startsWith('local-') && <Button variant="ghost" label="Share with the food bank" icon={<Share2 size={18} />} onClick={share} />}
+        {!String(d.id).startsWith('local-') && <Button variant="ghost" label="Share with the pantry" icon={<Share2 size={18} />} onClick={share} />}
       </div>
       <header className="stack" style={{margin: 'var(--space-lg) 0 var(--space-xl)', gap: 'var(--space-sm)'}}>
         <div className="label">{day(d.startedAt)} · {d.van} · {d.driver}</div>
@@ -79,7 +79,7 @@ export default function Report({id, back}) {
             ? `Arrived ${clockAmPm(end)}, ${st.delta > 0 ? `${st.delta} min after` : st.delta < 0 ? `${-st.delta} min before` : 'right on'} the ${clock(d.promiseAt)} promise`
             : `In progress. Promised ${clock(d.promiseAt)}.`}
         </div>
-        {String(d.id).startsWith('local-') && <Banner status="info" title="Saved on this iPad only" description="This drive ran without a connection to the food bank, so they can't see it." />}
+        {String(d.id).startsWith('local-') && <Banner status="info" title="Saved on this iPad only" description="This drive ran without a connection to the pantry, so they can't see it." />}
       </header>
 
       <div className="metrics">
@@ -93,7 +93,7 @@ export default function Report({id, back}) {
       <section className="stack" style={{marginTop: 'var(--space-2xl)'}} aria-labelledby="eta">
         <h2 id="eta">Did the truck stay on schedule?</h2>
         <p className="muted" style={{margin: 0, maxWidth: 'var(--size-form)'}}>
-          When the drive started, FreshRoute promised the food bank a return time of {clockAmPm(d.promiseAt)} (the dashed line). The solid line is the return time FreshRoute expected at each moment of the trip. It rises when the truck falls behind (traffic, a long stop) and drops when it catches up. Finishing on or below the dashed line means it was on time.
+          When the drive started, FreshRoute promised the pantry a return time of {clockAmPm(d.promiseAt)} (the dashed line). The solid line is the return time FreshRoute expected at each moment of the trip. It rises when the truck falls behind (traffic, a long stop) and drops when it catches up. Finishing on or below the dashed line means it was on time.
         </p>
         <EtaChart d={d} end={end} />
       </section>

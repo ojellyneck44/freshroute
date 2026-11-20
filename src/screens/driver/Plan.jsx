@@ -67,11 +67,11 @@ export default function Plan() {
 
   const promise = plan ? promiseFor(plan.route, plan.stops.length, now.getTime()) : null;
   const markers = [
-    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'FB', label: BANK.name},
+    {id: 'bank', lon: BANK.lon, lat: BANK.lat, className: 'pin bank', text: 'P', label: BANK.name},
     ...stores.map((s) => {
       const i = ids.indexOf(s.id);
       return {
-        id: s.id, lon: s.lon, lat: s.lat,
+        id: s.id, lon: s.lon, lat: s.lat, fit: !s.warehouse || i >= 0, // the Fort Worth warehouse would zoom the map out of Denton
         className: i >= 0 ? `stopnum${sel === s.id ? ' pin sel' : ''}` : `pin ${pinClass(nextWindow(s, now), now)}${sel === s.id ? ' sel' : ''}`,
         text: i >= 0 ? String(i + 1) : '',
         label: `${s.name}, ${s.address}. ${windowText(nextWindow(s, now), now)}`,
@@ -89,7 +89,7 @@ export default function Plan() {
           ['pin today', 'Opens later today'],
           ['pin later', 'Not today'],
           ...(ids.length ? [['stopnum', 'Your stops, in order'], ['line', 'Your planned route']] : []),
-          ['pin bank', 'Your food bank: start and finish'],
+          ['pin bank', 'P: your pantry, start and finish'],
         ]}} />
       <aside className={`sheet${selStore ? ' tall' : ''}`} aria-label="Plan pickups">
         {selStore ? (
@@ -175,7 +175,7 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
           <Banner status="warning" title="This pickup has chilled food" description="Your van has no cold storage. Bring insulated totes, and plan this stop last so the cold timer stays short." />
         )}
         <section className="stack" aria-labelledby="items">
-          <h2 className="as-h3" id="items">What they usually donate</h2>
+          <h2 className="as-h3" id="items">{store.warehouse ? "Your pantry's order" : "What they usually donate"}</h2>
           <table className="table">
             <thead><tr><th>Item</th><th>Amount</th><th>Weight</th><th>Storage</th></tr></thead>
             <tbody>
@@ -220,7 +220,7 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
       <div className="sheet-body">
         <div className="empty">
           <h2 className="as-h3">No stops yet</h2>
-          <p>Add stores from the list or tap pins on the map. FreshRoute orders the trip from the food bank and back.</p>
+          <p>Add stores from the list or tap pins on the map. FreshRoute orders the trip from the pantry and back.</p>
           <Button variant="primary" label="Find pickups" icon={<MapPin size={18} />} onClick={onAdd} />
         </div>
       </div>
