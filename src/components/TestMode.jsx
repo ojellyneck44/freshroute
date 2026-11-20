@@ -19,7 +19,7 @@ export const TASKS = [
   {id: 'P3', who: 'Pantry', text: 'Receive the delivery. One case of apples arrived crushed'},
   {id: 'P4', who: 'Pantry', text: "Send the credit request for yesterday's delivery"},
   {id: 'P5', who: 'Pantry', text: 'Start a sample pickup run and find out when it will be back'},
-  {id: 'P6', who: 'Pantry', text: 'In a finished pickup run, find the moment of a hard brake'},
+  {id: 'P6', who: 'Pantry', text: 'Find how long cold food was out of the fridge on the last pickup run'},
   {id: 'P7', who: 'Pantry', text: 'Read what drivers said about a store'},
 ];
 const SUS = [
@@ -55,6 +55,15 @@ const readLog = () => {
   }
 };
 const writeLog = (l) => localStorage.setItem(LOG, JSON.stringify(l));
+
+// Between participants: wipe everything this device remembers about the app (role, profile, route,
+// drive in progress, receipts, local reports) but keep the test log, then start again at Welcome.
+function resetForNext() {
+  if (!confirm('Reset FreshRoute on this device for the next participant? The test log stays.')) return;
+  for (const k of Object.keys(localStorage)) if (k.startsWith('freshroute:') && k !== LOG) localStorage.removeItem(k);
+  sessionStorage.removeItem('freshroute:alerts');
+  location.href = '/?test=1';
+}
 
 // SUS score: odd items (score − 1), even items (5 − score), sum × 2.5.
 export const susScore = (ans) => (Object.keys(ans).length < 10 ? null : SUS.reduce((a, _, i) => a + (i % 2 === 0 ? ans[i] - 1 : 5 - ans[i]), 0) * 2.5);
@@ -167,6 +176,7 @@ export function Facilitator() {
           ))}
           <div className="row wrap">
             <Button label="Export CSV" icon={<Download size={16} />} onClick={exportCsv} isDisabled={!log.rows.length && !Object.keys(log.sus).length} />
+            <Button label="Reset app for next participant" onClick={resetForNext} />
             <Button variant="ghost" label="Clear log" icon={<Square size={16} />} onClick={() => confirm('Delete every timed task and survey answer on this device? This cannot be undone.') && save({rows: [], sus: {}})} />
           </div>
         </div>
