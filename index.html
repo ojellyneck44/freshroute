@@ -27,6 +27,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // If the app script never starts (very old Safari, blocked script, network), say so instead of showing a blank page.
+      window.__frErrors = [];
+      addEventListener('error', function (e) { window.__frErrors.push(e.message || String(e)); });
+      setTimeout(function () {
+        if (window.__frStarted) return;
+        var r = document.getElementById('root');
+        r.innerHTML = '<div style="font:17px/1.5 -apple-system,sans-serif;color:#F3F4F6;background:#1A1C20;min-height:100vh;padding:48px 24px"><h1 style="font-size:28px;margin:0 0 12px">FreshRoute didn\'t start</h1><p style="margin:0 0 12px;color:#BBC0C8">Check your connection and reload. FreshRoute needs Safari on iPadOS 15 or later.</p><p style="margin:0 0 20px;color:#959BA5;font-size:14px">' + (window.__frErrors.join(' · ') || 'No error was reported.').replace(/</g, '&lt;') + '</p><button onclick="location.reload()" style="font:600 17px -apple-system,sans-serif;padding:12px 20px;border:0;border-radius:12px;background:#B4EC6A;color:#16181B">Reload</button></div>';
+      }, 10000);
+    </script>
     <noscript>FreshRoute needs JavaScript to plan routes and show live arrival times.</noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -7,10 +7,14 @@ import '@fontsource-variable/overpass/wght.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import App from './App.jsx';
+import Crash from './components/Crash.jsx';
 
+window.__frStarted = true;
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Crash>
+      <App />
+    </Crash>
   </StrictMode>,
 );
 

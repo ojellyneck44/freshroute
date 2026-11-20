@@ -1,5 +1,5 @@
 // FreshRoute service worker: the app shell works offline; API and video always go to the network.
-const CACHE = 'freshroute-v1';
+const CACHE = 'freshroute-v2'; // bump to drop files cached by earlier deploys
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/', '/manifest.webmanifest', '/icons/icon-192.png'])));
   self.skipWaiting();

@@ -85,7 +85,7 @@ function useHeadsUp(drives) {
           sent.current[`${d.id}:5`] = sent.current[`${d.id}:15`] = 1;
           const msg = `${d.van} arrives in about ${Math.max(1, Math.round(left))} min (${clockAmPm(forecastOf(d))})${d.coldStartAt ? `, cold food out ${hms(Date.now() - d.coldStartAt)}` : ''}.`;
           fresh.push({id: key, msg});
-          if (Notification?.permission === 'granted') new Notification('FreshRoute', {body: msg, icon: '/icons/icon-192.png', tag: key});
+          if (globalThis.Notification?.permission === 'granted') new globalThis.Notification('FreshRoute', {body: msg, icon: '/icons/icon-192.png', tag: key});
         }
       }
     }
