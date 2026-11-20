@@ -10,6 +10,8 @@ import App from './App.jsx';
 import Crash from './components/Crash.jsx';
 
 window.__frStarted = true;
+// Safari ignores user-scalable=no, so block pinch-zoom here (the app is laid out for each screen size).
+for (const ev of ['gesturestart', 'gesturechange']) document.addEventListener(ev, (e) => e.preventDefault(), {passive: false});
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Crash>

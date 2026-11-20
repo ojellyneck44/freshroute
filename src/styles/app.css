@@ -1,8 +1,13 @@
 /* FreshRoute app styles. Values come from tokens.css; see DESIGN.md for the rules. */
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+html { touch-action: manipulation; } /* no double-tap zoom, no 300 ms tap delay */
 body {
   margin: 0;
+  /* App feel: no text selection or long-press callouts on UI chrome. Fields stay selectable below. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
   background: var(--fr-bg);
   color: var(--fr-text);
   font: 400 var(--fs-body)/1.45 var(--fr-ui);
@@ -17,6 +22,18 @@ body {
 }
 :focus-visible { outline: var(--rule) solid var(--fr-text); outline-offset: var(--rule); }
 .num { font-variant-numeric: tabular-nums; }
+/* iOS can't focus or type in a field that inherits user-select: none, so fields opt back in. */
+input, textarea, [contenteditable='true'] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+/* Touch first: every Astryx control is at least 44 px (Apple HIG), not the desktop default of 24 to 36 px. */
+.astryx-button { min-height: var(--fr-target); min-width: var(--fr-target); }
+.astryx-segmented-control-item { min-height: var(--fr-target); }
+/* Astryx text fields: the real <input> fills a 44 px box, and text stays at 17 px so iOS doesn't zoom on focus. */
+.astryx-text-input, .astryx-number-input, .astryx-text-area, .astryx-selector { min-height: var(--fr-target); }
+.astryx-text-input { padding-block: 0; }
+.astryx-text-input input, .astryx-number-input input, .astryx-text-area textarea, .astryx-field input:not([type='checkbox']):not([type='radio']), .astryx-field textarea {
+  font-size: var(--fs-body);
+  min-height: calc(var(--fr-target) - var(--rule));
+}
 .mono { font-family: var(--fr-mono); font-weight: 500; }
 .muted { color: var(--fr-text-2); }
 .faint { color: var(--fr-text-3); }
@@ -76,7 +93,7 @@ h3 { font-size: var(--fs-title3); font-weight: 700; line-height: 1.2; }
 .chip.slipping, .chip.apricot { background: var(--fr-apricot-tint); color: var(--fr-apricot); }
 .chip.late, .chip.tomato { background: var(--fr-tomato-tint); color: var(--fr-tomato); }
 .chip.cold, .chip.frost { background: var(--fr-frost-tint); color: var(--fr-frost); }
-button.chip { border: 0; cursor: pointer; min-height: var(--size-chip-tap); height: auto; padding: var(--space-sm) var(--space-md); }
+button.chip { border: 0; cursor: pointer; min-height: var(--fr-target); min-width: var(--fr-target); justify-content: center; height: auto; padding: var(--space-sm) var(--space-md); }
 button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-bg); }
 
 /* ---------- Welcome / setup ---------- */
@@ -185,7 +202,7 @@ button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-b
 
 /* ---------- Manager (app shell) ---------- */
 .shell { display: grid; grid-template-columns: var(--size-side) 1fr; min-height: 100%; }
-.side { position: sticky; top: 0; height: 100vh; padding: var(--space-xl) var(--space-lg); border-right: 1px solid var(--fr-line); display: flex; flex-direction: column; gap: var(--space-2xs); background: var(--fr-bg); }
+.side { position: sticky; top: 0; height: 100vh; height: 100dvh; padding: var(--space-xl) var(--space-lg); border-right: 1px solid var(--fr-line); display: flex; flex-direction: column; gap: var(--space-2xs); background: var(--fr-bg); }
 .side a { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) var(--space-md); border-radius: var(--r-element); color: var(--fr-text-2); text-decoration: none; font-weight: 600; font-size: var(--fs-callout); min-height: var(--fr-target); }
 .side a[aria-current='page'] { background: var(--fr-raised); color: var(--fr-text); }
 .main { padding: var(--space-2xl) clamp(var(--space-lg), 4vw, var(--space-4xl)) var(--size-count); min-width: 0; }

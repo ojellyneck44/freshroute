@@ -97,7 +97,7 @@ export default function Check() {
         <div className="progress-grid">
           <section className="stack" aria-labelledby="ready">
             <h1 id="ready">Before you drive</h1>
-            <div className="video" style={{aspectRatio: '4 / 3'}}>
+            <div className="video" style={{aspectRatio: '4 / 3', maxHeight: '36vh'}}>
               <video ref={video} autoPlay playsInline muted aria-label="Camera preview" />
               {camState === 'on' && <span className="rec live" style={{position: 'absolute'}}><i aria-hidden="true" />Preview</span>}
               {camState !== 'on' && <div className="cam-off muted" style={{position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: 'var(--space-lg)', textAlign: 'center'}}>{camState === 'error' ? camErr : cam === 'usb' && !usbId ? 'Pick your USB-C camera below.' : 'Starting camera…'}</div>}
