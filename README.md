@@ -11,7 +11,7 @@ Built for an internship case study. Research, wireframes and the style sheet are
 | Driver | Join, van setup and recording consent, store map and list, store details, route tray, pre-drive check (camera, location, motion), navigation, progress, pickup counts, drop-off counts, "what slowed you down", drive report, preferences |
 | Food bank manager | Trucks on the road (with 15- and 5-minute heads-up), live truck view with near-live video, drive reports, stores with driver notes |
 | Grocery store | One page from a text link, no account: ETA, what's being picked up, "ready at the dock" |
-| Test facilitator | Add `?test=1` to any URL: task script, timer, outcomes, SUS survey, CSV export. The simulator drives the route without GPS. |
+| Test facilitator | Hold the FreshRoute logo for a second (or `?test=1`, or Preferences > Test mode): task script, timer, outcomes, SUS survey, CSV export, reset between participants. The simulator drives the route without GPS. |
 
 ## Stack
 

@@ -2,8 +2,9 @@ import {useEffect, useState, useSyncExternalStore} from 'react';
 import {Button, Badge, SegmentedControl, SegmentedControlItem, Selector} from '@astryxdesign/core';
 import {FlaskConical, X, Download, Play, Square} from 'lucide-react';
 
-// User-testing kit (wireframe T1). Open any page with ?test=1 to show the facilitator panel;
-// ?test=0 hides it. Everything stays on this device until the facilitator exports the CSV.
+// User-testing kit (wireframe T1). Turn it on with ?test=1, by holding the FreshRoute logo for a second,
+// or from driver Preferences (the Home Screen app can't open a URL with ?test=1). It stays on, across
+// relaunches and participant resets, until turned off. Results stay on this device until exported.
 const FLAG = 'freshroute:test';
 const LOG = 'freshroute:testlog';
 
@@ -36,14 +37,44 @@ const SUS = [
 ];
 
 const subs = new Set();
-const isOn = () => sessionStorage.getItem(FLAG) === '1';
+const isOn = () => {
+  try {
+    return localStorage.getItem(FLAG) === '1';
+  } catch {
+    return false;
+  }
+};
+export function setTestMode(on) {
+  try {
+    on ? localStorage.setItem(FLAG, '1') : localStorage.removeItem(FLAG);
+  } catch {
+    /* private mode: test mode can't be saved */
+  }
+  subs.forEach((f) => f());
+}
+// Hold the logo for a second to switch test mode on or off (hidden from participants on purpose).
+export function holdToToggle() {
+  let t = null;
+  const cancel = () => clearTimeout(t);
+  return {
+    onPointerDown: () => {
+      cancel();
+      t = setTimeout(() => {
+        const on = !isOn();
+        if (confirm(on ? 'Turn on test mode? The usability testing panel will appear.' : 'Turn off test mode? The panel hides; the test log stays on this iPad.')) setTestMode(on);
+      }, 1000);
+    },
+    onPointerUp: cancel,
+    onPointerLeave: cancel,
+    onPointerCancel: cancel,
+    onContextMenu: (e) => e.preventDefault(),
+  };
+}
 export const useIsTest = () => useSyncExternalStore((f) => (subs.add(f), () => subs.delete(f)), isOn);
 export function useTestMode() {
   useEffect(() => {
     const q = new URLSearchParams(location.search).get('test');
-    if (q === '1') sessionStorage.setItem(FLAG, '1');
-    if (q === '0') sessionStorage.removeItem(FLAG);
-    subs.forEach((f) => f());
+    if (q === '1' || q === '0') setTestMode(q === '1');
   });
 }
 
@@ -60,9 +91,9 @@ const writeLog = (l) => localStorage.setItem(LOG, JSON.stringify(l));
 // drive in progress, receipts, local reports) but keep the test log, then start again at Welcome.
 function resetForNext() {
   if (!confirm('Reset FreshRoute on this device for the next participant? The test log stays.')) return;
-  for (const k of Object.keys(localStorage)) if (k.startsWith('freshroute:') && k !== LOG) localStorage.removeItem(k);
+  for (const k of Object.keys(localStorage)) if (k.startsWith('freshroute:') && k !== LOG && k !== FLAG) localStorage.removeItem(k);
   sessionStorage.removeItem('freshroute:alerts');
-  location.href = '/?test=1';
+  location.href = '/';
 }
 
 // SUS score: odd items (score − 1), even items (5 − score), sum × 2.5.
@@ -147,7 +178,7 @@ export function Facilitator() {
           ) : (
             <Button variant="primary" label="Start task" icon={<Play size={16} />} onClick={() => (setStart(Date.now()), setNow(Date.now()))} />
           )}
-          <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Tip: in navigation, the simulator moves the van without driving. Use 4× for a quick run.</p>
+          <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Tip: on Before you drive, turn on Simulate the drive and pick 8×. The van moves by itself and the times stay realistic.</p>
         </div>
       )}
       {tab === 'sus' && (

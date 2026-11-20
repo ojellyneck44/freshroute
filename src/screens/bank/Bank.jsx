@@ -115,7 +115,13 @@ function useHeadsUp(drives, parent) {
       }
     }
     sessionStorage.setItem('freshroute:alerts', JSON.stringify(sent.current));
-    if (fresh.length) setAlerts((a) => [...fresh, ...a].slice(0, 3));
+    // One alert per truck (the newest), and only while that truck is still on its way.
+    const src = (id) => id.split(':')[0];
+    const onWay = new Set([...(drives || []).filter(isActive).map((d) => d.id), ...(parent && parent.phase !== 'here' && !parent.receipt ? [parent.id] : [])]);
+    setAlerts((a) => {
+      const next = [...fresh, ...a.filter((x) => !fresh.some((f) => src(f.id) === src(x.id)))].filter((x) => onWay.has(src(x.id)));
+      return next.length === a.length && next.every((x, i) => x === a[i]) ? a : next.slice(0, 3);
+    });
   }, [drives, parent?.phase, Math.floor((parent?.etaAt - Date.now()) / 60000)]);
   return [alerts, (id) => setAlerts((a) => a.filter((x) => x.id !== id))];
 }

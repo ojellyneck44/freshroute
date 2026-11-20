@@ -1,3 +1,4 @@
+import {holdToToggle} from './TestMode.jsx';
 // FreshRoute's own glyphs (style sheet, iconography): drawn on a 48 grid, coloured by meaning.
 const G = ({children, size = 24, color, label}) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" stroke={color} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
@@ -13,5 +14,5 @@ export const MOTION_GLYPH = {brake: Brake, turn: Turn, bump: Bump};
 
 export const Mark = ({size = 40}) => <img src="/icons/mark.svg" width={size} height={size} alt="" />;
 export const Wordmark = ({size = 32}) => (
-  <span className="wordmark"><img src="/icons/icon-small.svg" width={size} height={size} alt="" style={{borderRadius: size * 0.22}} />FreshRoute</span>
+  <span className="wordmark" {...holdToToggle()}><img src="/icons/icon-small.svg" width={size} height={size} alt="" style={{borderRadius: size * 0.22}} />FreshRoute</span>
 );
