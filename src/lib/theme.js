@@ -8,6 +8,7 @@ import tokens from '../tokens/map.json';
 // Daylight between local sunrise and sunset; managers follow the system. Preferences can pin either.
 export function resolveTheme(pref, role, now = new Date(), systemDark = true) {
   if (pref === 'dark' || pref === 'light') return pref;
+  if (!role) return 'dark'; // signed out: the brand default, not the system setting
   if (role === 'driver') return isDaytime(now, BANK.lat, BANK.lon) ? 'light' : 'dark';
   return systemDark ? 'dark' : 'light';
 }

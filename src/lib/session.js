@@ -1,19 +1,23 @@
 // Things that must survive moving between screens but can't be saved: the camera stream,
 // the recorder, the motion watcher and the screen wake lock.
-import {SegmentRecorder, makeUploader, openCamera} from './recorder.js';
+import {SegmentRecorder, makeUploader, openFeeds} from './recorder.js';
 import {watchMotion} from './motion.js';
 import {getState} from './state.js';
 
-export const session = {stream: null, camera: 'back', recorder: null, uploader: null, stopMotion: null, wake: null, motionOk: false};
+export const session = {stream: null, camera: 'front', feeds: null, recorder: null, uploader: null, stopMotion: null, wake: null, motionOk: false};
 
-export async function useCamera(camera) {
+// camera: one or more cameras joined by commas, e.g. 'front,back' (first is the main picture).
+// sound: also record the microphone.
+export async function useCamera(camera, sound = true) {
   stopCamera();
   session.camera = camera;
-  session.stream = await openCamera(camera);
-  return session.stream;
+  session.feeds = await openFeeds(camera.split(',').filter(Boolean), sound);
+  session.stream = session.feeds.stream;
+  return session.feeds;
 }
 export function stopCamera() {
-  session.stream?.getTracks().forEach((t) => t.stop());
+  session.feeds?.stop();
+  session.feeds = null;
   session.stream = null;
 }
 

@@ -83,7 +83,7 @@ export default function Report({id, back}) {
       </header>
 
       <div className="metrics">
-        <Metric label="Arrival vs promise" value={`${st.delta > 0 ? '+' : ''}${st.delta} min`} base={avgDelta == null ? 'First finished drive on record' : `Average ${avgDelta > 0 ? '+' : ''}${avgDelta} min over ${past.length} ${past.length === 1 ? 'drive' : 'drives'}`} />
+        <Metric label="Back vs promised time" value={`${st.delta > 0 ? '+' : ''}${st.delta} min`} base={avgDelta == null ? 'First finished drive on record' : `Average ${avgDelta > 0 ? '+' : ''}${avgDelta} min over ${past.length} ${past.length === 1 ? 'drive' : 'drives'}`} />
         <Metric label="Drive time" value={duration(end - d.startedAt)} base={d.routeDuration ? `${duration(d.routeDuration * 1000)} driving + stops planned` : ''} />
         <Metric label="Cold food out of fridge" value={d.coldStartAt ? hms(coldMs) : 'None'} base={d.coldStartAt ? (coldMs > COLD_WARN ? 'Over the 1-hour warning' : 'Under the 1-hour warning') : 'No chilled pickups'} tone={d.coldStartAt ? coldState(coldMs) : null} />
         <Metric label="Items" value={`${totalDropped} of ${totalPicked}`} base={totalPicked === totalDropped ? 'Drop-off matches pickup' : `${totalPicked - totalDropped} not delivered`} tone={totalPicked !== totalDropped ? 'slipping' : null} />
@@ -91,7 +91,10 @@ export default function Report({id, back}) {
       </div>
 
       <section className="stack" style={{marginTop: 'var(--space-2xl)'}} aria-labelledby="eta">
-        <h2 id="eta">Promise vs forecast</h2>
+        <h2 id="eta">Did the truck stay on schedule?</h2>
+        <p className="muted" style={{margin: 0, maxWidth: 'var(--size-form)'}}>
+          When the drive started, FreshRoute promised the food bank a return time of {clockAmPm(d.promiseAt)} (the dashed line). The solid line is the return time FreshRoute expected at each moment of the trip. It rises when the truck falls behind (traffic, a long stop) and drops when it catches up. Finishing on or below the dashed line means it was on time.
+        </p>
         <EtaChart d={d} end={end} />
       </section>
 
@@ -103,7 +106,8 @@ export default function Report({id, back}) {
         </div>
         <div className="stack">
           <h2>Route</h2>
-          <div className="mapbox"><MapView route={coords} split={coords.length - 1} trail={trail} markers={markers} fitKey={d.id} label="Map of the drive" /></div>
+          <div className="mapbox"><MapView route={coords} split={coords.length - 1} trail={trail} markers={markers} fitKey={d.id} label="Map of the drive" legendAt="bl"
+            legend={{title: 'Where this drive went', items: [['line trail', 'Path the truck drove'], ['stopnum', 'Pickup stops, in order'], ['marker', 'Hard brake, turn or bump: tap to watch']]}} /></div>
         </div>
       </section>
 
@@ -195,10 +199,10 @@ function EtaChart({d, end}) {
   const events = (d.events || []).filter((e) => ['motion', 'delay', 'arrived', 'loaded'].includes(e.kind));
   const lastEta = pts.length ? pts[pts.length - 1].eta : d.promiseAt;
   const st = etaState(lastEta, d.promiseAt);
-  if (!pts.length) return <p className="muted">No forecast data for this drive yet.</p>;
+  if (!pts.length) return <p className="muted">No arrival estimates recorded for this drive yet.</p>;
   return (
     <figure style={{margin: 0}}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{overflow: 'hidden'}} role="img" aria-label={`Forecast arrival over the drive. Promise ${clock(d.promiseAt)}. Final forecast ${clock(lastEta)}.`}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{overflow: 'hidden'}} role="img" aria-label={`Expected return time during the drive. Promised ${clock(d.promiseAt)}. Last expected ${clock(lastEta)}.`}>
         <rect x={L} y={Y(d.promiseAt + band)} width={W - L - R} height={Y(d.promiseAt - band) - Y(d.promiseAt + band)} fill="var(--fr-sprout)" opacity="0.08" />
         <line x1={L} x2={W - R} y1={Y(d.promiseAt)} y2={Y(d.promiseAt)} stroke="var(--fr-sprout)" strokeWidth="2" strokeDasharray="6 6" />
         {yTicks.map((t) => <text key={t} x={L - 10} y={Y(t) + 4} textAnchor="end" fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
@@ -207,7 +211,7 @@ function EtaChart({d, end}) {
         {events.map((e, k) => <rect key={k} x={X(e.t) - 2} y={H - B - 10} width="4" height="10" rx="2" fill={e.kind === 'motion' || e.kind === 'delay' ? 'var(--fr-apricot)' : 'var(--fr-sprout)'} />)}
       </svg>
       <figcaption className="row wrap faint" style={{fontSize: 'var(--fs-sub)', gap: 'var(--space-lg)'}}>
-        <span>Dashed: promise {clock(d.promiseAt)} with a 3-minute band</span><span>Line: live forecast</span><span>Ticks: stops and motion</span>
+        <span>Up and down: expected return time (later is higher)</span><span>Left to right: time during the drive</span><span>Dashed: promised {clock(d.promiseAt)}, give or take 3 min</span><span>Marks along the bottom: stops (green) and hard brakes or delays (amber)</span>
       </figcaption>
     </figure>
   );

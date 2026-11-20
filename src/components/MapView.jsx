@@ -16,7 +16,7 @@ const line = (coords) => (coords && coords.length > 1 ? {type: 'Feature', geomet
  * markers: [{id, lon, lat, className, text, label, onClick}]; puck: {lon, lat, hdg}.
  * follow: 'nav' (heading-up, tilted, follows the puck) | 'fit' (fit everything once) | null.
  */
-export default function MapView({route, split = 0, trail, state = 'on-time', markers = [], puck, follow = 'fit', fitKey, padding, focus, label = 'Map'}) {
+export default function MapView({route, split = 0, trail, state = 'on-time', markers = [], puck, follow = 'fit', fitKey, padding, focus, label = 'Map', legend, legendAt = 'br'}) {
   const el = useRef(null);
   const map = useRef(null);
   const ready = useRef(false);
@@ -146,5 +146,20 @@ export default function MapView({route, split = 0, trail, state = 'on-time', mar
     }
   }, [puck?.lon, puck?.lat, puck?.hdg, follow]);
 
-  return <div ref={el} className="map" role="region" aria-label={label} />;
+  // legend: {title, items: [[swatchClass, text]]}, so anyone can read what the map is for.
+  return (
+    <>
+      <div ref={el} className="map" role="region" aria-label={label} />
+      {legend && (
+        <div className={`maplegend glass dense at-${legendAt}`}>
+          <strong>{legend.title}</strong>
+          <ul>
+            {legend.items.map(([cls, text]) => (
+              <li key={text}><span className={`key ${cls}`} aria-hidden="true">{cls === 'stopnum' ? '1' : ''}</span>{text}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </>
+  );
 }

@@ -35,7 +35,7 @@ export default function StoreLink({path}) {
     <main className="storelink" tabIndex={-1}>
       <div className="inner">
         <Wordmark size={28} />
-        {err && <Banner status="error" title={err} />}
+        {err && <div className="stack"><h1>That pickup link doesn't work</h1><p className="muted" style={{margin: 0}}>{err} Ask the driver or the food bank to send a new one.</p></div>}
         {!d && !err && <p className="muted" aria-busy="true">Loading pickup…</p>}
         {s && (
           <>

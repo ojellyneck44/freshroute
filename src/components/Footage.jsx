@@ -2,6 +2,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {videoUrl} from '../lib/api.js';
 import {clock} from '../lib/format.js';
 import {motionLabel} from '../lib/motion.js';
+import {Volume2, VolumeX} from 'lucide-react';
 
 const TICK = {motion: 'var(--fr-apricot)', arrived: 'var(--fr-sprout)', loaded: 'var(--fr-sprout)', skipped: 'var(--fr-text-3)', delivered: 'var(--fr-sprout)', 'arrived-bank': 'var(--fr-sprout)', delay: 'var(--fr-apricot)', reason: 'var(--fr-apricot)', 'store-ready': 'var(--fr-frost)'};
 export const eventText = (e) => {
@@ -19,6 +20,7 @@ export const eventText = (e) => {
     case 'gap': return `FreshRoute was in the background for ${Math.max(1, Math.round((d.ms || 0) / 1000))} s, so nothing was recorded`;
     case 'gap-start': return 'App in background: recording paused';
     case 'gap-end': return 'Recording resumed';
+    case 'reroute': return 'New route after leaving the planned one';
     default: return e.kind;
   }
 };
@@ -28,6 +30,7 @@ export const eventText = (e) => {
  * live: keeps jumping to the newest segment (the manager's near-live view).
  */
 export default function Footage({segments = [], events = [], start, end, live = false, seekTo, noCamera = false}) {
+  const [muted, setMuted] = useState(true); // autoplay needs muted; the viewer turns sound on
   const v = useRef(null);
   const pendingSeek = useRef(0);
   const [i, setI] = useState(0);
@@ -81,7 +84,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
           src={cur ? videoUrl(cur.key) : undefined}
           controls={!live}
           autoPlay
-          muted
+          muted={muted}
           playsInline
           aria-label={`Drive video, ${clock(cur?.t0)}`}
           onLoadedMetadata={(e) => {
@@ -91,6 +94,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
           onTimeUpdate={(e) => setT(cur.t0 + e.currentTarget.currentTime * 1000)}
           onEnded={() => setI((x) => Math.min(segs.length - 1, x + 1))}
         />
+        <button className="rec vidsound" onClick={() => setMuted((m) => !m)} aria-pressed={!muted} aria-label={muted ? 'Turn sound on' : 'Turn sound off'}>{muted ? <VolumeX size={16} aria-hidden="true" /> : <Volume2 size={16} aria-hidden="true" />}{muted ? 'Sound off' : 'Sound on'}</button>
         <span className="rec live">{live ? <><i aria-hidden="true" />Live · {clock(cur?.t1)}</> : clock(t)}</span>
       </div>
       {!live && (

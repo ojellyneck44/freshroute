@@ -59,7 +59,7 @@ export function promiseFor(route, stopsCount, start = Date.now(), speed = 1) {
 }
 
 // ---------- Start / stop ----------
-export async function startDrive({storeIds, plan, sim = 0, camera, sample = false}) {
+export async function startDrive({storeIds, plan, sim = 0, camera, sound = true, sample = false}) {
   const {stops, route} = plan || (await planRoute(storeIds));
   const now = Date.now();
   const promise = promiseFor(route, stops.length, now, sim || 1);
@@ -74,6 +74,7 @@ export async function startDrive({storeIds, plan, sim = 0, camera, sample = fals
     cold: profile.cold,
     bankName: BANK.name,
     camera: sample ? 'none' : camera || '',
+    sound: !sample && sound,
     sample,
     startedAt: now,
     promiseAt: promise.final,
@@ -187,11 +188,38 @@ function onPosition({lat, lon, spd, hdg, t}) {
   live.hdg = hdg ?? live.hdg;
   live.hdgRate = ((((live.hdg - prevHdg + 540) % 360) - 180) / Math.max(0.5, (t - prevT) / 1000));
   live.offRoute = pr.off > 120;
+  // Off the route for 12 s on a real drive: plan a new one from here to the stops still ahead.
+  if (live.offRoute && !drive.sim) {
+    offSince ||= t;
+    if (t - offSince > 12000 && !rerouting) reroute(p);
+  } else offSince = 0;
   if (!live.offRoute && pr.along >= live.along - 30) {
     live.along = pr.along;
     live.idx = pr.i;
   }
   update(t);
+}
+
+let offSince = 0, rerouting = false;
+async function reroute(p) {
+  rerouting = true;
+  try {
+    const i = currentTarget().i;
+    const r = await osrmRoute([{lon: p[0], lat: p[1]}, ...drive.stops.slice(i), drive.dest]);
+    // Legs stay indexed by stop: finished legs are kept (length 0) so leg i still leads to stop i.
+    const keep = drive.route.legs.slice(0, i);
+    let acc = 0;
+    const legEnds = [...keep.map(() => 0), ...r.legs.map((l) => (acc += l.distance))];
+    drive.route = {...drive.route, coords: r.coords, legs: [...keep, ...r.legs], legEnds};
+    Object.assign(live, {cum: cumulative(r.coords), along: 0, idx: 0, stepI: 0, offRoute: false});
+    logEvent('reroute', {});
+    if (shared()) send(`drives/${drive.id}`, {routeCoords: r.coords, legEnds}, 'PATCH');
+  } catch {
+    /* no signal or router down: keep showing the old route and try again on the next fix */
+  } finally {
+    rerouting = false;
+    offSince = 0;
+  }
 }
 
 function update(t = Date.now()) {

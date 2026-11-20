@@ -2,7 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Badge} from '@astryxdesign/core';
 import {ArrowLeft, Plus, Check, ChevronUp, ChevronDown, X, Settings, Snowflake, FileText, MapPin} from 'lucide-react';
 import MapView from '../../components/MapView.jsx';
-import {stores, storeById, nextWindow, totalLb, needsCold, BANK} from '../../data/stores.js';
+import {stores, storeById, nextWindow, totalLb, needsCold, isDemoOpen, BANK} from '../../data/stores.js';
 import {useAppState, setState, navigate} from '../../lib/state.js';
 import {planRoute, promiseFor} from '../../lib/engine.js';
 import {clock, clockAmPm, day, duration, miles} from '../../lib/format.js';
@@ -83,10 +83,17 @@ export default function Plan() {
   const selStore = sel && storeById(sel);
   return (
     <main className="mapshell" tabIndex={-1}>
-      <MapView route={plan?.route.coords} markers={markers} fitKey={`${ids.join(',') || 'all'}|${plan ? 'planned' : ''}`} padding={{top: 60, bottom: 60, left: innerWidth > 820 ? 440 : 40, right: 60}} focus={sel ? storeById(sel) : null} label="Map of donation stores" />
+      <MapView route={plan?.route.coords} markers={markers} fitKey={`${ids.join(',') || 'all'}|${plan ? 'planned' : ''}`} padding={{top: 60, bottom: 60, left: innerWidth > 820 ? 440 : 40, right: 60}} focus={sel ? storeById(sel) : null} label="Map of donation stores"
+        legend={{title: 'Stores donating food', items: [
+          ['pin open', 'Open now: ready for pickup'],
+          ['pin today', 'Opens later today'],
+          ['pin later', 'Not today'],
+          ...(ids.length ? [['stopnum', 'Your stops, in order'], ['line', 'Your planned route']] : []),
+          ['pin bank', 'Your food bank: start and finish'],
+        ]}} />
       <aside className={`sheet${selStore ? ' tall' : ''}`} aria-label="Plan pickups">
         {selStore ? (
-          <StoreDetail store={selStore} now={now} added={inRoute(selStore.id)} onToggle={() => toggle(selStore.id)} onBack={() => setSel(null)} vanCold={profile.cold} />
+          <StoreDetail store={selStore} now={now} added={inRoute(selStore.id)} onToggle={() => (inRoute(selStore.id) || setSel(null), toggle(selStore.id))} onBack={() => setSel(null)} vanCold={profile.cold} />
         ) : (
           <>
             <div className="sheet-head">
@@ -111,7 +118,7 @@ export default function Plan() {
                 </div>
                 <div className="sheet-body">
                   {list.length === 0 && (
-                    <div className="empty"><h3>No pickups {filter === 'open' ? 'open right now' : 'today'}</h3><p>Try “All” to see the next donation windows this week.</p></div>
+                    <div className="empty"><h2 className="as-h3">No pickups {filter === 'open' ? 'open right now' : 'today'}</h2><p>Try “All” to see the next donation windows this week.</p></div>
                   )}
                   {list.map(({s, w}) => (
                     <button key={s.id} className="listbtn" onClick={() => setSel(s.id)} aria-label={`${s.name}, ${s.address}`}>
@@ -160,7 +167,7 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
         </div>
         <div className="row wrap" style={{gap: 'var(--space-xs)'}}>
           <span className={`chip ${w?.isOpen ? 'sprout' : ''}`}>{windowText(w, now)}</span>
-          {store.schedule.map((s, i) => <span key={i} className="chip">Every {s.days.map((d) => days[d]).join(', ')}, {hm(s.start)} to {hm(s.end)}</span>)}
+          {isDemoOpen(store) ? <span className="chip">Demo store: always open for test drives</span> : store.schedule.map((s, i) => <span key={i} className="chip">Every {s.days.map((d) => days[d]).join(', ')}, {hm(s.start)} to {hm(s.end)}</span>)}
         </div>
       </div>
       <div className="sheet-body stack" style={{gap: 'var(--space-xl)'}}>
@@ -168,7 +175,7 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
           <Banner status="warning" title="This pickup has chilled food" description="Your van has no cold storage. Bring insulated totes, and plan this stop last so the cold timer stays short." />
         )}
         <section className="stack" aria-labelledby="items">
-          <h3 id="items">What they usually donate</h3>
+          <h2 className="as-h3" id="items">What they usually donate</h2>
           <table className="table">
             <thead><tr><th>Item</th><th>Amount</th><th>Weight</th><th>Storage</th></tr></thead>
             <tbody>
@@ -185,11 +192,11 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
           <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Sample schedule and items for the prototype.</p>
         </section>
         <section className="stack" aria-labelledby="how">
-          <h3 id="how">How pickup works here</h3>
+          <h2 className="as-h3" id="how">How pickup works here</h2>
           <p style={{margin: 0}}>{store.how}</p>
         </section>
         <section className="stack" aria-labelledby="say">
-          <h3 id="say">What drivers said</h3>
+          <h2 className="as-h3" id="say">What drivers said</h2>
           {notes === null && <p className="muted" style={{margin: 0}}>Loading notes…</p>}
           {notes?.length === 0 && <p className="muted" style={{margin: 0}}>No notes yet. After a drive, what you share about this store shows up here for the next driver.</p>}
           {notes?.slice(0, 5).map((n, i) => (
@@ -212,7 +219,7 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
     return (
       <div className="sheet-body">
         <div className="empty">
-          <h3>No stops yet</h3>
+          <h2 className="as-h3">No stops yet</h2>
           <p>Add stores from the list or tap pins on the map. FreshRoute orders the trip from the food bank and back.</p>
           <Button variant="primary" label="Find pickups" icon={<MapPin size={18} />} onClick={onAdd} />
         </div>

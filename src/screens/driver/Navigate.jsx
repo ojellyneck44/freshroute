@@ -6,7 +6,7 @@ import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
 import {useDrive, resumeDrive, currentTarget, arrive, loaded, skipStop, addDelay, finishDrive, setSimSpeed, logEvent} from '../../lib/engine.js';
 import {session, startCapture, stopCapture, useCamera} from '../../lib/session.js';
-import {useAppState, navigate} from '../../lib/state.js';
+import {useAppState, setState, navigate} from '../../lib/state.js';
 import {instruction} from '../../lib/osrm.js';
 import {clock, deltaText, etaState, hms, miles, coldState} from '../../lib/format.js';
 import {pending} from '../../lib/api.js';
@@ -29,7 +29,8 @@ export default function Navigate() {
   const finishing = useRef(false); // set while handing over to the report, so we don't bounce to /drive
   useEffect(() => {
     if (finishing.current) return;
-    if (!drive && driveId && !resumeDrive()) navigate('/drive', {replace: true});
+    // No saved drive to resume (cleared storage, finished elsewhere): drop the stale id, or App sends us straight back here.
+    if (!drive && driveId && !resumeDrive()) (setState({driveId: null}), navigate('/drive', {replace: true}));
     if (!drive && !driveId) navigate('/drive', {replace: true});
   }, [drive, driveId]);
 
@@ -40,7 +41,7 @@ export default function Navigate() {
     (async () => {
       if (!session.stream && drive.camera !== undefined && drive.camera !== 'none') {
         try {
-          await useCamera(drive.camera || 'back');
+          await useCamera(drive.camera || 'front', drive.sound !== false);
         } catch {
           /* camera unavailable: drive continues, report shows no video */
         }
@@ -98,7 +99,8 @@ export default function Navigate() {
   return (
     <main className="mapshell" data-screen tabIndex={-1}>
       <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
-      <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" />
+      <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
+        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['pin bank', 'Food bank drop-off']]}} />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
         {session.stream ? <span className="rec"><i aria-hidden="true" />Recording</span> : <div className="cam-off">Camera off</div>}
@@ -107,7 +109,7 @@ export default function Navigate() {
         <Arrow size={52} strokeWidth={2.5} aria-hidden="true" />
         <div>
           <div className="dist">{live.offRoute ? 'Off route' : miles(live.stepDist ?? 0)}</div>
-          <div className="what">{live.offRoute ? 'Head back to the highlighted route' : instruction(step) || 'Follow the route'}</div>
+          <div className="what">{live.offRoute ? 'Finding a new route…' : instruction(step) || 'Follow the route'}</div>
         </div>
       </div>
       <button className="ringbtn glass" onClick={() => setOverlay('progress')} aria-label="Open progress">

@@ -14,9 +14,13 @@ export default function Check() {
   const route = useAppState((s) => s.route);
   const prefs = useAppState((s) => s.prefs);
   const [plan, setPlan] = useState(null);
-  const [cam, setCam] = useState(prefs.camera && !['back', 'front'].includes(prefs.camera) ? 'usb' : prefs.camera || 'back');
+  // Saved as 'front,back' or 'front,<usb deviceId>'. Front comes first: the driver's face is the main picture.
+  const saved = (prefs.camera || 'front').split(',');
+  const [picked, setPicked] = useState(saved.map((c) => (['front', 'back'].includes(c) ? c : 'usb')));
   const [devices, setDevices] = useState([]);
-  const [usbId, setUsbId] = useState(prefs.camera && !['back', 'front'].includes(prefs.camera) ? prefs.camera : '');
+  const [usbId, setUsbId] = useState(saved.find((c) => !['front', 'back'].includes(c)) || '');
+  const [sound, setSound] = useState(prefs.sound ?? true);
+  const [feeds, setFeeds] = useState(null);
   const [camState, setCamState] = useState('idle'); // idle | on | error
   const [camErr, setCamErr] = useState('');
   const [motion, setMotion] = useState(session.motionOk ? 'granted' : 'unknown');
@@ -31,15 +35,18 @@ export default function Check() {
     else planRoute(route.map((r) => r.storeId)).then(setPlan).catch((e) => setErr(e.message));
   }, []);
 
-  const camera = cam === 'usb' ? usbId : cam;
+  const ORDER = ['front', 'usb', 'back'];
+  const camera = ORDER.filter((c) => picked.includes(c)).map((c) => (c === 'usb' ? usbId : c)).filter(Boolean).join(',');
+  const togglePick = (c) => setPicked((p) => (p.includes(c) ? (p.length > 1 ? p.filter((x) => x !== c) : p) : [...p, c]));
   useEffect(() => {
-    if (cam === 'usb' && !usbId) return;
+    if (!camera) return;
     let alive = true;
     setCamState('idle');
-    useCamera(camera)
-      .then(async (stream) => {
+    useCamera(camera, sound)
+      .then(async (f) => {
         if (!alive) return;
-        video.current.srcObject = stream;
+        video.current.srcObject = f.stream;
+        setFeeds(f);
         setCamState('on');
         setDevices(await listCameras());
       })
@@ -51,7 +58,7 @@ export default function Check() {
     return () => {
       alive = false;
     };
-  }, [camera]);
+  }, [camera, sound]);
 
   const checkGps = () => {
     setGps('asking');
@@ -68,8 +75,8 @@ export default function Check() {
     setErr(null);
     try {
       await keepAwake();
-      setState((s) => ({prefs: {...s.prefs, camera}}));
-      await startDrive({storeIds: route.map((r) => r.storeId), plan, sim, camera});
+      setState((s) => ({prefs: {...s.prefs, camera, sound}}));
+      await startDrive({storeIds: route.map((r) => r.storeId), plan, sim, camera, sound});
       setState({route: []});
       navigate('/drive/nav', {replace: true});
     } catch (e) {
@@ -99,30 +106,39 @@ export default function Check() {
             <h1 id="ready">Before you drive</h1>
             <div className="video" style={{aspectRatio: 'auto', height: 'min(36vh, calc(var(--size-progress-col) * 0.75))'}}>
               <video ref={video} autoPlay playsInline muted aria-label="Camera preview" />
-              {camState === 'on' && <span className="rec live" style={{position: 'absolute'}}><i aria-hidden="true" />Preview</span>}
-              {camState !== 'on' && <div className="cam-off muted" style={{position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: 'var(--space-lg)', textAlign: 'center'}}>{camState === 'error' ? camErr : cam === 'usb' && !usbId ? 'Pick your USB-C camera below.' : 'Starting camera…'}</div>}
+              {camState === 'on' && <span className="rec live" style={{position: 'absolute'}}><i aria-hidden="true" />Preview{feeds?.sound ? ' · sound on' : ''}</span>}
+              {camState !== 'on' && <div className="cam-off muted" style={{position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', padding: 'var(--space-lg)', textAlign: 'center'}}>{camState === 'error' ? camErr : !camera ? 'Pick your USB-C camera below.' : 'Starting camera…'}</div>}
             </div>
-            <SegmentedControl label="Camera" value={cam} onChange={setCam} layout="fill">
-              <SegmentedControlItem value="back" label="Back" />
-              <SegmentedControlItem value="front" label="Front" />
-              <SegmentedControlItem value="usb" label="USB-C" />
-            </SegmentedControl>
-            {cam === 'usb' && (
+            <div className="stack" style={{gap: 'var(--space-sm)'}}>
+              <span className="label">Cameras to record</span>
+              <div className="row wrap" role="group" aria-label="Cameras to record">
+                {[['front', 'Front (driver)'], ['back', 'Back (road)'], ['usb', 'USB-C']].map(([k, l]) => (
+                  <button key={k} className="chip" aria-pressed={picked.includes(k)} onClick={() => togglePick(k)}>{l}</button>
+                ))}
+              </div>
+              <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Pick two to record both: the front camera fills the video and the other sits in the corner.</p>
+            </div>
+            {picked.includes('usb') && (
               usb.length || devices.length ? (
                 <Selector label="USB-C camera" value={usbId} onChange={setUsbId} width="100%" options={(usb.length ? usb : devices).map((d, i) => ({value: d.deviceId, label: d.label || `Camera ${i + 1}`}))} />
               ) : (
                 <p className="muted" style={{margin: 0}}>Plug a USB-C camera into the iPad, then come back to this screen. Bluetooth dashcams can't connect to a web app.</p>
               )
             )}
-            <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video only, no sound. Recording runs while FreshRoute is open on screen.</p>
+            {feeds?.dropped.length > 0 && (
+              <Banner status="warning" title={`Recording the ${feeds.cameras[0] === 'front' ? 'front' : feeds.cameras[0] === 'back' ? 'back' : 'USB-C'} camera only`} description="This iPad can run one camera at a time in a web app, so the second camera is off. A Mac or the future native app can record both." />
+            )}
+            <Switch label="Record sound" description="The microphone records inside the vehicle along with the video." value={sound} onChange={setSound} labelSpacing="spread" labelPosition="start" />
           </section>
           <section className="stack">
             <ul style={{listStyle: 'none', margin: 0, padding: 0}}>
               <Item ok={camState === 'on'} icon={Camera} title="Camera">
-                <span className="muted">{camState === 'on' ? 'Recording starts when you start the drive.' : 'Needed for the food bank to see the drive.'}</span>
+                <span className="muted">{camState === 'on' ? `Recording starts when you start the drive${feeds?.sound ? ', with sound' : ''}.` : 'Needed for the food bank to see the drive.'}</span>
               </Item>
               <Item ok={gps === 'granted' || sim > 0} icon={MapPin} title="Location">
-                {gps === 'denied' ? <Banner status="error" title="Location is off for this site" description="Turn it on in Settings > Safari > Location, then check again." /> : <span className="muted">Used for turn-by-turn and the live arrival time.</span>}
+                {gps === 'denied' ? <Banner status="error" title="Location is off for FreshRoute" description="On iPad: Settings > Privacy & Security > Location Services. Turn it on, then set Safari Websites (or FreshRoute, if you opened it from the Home Screen) to While Using. Then check again." />
+                  : gps === 'error' ? <Banner status="warning" title="Couldn't find your location" description="Move near a window or outside and check again. Wi-Fi-only iPads have no GPS, so location drops once you leave Wi-Fi. In the iOS Simulator, pick a place in Features > Location. You can still start with the simulated drive below." />
+                  : <span className="muted">Used for turn-by-turn and the live arrival time.</span>}
                 {gps !== 'granted' && <div><Button label={gps === 'asking' ? 'Checking…' : 'Check location'} onClick={checkGps} /></div>}
               </Item>
               <Item ok={motion === 'granted'} icon={Activity} title="Motion sensors">

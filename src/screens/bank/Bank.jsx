@@ -140,7 +140,7 @@ function Live() {
           {drives === null && !err && <p className="muted" aria-busy="true">Loading trucks…</p>}
           {drives && active.length === 0 && (
             <div className="empty">
-              <h3>No trucks on the road</h3>
+              <h2 className="as-h3">No trucks on the road</h2>
               <p>When a driver starts a drive, it shows up here with a live arrival time.</p>
               <Button variant="primary" label={localSim ? 'Sample truck running' : 'Run a sample truck'} icon={<Play size={18} />} isLoading={starting} isDisabled={!!localSim} onClick={sample} />
               <p className="faint" style={{fontSize: 'var(--fs-sub)'}}>The sample drives three real Denton stops at 8× speed from this browser tab.</p>
@@ -168,7 +168,8 @@ function Live() {
           })}
         </section>
         <section className="mapbox" aria-label="Map of trucks">
-          <MapView markers={markers} fitKey={active.map((d) => d.id).join(',') || 'none'} label="Map of trucks and the food bank" />
+          <MapView markers={markers} fitKey={active.map((d) => d.id).join(',') || 'none'} label="Map of trucks and the food bank" legendAt="bl"
+            legend={{title: 'Where each truck is now', items: [['truck', 'Truck: green on time, amber slipping, red late'], ['pin bank', 'Your food bank']]}} />
         </section>
       </div>
     </>
@@ -215,13 +216,14 @@ function TruckDetail({id}) {
         <section className="stack">
           <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={Date.now()} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} />
           {d.segments?.length > 0 && <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>}
-          <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" /></div>
+          <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" legendAt="bl"
+            legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['pin bank', 'Drop-off at the food bank']]}} /></div>
         </section>
         <section className="stack">
           <div className="panel stack" style={{alignItems: 'center', textAlign: 'center'}}>
             <Ring forecast={f} promise={d.promiseAt} progress={progressOf({...d, last})} size={220} stroke={14} timeSize={48} />
             <div className="big-delta" style={{color: STATE_VAR[st.key]}}>{d.status === 'delivered' ? `Delivered ${clockAmPm(d.deliveredAt)}` : deltaText(f, d.promiseAt)}</div>
-            <div className="muted num">Promised {clock(d.promiseAt)} · Forecast {clock(f)} · Updated {clock(last?.t || d.updated)}</div>
+            <div className="muted num">Promised back {clock(d.promiseAt)} · Now expected {clock(f)} · Updated {clock(last?.t || d.updated)}</div>
             {d.coldStartAt && <span className={`chip ${coldState(cold) === 'cold' ? 'frost' : coldState(cold)}`}><Cold size={16} />{hms(cold)} out of fridge</span>}
             {reasons.map((e, k) => <span key={k} className="chip apricot">{eventText(e)}</span>)}
           </div>
@@ -255,7 +257,7 @@ function Reports() {
     <>
       <div className="main-head"><h1>Drive reports</h1></div>
       {err && <Banner status="warning" title="Can't reach FreshRoute right now" description="Retrying." />}
-      {drives && done.length === 0 && <div className="empty"><h3>No finished drives yet</h3><p>Reports appear here as soon as a driver taps Finish drive. You don't need the driver's approval to open them.</p></div>}
+      {drives && done.length === 0 && <div className="empty"><h2 className="as-h3">No finished drives yet</h2><p>Reports appear here as soon as a driver taps Finish drive. You don't need the driver's approval to open them.</p></div>}
       {done.length > 0 && (
         <div style={{overflowX: 'auto'}}>
           <table className="table">

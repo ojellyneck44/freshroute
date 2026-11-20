@@ -25,7 +25,7 @@ export default function Setup() {
       <div className="form">
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => (setState({role: null}), navigate('/'))} /></div>
         <h1>Set up your van</h1>
-        <TextInput label="Your name" value={name} onChange={setName} autoComplete="given-name" placeholder="First and last name" />
+        <TextInput label="Your name" value={name} onChange={setName} autoComplete="name" placeholder="First and last name" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
           <span className="label">Vehicle</span>
           <SegmentedControl label="Vehicle" value={van} onChange={setVan} layout="fill" size="lg">
@@ -34,12 +34,13 @@ export default function Setup() {
         </div>
         <Switch label="This vehicle has cold storage" description="Pickups with chilled or frozen food are marked for you either way." value={cold} onChange={setCold} labelSpacing="spread" labelPosition="start" />
         <section className="stack" aria-labelledby="rec">
-          <h3 id="rec">Recording during drives</h3>
+          <h2 className="as-h3" id="rec">Recording during drives</h2>
           <div className="consent" tabIndex={0} aria-label="Recording terms">
-            <p>While a drive is running, FreshRoute records video from the camera you pick, your location, and sudden movements (hard brakes, sharp turns, bumps). It does not record sound.</p>
+            <p>While a drive is running, FreshRoute records video from the cameras you pick (usually the front camera, facing you), sound inside the vehicle, your location, and sudden movements (hard brakes, sharp turns, bumps). You can turn sound off before each drive.</p>
             <p>{BANK.name} can watch the video live or later, and see drive reports, without asking you each time. The recording is there to show what happened to the food, and to protect you if something is damaged or goes missing.</p>
             <p>Recording only happens while a drive is running and FreshRoute is open on screen. Gaps are marked in the report. Video is kept for 90 days unless the food bank needs it for a report.</p>
-            <p className="faint">This is a plain-language summary for the prototype, not legal advice. The food bank's own policy applies.</p>
+            <p>Tell anyone riding with you, and store staff you talk to near the iPad, that sound is being recorded.</p>
+            <p className="faint">This is a plain-language summary for the prototype, not legal advice. Texas lets one person in a conversation record it; other states can require everyone's consent. The food bank's own policy applies.</p>
           </div>
           <CheckboxInput label="I agree to drive recording on this device" value={consent} onChange={setConsent} />
         </section>
