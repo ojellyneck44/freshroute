@@ -16,6 +16,7 @@ export const eventText = (e) => {
     case 'arrived-bank': return 'Arrived at the food bank';
     case 'delivered': return 'Drive finished';
     case 'store-ready': return d.ready ? 'Store marked donations ready' : 'Store marked not ready';
+    case 'gap': return `FreshRoute was in the background for ${Math.max(1, Math.round((d.ms || 0) / 1000))} s, so nothing was recorded`;
     case 'gap-start': return 'App in background: recording paused';
     case 'gap-end': return 'Recording resumed';
     default: return e.kind;
@@ -26,7 +27,7 @@ export const eventText = (e) => {
  * Plays a drive's video segments as one timeline, Ring-style: scrub bar with event ticks.
  * live: keeps jumping to the newest segment (the manager's near-live view).
  */
-export default function Footage({segments = [], events = [], start, end, live = false, seekTo}) {
+export default function Footage({segments = [], events = [], start, end, live = false, seekTo, noCamera = false}) {
   const v = useRef(null);
   const pendingSeek = useRef(0);
   const [i, setI] = useState(0);
@@ -66,7 +67,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
     return (
       <div className="video" style={{display: 'grid', placeItems: 'center'}}>
         <p className="muted" style={{textAlign: 'center', padding: 'var(--space-xl)', margin: 0}}>
-          {live ? 'Waiting for the first video segment. Video arrives in 10-second pieces, so it runs a little behind live.' : 'No video for this drive. The camera was off or the footage has not uploaded yet.'}
+          {noCamera ? 'This drive has no camera, so there is no video.' : live ? 'Waiting for the first video segment. Video arrives in 10-second pieces, so it runs a little behind live.' : 'No video for this drive. The camera was off or the footage has not uploaded yet.'}
         </p>
       </div>
     );

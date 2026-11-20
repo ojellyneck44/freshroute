@@ -26,7 +26,7 @@ export function etaState(forecast, promise) {
 }
 export function deltaText(forecast, promise) {
   const d = Math.round((forecast - promise) / 60000);
-  if (Math.abs(d) <= 0) return `Right on your ${clock(promise)} promise`;
+  if (Math.abs(d) <= 0) return `Right on the ${clock(promise)} promise`;
   return d > 0 ? `${d} min behind ${clock(promise)}` : `${-d} min ahead of ${clock(promise)}`;
 }
 

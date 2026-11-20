@@ -48,7 +48,7 @@ export default function App() {
   useTestMode();
 
   useEffect(() => {
-    document.title = TITLES[path] || (path.startsWith('/s/') ? 'Pickup ETA · FreshRoute' : path.includes('report') ? 'Drive report · FreshRoute' : 'FreshRoute');
+    document.title = TITLES[path] || (path.startsWith('/s/') ? 'Pickup ETA · FreshRoute' : path.includes('report') ? 'Drive report · FreshRoute' : path.startsWith('/bank/truck') ? 'Live truck · FreshRoute' : 'FreshRoute');
     document.querySelector('main, [data-screen]')?.focus?.({preventScroll: true});
   }, [path]);
 

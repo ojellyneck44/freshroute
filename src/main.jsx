@@ -21,3 +21,11 @@ createRoot(document.getElementById('root')).render(
 );
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) navigator.serviceWorker.register('/sw.js');
+
+// A home-screen app resumes instead of relaunching, so it can run an old build for days. On return, load a newer build if one is live (never mid-drive).
+if (import.meta.env.PROD) document.addEventListener('visibilitychange', async () => {
+  if (document.hidden || location.pathname === '/drive/nav') return;
+  const mine = document.querySelector('script[type="module"][src]')?.getAttribute('src');
+  const live = await fetch('/', {cache: 'no-store'}).then((r) => r.text()).catch(() => '');
+  if (mine && live.includes('/assets/index-') && !live.includes(mine)) location.reload();
+});

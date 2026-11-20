@@ -54,6 +54,10 @@ export default function Bank({path}) {
         <a href="/" onClick={(e) => (e.preventDefault(), confirm('Sign out of FreshRoute on this device?') && (resetState(), navigate('/', {replace: true})))}><LogOut size={20} aria-hidden="true" />Sign out</a>
       </nav>
       <main className="main" id="content" tabIndex={-1}>
+        <div className="mobilehead spread">
+          <Wordmark size={26} />
+          <Button variant="ghost" label="Sign out" icon={<LogOut size={18} />} onClick={() => confirm('Sign out of FreshRoute on this device?') && (resetState(), navigate('/', {replace: true}))} />
+        </div>
         {page === 'live' && <Live />}
         {page === 'truck' && <TruckDetail id={parts[3]} />}
         {page === 'reports' && <Reports />}
@@ -105,7 +109,7 @@ function Live() {
   const sample = async () => {
     setStarting(true);
     try {
-      await startDrive({storeIds: ['kroger-loop288', 'aldi-loop288', 'target-loop288'], sim: 8});
+      await startDrive({storeIds: ['kroger-loop288', 'aldi-loop288', 'target-loop288'], sim: 8, sample: true});
     } finally {
       setStarting(false);
     }
@@ -209,8 +213,8 @@ function TruckDetail({id}) {
       </div>
       <div className="detail">
         <section className="stack">
-          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={Date.now()} live={d.status !== 'delivered'} />
-          <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>
+          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={Date.now()} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} />
+          {d.segments?.length > 0 && <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>}
           <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" /></div>
         </section>
         <section className="stack">
@@ -265,7 +269,7 @@ function Reports() {
                 const cold = d.coldStartAt ? end - d.coldStartAt : 0;
                 return (
                   <tr key={d.id} className="click" tabIndex={0} onClick={() => navigate(`/bank/report/${d.id}`)} onKeyDown={(e) => e.key === 'Enter' && navigate(`/bank/report/${d.id}`)}>
-                    <td className="num">{day(d.startedAt)}<div className="muted">{clockAmPm(d.startedAt)}</div></td>
+                    <td className="num nowrap">{day(d.startedAt)}<div className="muted">{clockAmPm(d.startedAt)}</div></td>
                     <td><strong>{d.van}</strong><div className="muted">{d.driver}</div></td>
                     <td className="num">{(d.stops || []).length}</td>
                     <td><span className={`chip ${st.key}`}>{st.delta > 0 ? '+' : ''}{st.delta} min</span></td>

@@ -18,6 +18,8 @@ export function recolor(map, mode) {
     else if (/waterway/.test(id)) set(id, 'line-color', DARK.water);
     else if (/park|wood|grass|landcover/.test(id) && type === 'fill') set(id, 'fill-color', DARK.green);
     else if (/landuse/.test(id) && type === 'fill') set(id, 'fill-opacity', 0.15);
+    else if (/aeroway/.test(id)) set(id, type === 'fill' ? 'fill-color' : 'line-color', DARK.major);
+    else if (/rail/.test(id) && type === 'line') set(id, 'line-color', /dash/.test(id) ? DARK.background : DARK.minor);
     else if (/building/.test(id) && type === 'fill') {
       set(id, 'fill-color', DARK.building);
       set(id, 'fill-outline-color', DARK.building);

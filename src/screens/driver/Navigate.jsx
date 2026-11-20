@@ -38,7 +38,7 @@ export default function Navigate() {
     if (!drive) return;
     let alive = true;
     (async () => {
-      if (!session.stream && drive.camera !== undefined) {
+      if (!session.stream && drive.camera !== undefined && drive.camera !== 'none') {
         try {
           await useCamera(drive.camera || 'back');
         } catch {
@@ -262,6 +262,7 @@ function Pickup({drive, i, onClose}) {
               <div>
                 <div className="store-name">{it.name}</div>
                 <div className="muted" style={{fontSize: 'var(--fs-label)'}}>Expected {it.qty} · {it.pack}{it.storage === 'cold' || it.storage === 'frozen' ? ' · keep cold' : ''}</div>
+                {counts[it.name] !== it.qty && <div style={{fontSize: 'var(--fs-label)', color: 'var(--fr-apricot)', marginTop: 'var(--space-3xs)'}}>{Math.abs(counts[it.name] - it.qty)} {counts[it.name] < it.qty ? 'fewer' : 'more'} than expected</div>}
               </div>
               <div className="stepper">
                 <button onClick={() => set(it.name, counts[it.name] - 1)} aria-label={`One fewer ${it.name}`}>−</button>

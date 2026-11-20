@@ -59,7 +59,7 @@ export function promiseFor(route, stopsCount, start = Date.now(), speed = 1) {
 }
 
 // ---------- Start / stop ----------
-export async function startDrive({storeIds, plan, sim = 0, camera}) {
+export async function startDrive({storeIds, plan, sim = 0, camera, sample = false}) {
   const {stops, route} = plan || (await planRoute(storeIds));
   const now = Date.now();
   const promise = promiseFor(route, stops.length, now, sim || 1);
@@ -69,11 +69,12 @@ export async function startDrive({storeIds, plan, sim = 0, camera}) {
   route.legs.forEach((l) => legEnds.push((acc += l.distance)));
   drive = {
     id: null,
-    driver: profile.name || 'Driver',
-    van: profile.van,
+    driver: sample ? 'Sample driver' : profile.name || 'Driver',
+    van: sample ? 'Sample van' : profile.van,
     cold: profile.cold,
     bankName: BANK.name,
-    camera: camera || '',
+    camera: sample ? 'none' : camera || '',
+    sample,
     startedAt: now,
     promiseAt: promise.final,
     status: 'en-route-pickup',

@@ -83,7 +83,7 @@ export default function Report({id, back}) {
       </header>
 
       <div className="metrics">
-        <Metric label="Arrival vs promise" value={`${st.delta > 0 ? '+' : ''}${st.delta} min`} base={avgDelta == null ? 'First finished drive on record' : `Average ${avgDelta > 0 ? '+' : ''}${avgDelta} min over ${past.length} drives`} />
+        <Metric label="Arrival vs promise" value={`${st.delta > 0 ? '+' : ''}${st.delta} min`} base={avgDelta == null ? 'First finished drive on record' : `Average ${avgDelta > 0 ? '+' : ''}${avgDelta} min over ${past.length} ${past.length === 1 ? 'drive' : 'drives'}`} />
         <Metric label="Drive time" value={duration(end - d.startedAt)} base={d.routeDuration ? `${duration(d.routeDuration * 1000)} driving + stops planned` : ''} />
         <Metric label="Cold food out of fridge" value={d.coldStartAt ? hms(coldMs) : 'None'} base={d.coldStartAt ? (coldMs > COLD_WARN ? 'Over the 1-hour warning' : 'Under the 1-hour warning') : 'No chilled pickups'} tone={d.coldStartAt ? coldState(coldMs) : null} />
         <Metric label="Items" value={`${totalDropped} of ${totalPicked}`} base={totalPicked === totalDropped ? 'Drop-off matches pickup' : `${totalPicked - totalDropped} not delivered`} tone={totalPicked !== totalDropped ? 'slipping' : null} />
@@ -111,7 +111,7 @@ export default function Report({id, back}) {
         <div className="stack">
           <h2>What happened</h2>
           <ol className="timeline" aria-label="Drive events">
-            {(d.events || []).filter((e) => e.kind !== 'gap-end').map((e, k) => {
+            {withGaps(d.events || []).map((e, k) => {
               const G = e.kind === 'motion' ? MOTION_GLYPH[e.data?.kind] : e.kind === 'loaded' && e.data?.cold ? Cold : null;
               return (
                 <li key={k} style={{gridTemplateColumns: 'var(--size-stopnum) 1fr auto'}}>
@@ -148,6 +148,20 @@ export default function Report({id, back}) {
   );
 }
 
+// Pair each 'app in background' with its return so the list shows one row with how long it lasted.
+function withGaps(events) {
+  const out = [];
+  for (const e of events) {
+    if (e.kind === 'gap-end') {
+      const start = [...out].reverse().find((x) => x.kind === 'gap-start' && !x.ended);
+      if (start) start.ended = e.t;
+      continue;
+    }
+    out.push({...e});
+  }
+  return out.map((e) => (e.kind === 'gap-start' ? {...e, kind: 'gap', data: {ms: (e.ended || e.t) - e.t}} : e));
+}
+
 function nearest(points, t) {
   let best = null;
   for (const p of points) if (!best || Math.abs(p.t - t) < Math.abs(best.t - t)) best = p;
@@ -167,7 +181,7 @@ function Metric({label, value, base, tone}) {
 // Clock time on the y-axis, so managers read it like a schedule. Promise is dashed with a ±3 min band.
 function EtaChart({d, end}) {
   const W = 900, H = 260, L = 64, R = 16, T = 16, B = 32;
-  const pts = (d.points || []).filter((p) => p.eta);
+  const pts = (d.points || []).filter((p) => p.eta && p.t <= Math.max(end, d.startedAt + 60000));
   const x0 = d.startedAt, x1 = Math.max(end, x0 + 60000);
   const ys = [d.promiseAt, ...pts.map((p) => p.eta)];
   const y0 = Math.min(...ys) - 6 * 60000, y1 = Math.max(...ys) + 6 * 60000;
@@ -175,7 +189,8 @@ function EtaChart({d, end}) {
   const Y = (t) => T + (1 - (t - y0) / (y1 - y0)) * (H - T - B);
   const band = 3 * 60000;
   const path = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p.t).toFixed(1)} ${Y(p.eta).toFixed(1)}`).join(' ');
-  const yTicks = [y0 + 6 * 60000, d.promiseAt, y1 - 6 * 60000].filter((v, i, a) => a.indexOf(v) === i);
+  // Promise plus the top and bottom of the range, dropping any label closer than 18 px to another.
+  const yTicks = [d.promiseAt, y1 - 6 * 60000, y0 + 6 * 60000].filter((v, i, a) => a.slice(0, i).every((u) => Math.abs(Y(u) - Y(v)) >= 18));
   const xTicks = [x0, x0 + (x1 - x0) / 2, x1];
   const events = (d.events || []).filter((e) => ['motion', 'delay', 'arrived', 'loaded'].includes(e.kind));
   const lastEta = pts.length ? pts[pts.length - 1].eta : d.promiseAt;
@@ -183,7 +198,7 @@ function EtaChart({d, end}) {
   if (!pts.length) return <p className="muted">No forecast data for this drive yet.</p>;
   return (
     <figure style={{margin: 0}}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Forecast arrival over the drive. Promise ${clock(d.promiseAt)}. Final forecast ${clock(lastEta)}.`}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{overflow: 'hidden'}} role="img" aria-label={`Forecast arrival over the drive. Promise ${clock(d.promiseAt)}. Final forecast ${clock(lastEta)}.`}>
         <rect x={L} y={Y(d.promiseAt + band)} width={W - L - R} height={Y(d.promiseAt - band) - Y(d.promiseAt + band)} fill="var(--fr-sprout)" opacity="0.08" />
         <line x1={L} x2={W - R} y1={Y(d.promiseAt)} y2={Y(d.promiseAt)} stroke="var(--fr-sprout)" strokeWidth="2" strokeDasharray="6 6" />
         {yTicks.map((t) => <text key={t} x={L - 10} y={Y(t) + 4} textAnchor="end" fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
