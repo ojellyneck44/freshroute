@@ -31,7 +31,7 @@ export default function Prefs() {
         </div>
         <div className="panel stack">
           <div className="label">Food bank</div>
-          <div className="mono">{code}</div>
+          <strong>{code}</strong>
           <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>You agreed to drive recording on {profile.consent ? 'this device' : 'no device yet'}. Video, location and motion markers are shared with your food bank during drives only.</p>
         </div>
         <Button variant="destructive" label="Sign out of this iPad" icon={<LogOut size={18} />} onClick={() => confirm('Sign out? Your name, vehicle and planned route are removed from this iPad. Finished drives stay with the food bank.') && (resetState(), navigate('/', {replace: true}))} />

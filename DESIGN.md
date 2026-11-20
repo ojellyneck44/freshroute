@@ -17,7 +17,7 @@ x-zsd:
   intent:
     audience: Food bank drivers with an iPad mounted in a van or truck, and food bank managers at a laptop or phone.
     primary-task: Drive a multi-stop pickup route and arrive when promised; for managers, see each truck's live ETA, cold-chain time and footage.
-    character: Calm dispatcher. Native Apple feel, dark night-road surfaces, one green that means on time. Trustworthy, dry, precise.
+    character: Calm, friendly dispatcher. Native Apple feel, soft charcoal dark mode (not terminal black), one green that means on time. Trustworthy and warm.
     density: comfortable
     theme: dark
     references:
@@ -29,7 +29,7 @@ x-zsd:
     must-use:
       - Overpass for headlines, store names and the wordmark.
       - System font (SF Pro on Apple devices) for all interface text and every live number, with tabular figures.
-      - IBM Plex Mono only for records such as timecodes, event rows and IDs.
+      - System font with tabular figures for timecodes, event rows and IDs (no monospace in the product UI).
       - Sprout as the only brand color; it also means on time.
       - A glyph and a word with every status color.
       - Liquid Glass only on controls that float over the map or video.
@@ -55,7 +55,6 @@ x-zsd:
     style-sources: []
     font-assets:
       - Overpass (Open Font License, self-hosted variable woff2)
-      - IBM Plex Mono 500 and 600 (Open Font License, self-hosted)
     image-assets: []
     icon-assets:
       - Lucide (ISC) registered as Astryx theme icons
@@ -118,24 +117,24 @@ x-zsd:
         error-tint: "#F9DDD8"
         cold-tint: "#D6EEF6"
 colors:
-  primary: "#B8F25E"
-  primary-hover: "#D6FB92"
-  on-primary: "#0B0F0E"
-  surface: "#0B0F0E"
-  surface-raised: "#141A18"
-  surface-muted: "#1C2321"
-  on-surface: "#ECF0EE"
-  on-surface-muted: "#A3AEA9"
-  on-surface-faint: "#86928D"
-  outline: "#252D2A"
-  outline-strong: "#323C38"
-  warning: "#FFB54A"
-  error: "#FF7A66"
-  cold: "#7FD6F0"
-  primary-tint: "#1A2A0B"
-  warning-tint: "#2E2008"
-  error-tint: "#33140F"
-  cold-tint: "#0C2530"
+  primary: "#B4EC6A"
+  primary-hover: "#C8F48C"
+  on-primary: "#16181B"
+  surface: "#1A1C20"
+  surface-raised: "#23262B"
+  surface-muted: "#2D3036"
+  on-surface: "#F3F4F6"
+  on-surface-muted: "#BBC0C8"
+  on-surface-faint: "#959BA5"
+  outline: "#33373D"
+  outline-strong: "#41464E"
+  warning: "#FFBE5C"
+  error: "#FF8A76"
+  cold: "#86D9F2"
+  primary-tint: "#2A3820"
+  warning-tint: "#3D301A"
+  error-tint: "#422623"
+  cold-tint: "#1C3744"
 typography:
   numeral-hero:
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
@@ -186,7 +185,7 @@ typography:
     lineHeight: 1.38
     letterSpacing: 0px
   record:
-    fontFamily: "'IBM Plex Mono', ui-monospace, monospace"
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.43
@@ -328,9 +327,9 @@ The `daylight` mode applies to the screens for drivers between local sunrise and
 - `headline-lg`: Overpass. Use for screen titles and store names.
 - `maneuver`: Use for the next-turn instruction. This is the smallest size a driver reads while moving.
 - `title-md`, `body-md`, `label-md`, `footnote`: Use for interface text in sentence case.
-- `record`: IBM Plex Mono. Use for timecodes, event rows and IDs only.
+- `record`: System font with tabular figures. Use for timecodes, event rows and IDs.
 
-Set every changing number (ETA, timers, distance) in the system font with tabular figures. Overpass separators need a wider space than its middle dot gives; use a thin divider or an en space. Respect the user's text-size setting.
+Set every changing number (ETA, timers, distance) in the system font with tabular figures. Do not use monospace: it made the dark mode read like a terminal. Overpass separators need a wider space than its middle dot gives; use a thin divider or an en space. Respect the user's text-size setting.
 
 ## Layout
 

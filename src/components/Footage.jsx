@@ -90,7 +90,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
           onTimeUpdate={(e) => setT(cur.t0 + e.currentTarget.currentTime * 1000)}
           onEnded={() => setI((x) => Math.min(segs.length - 1, x + 1))}
         />
-        <span className="rec live">{live ? <><i aria-hidden="true" />LIVE · {clock(cur?.t1)}</> : clock(t)}</span>
+        <span className="rec live">{live ? <><i aria-hidden="true" />Live · {clock(cur?.t1)}</> : clock(t)}</span>
       </div>
       {!live && (
         <div className="scrub">

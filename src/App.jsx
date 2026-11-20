@@ -10,8 +10,9 @@ import Welcome from './screens/Welcome.jsx';
 const load = (f) =>
   lazy(() =>
     f().catch((e) => {
-      if (sessionStorage.getItem('freshroute:reloaded')) throw e;
-      sessionStorage.setItem('freshroute:reloaded', '1');
+      const last = Number(sessionStorage.getItem('freshroute:reloaded') || 0);
+      if (Date.now() - last < 30000) throw e; // already tried just now: don't loop
+      sessionStorage.setItem('freshroute:reloaded', String(Date.now()));
       location.reload();
       return new Promise(() => {});
     }),

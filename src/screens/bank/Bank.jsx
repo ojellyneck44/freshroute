@@ -122,7 +122,7 @@ function Live() {
           <h1>Trucks on the road</h1>
         </div>
         <div className="row wrap">
-          {perm !== 'unsupported' && perm !== 'granted' && <Button label="Turn on arrival alerts" icon={<Bell size={18} />} onClick={() => Notification.requestPermission().then(setPerm)} />}
+          {perm === 'default' && <Button label="Turn on arrival alerts" icon={<Bell size={18} />} onClick={() => Notification.requestPermission().then(setPerm)} />}
           {perm === 'granted' && <Badge variant="success" label="Arrival alerts on" icon={<Bell size={14} />} />}
           {perm === 'denied' && <Badge variant="neutral" label="Alerts blocked in browser settings" icon={<BellOff size={14} />} />}
         </div>

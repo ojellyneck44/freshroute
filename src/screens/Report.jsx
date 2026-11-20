@@ -117,7 +117,7 @@ export default function Report({id, back}) {
                 <li key={k} style={{gridTemplateColumns: 'var(--size-stopnum) 1fr auto'}}>
                   <span aria-hidden="true">{G ? <G size={24} /> : null}</span>
                   <button className="btn ghost" style={{justifyContent: 'flex-start', padding: 0, minHeight: 'var(--fr-target)'}} onClick={() => setSeek({t: e.t - 3000})}>{eventText(e)}</button>
-                  <span className="mono faint num">{new Date(e.t).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})}</span>
+                  <span className="faint num">{new Date(e.t).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})}</span>
                 </li>
               );
             })}
@@ -186,8 +186,8 @@ function EtaChart({d, end}) {
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={`Forecast arrival over the drive. Promise ${clock(d.promiseAt)}. Final forecast ${clock(lastEta)}.`}>
         <rect x={L} y={Y(d.promiseAt + band)} width={W - L - R} height={Y(d.promiseAt - band) - Y(d.promiseAt + band)} fill="var(--fr-sprout)" opacity="0.08" />
         <line x1={L} x2={W - R} y1={Y(d.promiseAt)} y2={Y(d.promiseAt)} stroke="var(--fr-sprout)" strokeWidth="2" strokeDasharray="6 6" />
-        {yTicks.map((t) => <text key={t} x={L - 10} y={Y(t) + 4} textAnchor="end" fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-mono)">{clock(t)}</text>)}
-        {xTicks.map((t, i) => <text key={i} x={X(t)} y={H - 8} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-mono)">{clock(t)}</text>)}
+        {yTicks.map((t) => <text key={t} x={L - 10} y={Y(t) + 4} textAnchor="end" fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
+        {xTicks.map((t, i) => <text key={i} x={X(t)} y={H - 8} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
         <path d={path} fill="none" stroke={st.key === 'on-time' ? 'var(--fr-text)' : `var(--fr-${st.key === 'slipping' ? 'apricot' : 'tomato'})`} strokeWidth="3" strokeLinejoin="round" />
         {events.map((e, k) => <rect key={k} x={X(e.t) - 2} y={H - B - 10} width="4" height="10" rx="2" fill={e.kind === 'motion' || e.kind === 'delay' ? 'var(--fr-apricot)' : 'var(--fr-sprout)'} />)}
       </svg>
