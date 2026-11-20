@@ -14,4 +14,4 @@
 The style sheet in `docs/brand/` must be approved before any web development starts.
 7. **Display typeface: Overpass** (chosen 2026-11-19). Interface text stays in the system font, and records in IBM Plex Mono.
 8. **App icon: direction A, ring and leaf** (chosen 2026-11-19). `docs/brand/icon/icon.svg` is the full icon; `icon-small.svg` is used at 64 px and below.
-9. **Friendlier dark mode** (2026-11-19, Stevie: "feels like a computer terminal"). The green-black Asphalt neutrals became soft charcoal (#1A1C20 page, #23262B surface), Sprout softened to #B4EC6A, and monospace left the product UI (timecodes now use the system font with tabular figures). DESIGN.md holds the new values; the v3 style sheet PDF still shows the old dark palette.
+9. **Friendlier dark mode** (2026-11-19, Stevie: "feels like a computer terminal"). The green-black Asphalt neutrals became soft charcoal (#1A1C20 page, #23262B surface), Sprout softened to #B4EC6A, and monospace left the product UI (timecodes now use the system font with tabular figures). DESIGN.md holds the new values; the style sheet (v4 PDF) and the app icon use the new palette too.

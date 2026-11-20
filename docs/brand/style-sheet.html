@@ -5,18 +5,19 @@
 <title>FreshRoute Style Sheet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&display=block" rel="stylesheet">
 <style>
 @page { size: 1600px 1000px; margin: 0; }
 :root{
-  --a1000:#070A09;--a950:#0B0F0E;--a900:#141A18;--a850:#1C2321;--a800:#252D2A;--a700:#323C38;--a600:#4A5551;--a500:#66726D;--a400:#86928D;--a300:#A3AEA9;--a200:#C9D1CE;--a100:#ECF0EE;
-  --sprout300:#D6FB92;--sprout:#B8F25E;--sprout600:#8CC63A;--sprout800:#3C7A0C;--sprout950:#1A2A0B;
-  --frost:#7FD6F0;--frost800:#0A6F91;--frost950:#0C2530;
-  --apricot:#FFB54A;--apricot800:#9A5800;--apricot950:#2E2008;
-  --tomato:#FF7A66;--tomato800:#C2341E;--tomato950:#33140F;
+  --a1000:#121316;--a950:#1A1C20;--a900:#23262B;--a850:#2D3036;--a800:#33373D;--a700:#41464E;--a600:#5A606A;--a500:#737983;--a400:#959BA5;--a300:#BBC0C8;--a200:#D9DCE1;--a100:#F3F4F6;
+  --sprout300:#C8F48C;--sprout:#B4EC6A;--sprout600:#8CC63A;--sprout800:#3C7A0C;--sprout950:#2A3820;
+  --frost:#86D9F2;--frost800:#0A6F91;--frost950:#1C3744;
+  --apricot:#FFBE5C;--apricot800:#9A5800;--apricot950:#3D301A;
+  --tomato:#FF8A76;--tomato800:#C2341E;--tomato950:#422623;
   --display:"Overpass",-apple-system,sans-serif;
   --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --mono:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  --code:ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#000}
@@ -31,7 +32,7 @@ h3{font:600 15px/1.3 var(--ui);color:var(--a100);margin-bottom:6px}
 p,li{font:400 17px/1.5 var(--ui);color:var(--a300)}
 .lede{text-wrap:pretty;font-size:21px;line-height:1.45;color:var(--a200);max-width:980px}
 .small{font-size:14px;line-height:1.45;color:var(--a400)}
-.mono{font-family:var(--mono)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .label{font:600 13px/1.25 var(--ui);color:var(--a400)}
 b,strong{color:var(--a100);font-weight:600}
 .grid{display:grid;gap:28px}
@@ -39,11 +40,11 @@ b,strong{color:var(--a100);font-weight:600}
 table{border-collapse:collapse;width:100%}
 th{font:600 13px/1.25 var(--ui);color:var(--a400);text-align:left;padding:0 14px 10px 0;border-bottom:1px solid var(--a700)}
 td{font:400 15px/1.4 var(--ui);color:var(--a200);padding:11px 14px 11px 0;border-bottom:1px solid var(--a800);vertical-align:top}
-td.m{font:500 13px/1.4 var(--mono);color:var(--a300)}
+td.m{font:500 13px/1.4 var(--mono);font-variant-numeric:tabular-nums;color:var(--a300)}
 .sep{font-family:var(--ui);font-weight:400;margin:0 .3em}
 .chip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:15px;font:600 14px/1 var(--ui)}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.glass{background:rgba(28,35,33,.56);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px rgba(255,255,255,.05),0 6px 20px rgba(0,0,0,.3)}
+.glass{background:rgba(40,43,49,.62);-webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 0 0 1px rgba(255,255,255,.05),0 6px 20px rgba(0,0,0,.3)}
 .glass.dense{background:rgba(20,26,24,.8)}
 .solid{background:var(--a900);border:1px solid var(--a800)}
 .do,.dont{font:600 13px/1 var(--ui);padding:5px 8px;border-radius:5px;display:inline-block;margin-bottom:10px}
@@ -51,7 +52,7 @@ td.m{font:500 13px/1.4 var(--mono);color:var(--a300)}
 .dont{background:var(--a800);color:var(--a100)}
 .note{border-top:1px solid var(--a800);padding-top:14px}
 .warnnote{border-top:1px solid var(--a800);padding-top:14px}
-code,pre{font-family:var(--mono)}
+code,pre{font-family:var(--code)}
 pre{font-size:12.5px;line-height:1.55;color:var(--a200);background:var(--a1000);border:1px solid var(--a800);border-radius:14px;padding:20px 22px;white-space:pre;overflow:hidden}
 pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 </style>
@@ -59,18 +60,18 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 <body>
 <svg width="0" height="0" style="position:absolute">
   <defs>
-    <linearGradient id="ibg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C2622"/><stop offset="1" stop-color="#080B0A"/></linearGradient>
-    <linearGradient id="isp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D6FB92"/><stop offset="1" stop-color="#A3E041"/></linearGradient>
+    <linearGradient id="ibg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2D33"/><stop offset="1" stop-color="#16181B"/></linearGradient>
+    <linearGradient id="isp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8F48C"/><stop offset="1" stop-color="#9FD95A"/></linearGradient>
     <symbol id="mark" viewBox="0 0 1024 1024">
-      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/>
+      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B4EC6A" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/>
       <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="url(#isp)" stroke-width="100" stroke-linecap="round"/>
-      <circle cx="249.2" cy="634.6" r="26" fill="#0B0F0E"/>
+      <circle cx="249.2" cy="634.6" r="26" fill="#1A1C20"/>
       <g transform="translate(588 218) rotate(-12)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="url(#isp)"/><path d="M -84 0 C -30 -6 30 -6 80 0" fill="none" stroke="#0E1412" stroke-width="10" stroke-linecap="round" opacity=".5"/></g>
     </symbol>
     <symbol id="iconsm" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="url(#ibg)"/>
-      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".3" stroke-width="130" stroke-linecap="round"/>
-      <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="#B8F25E" stroke-width="130" stroke-linecap="round"/>
-      <g transform="translate(588 206) rotate(-12) scale(1.15)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="#B8F25E"/></g>
+      <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B4EC6A" stroke-opacity=".3" stroke-width="130" stroke-linecap="round"/>
+      <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="#B4EC6A" stroke-width="130" stroke-linecap="round"/>
+      <g transform="translate(588 206) rotate(-12) scale(1.15)"><path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="#B4EC6A"/></g>
     </symbol>
     <symbol id="icon" viewBox="0 0 1024 1024"><rect width="1024" height="1024" fill="url(#ibg)"/><use href="#mark"/></symbol>
     <symbol id="markmono" viewBox="0 0 1024 1024">
@@ -82,13 +83,13 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 </svg>
 
 <!-- 1 COVER -->
-<section class="page" style="padding:0;background:radial-gradient(1200px 700px at 78% 30%,#18241D 0%,var(--a950) 60%)">
+<section class="page" style="padding:0;background:radial-gradient(1200px 700px at 78% 30%,#24282E 0%,var(--a950) 60%)">
   <div style="position:absolute;left:88px;top:88px;display:flex;align-items:center;gap:20px">
     <svg width="64" height="64" style="border-radius:15px"><use href="#iconsm"/></svg>
     <div style="font:700 34px/1 var(--display);letter-spacing:-.02em">FreshRoute</div>
   </div>
   <div style="position:absolute;left:88px;bottom:150px;max-width:860px">
-    <div class="kicker">Brand and interface style sheet, version 3, for review</div>
+    <div class="kicker">Brand and interface style sheet, version 4: friendlier dark mode</div>
     <h1 style="font-size:104px;line-height:.95">Keep the promise.<br><span style="color:var(--sprout)">Show the proof.</span></h1>
     <p class="lede" style="margin-top:28px">How FreshRoute looks, sounds and moves: colour, type, the glass material, the app icon, the map, motion and copy rules, all mapped onto Astryx theme tokens. Nothing gets built until you sign off on this document.</p>
   </div>
@@ -119,7 +120,7 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
   <p class="lede">Drivers and managers already know these products, so we reuse what they have learned and avoid looking like any one of them.</p>
   <table style="margin-top:40px">
     <tr><th style="width:17%">Product</th><th style="width:27%">What people already know from it</th><th style="width:27%">What we take</th><th>How FreshRoute looks different</th></tr>
-    <tr><td><b>Google Maps / Waze</b></td><td>Maneuver card at the top, big next-turn arrow, route line in one strong colour</td><td>Maneuver card placement, lane-arrow glyph style, a route line that is the brightest thing on screen</td><td>Their route lines are blue on a light map; ours is Sprout on Asphalt. The ETA is a ring, top-right, not a bottom bar</td></tr>
+    <tr><td><b>Google Maps / Waze</b></td><td>Maneuver card at the top, big next-turn arrow, route line in one strong colour</td><td>Maneuver card placement, lane-arrow glyph style, a route line that is the brightest thing on screen</td><td>Their route lines are blue on a light map; ours is Sprout on Charcoal. The ETA is a ring, top-right, not a bottom bar</td></tr>
     <tr><td><b>Life360</b></td><td>Drive reports: a timeline with hard-brake and speed events</td><td>The report structure: map, then event list, then metrics</td><td>Life360 uses friendly purple and family framing. Ours is a work record: monospace timecodes, a baseline on every number</td></tr>
     <tr><td><b>Ring</b></td><td>Live view, an event timeline you scrub, clips grouped by event</td><td>The scrub bar with event ticks, "Live" state, event thumbnails</td><td>Ring is blue, consumer-security framing. Our markers are coloured by what happened (motion, cold, stop), not by "motion detected"</td></tr>
     <tr><td><b>Onfleet / Routific</b></td><td>Dispatch dashboards: a list of drivers next to a map</td><td>Manager layout: truck list on the left, map plus detail on the right</td><td>They are light, dense SaaS dashboards. Ours keeps the dark, glanceable driver language on the manager side too</td></tr>
@@ -131,39 +132,39 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 
 <!-- 4 CORE PALETTE -->
 <section class="page">
-  <h1>Night road, one green.</h1>
-  <p class="lede">The neutrals are a slightly green-tinted asphalt, so the dark mode feels like a road at night rather than a generic grey. There is one brand colour, <b style="color:var(--sprout)">Sprout</b>, and it means "on time". Apricot means "needs a look", Tomato means a broken promise or something destructive, and Frost is only ever the cold chain.</p>
+  <h1>Soft charcoal, one green.</h1>
+  <p class="lede">The neutrals are soft charcoal greys, like Apple's own dark mode: calm and friendly rather than terminal black. There is one brand colour, <b style="color:var(--sprout)">Sprout</b>, and it means "on time". Apricot means "needs a look", Tomato means a broken promise or something destructive, and Frost is only ever the cold chain.</p>
   <div class="grid" style="grid-template-columns:2.1fr 1fr 1fr 1fr;margin-top:44px;gap:20px">
     <div>
       <div style="height:300px;border-radius:24px;background:var(--sprout);padding:26px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
         <div style="font:700 44px/1 var(--display)">Sprout</div>
-        <div><div style="font:600 15px/1.4 var(--ui)">Brand · on time · primary action · the route line</div><div class="mono" style="font-size:14px;margin-top:6px">#B8F25E · 14.6:1 on Asphalt 950</div></div>
+        <div><div style="font:600 15px/1.4 var(--ui)">Brand · on time · primary action · the route line</div><div class="mono" style="font-size:14px;margin-top:6px">#B4EC6A · 12.3:1 on Charcoal 950</div></div>
       </div>
       <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px">
-        <div style="flex:1;background:var(--sprout300);color:var(--a950);padding:10px" class="mono"><small>300 #D6FB92</small></div>
+        <div style="flex:1;background:var(--sprout300);color:var(--a950);padding:10px" class="mono"><small>300 #C8F48C</small></div>
         <div style="flex:1;background:var(--sprout600);color:var(--a950);padding:10px" class="mono"><small>600 #8CC63A</small></div>
         <div style="flex:1;background:var(--sprout800);color:#fff;padding:10px" class="mono"><small>800 #3C7A0C</small></div>
-        <div style="flex:1;background:var(--sprout950);color:var(--sprout);padding:10px" class="mono"><small>950 #1A2A0B</small></div>
+        <div style="flex:1;background:var(--sprout950);color:var(--sprout);padding:10px" class="mono"><small>950 #2A3820</small></div>
       </div>
     </div>
     <div>
       <div style="height:300px;border-radius:24px;background:var(--apricot);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
         <div style="font:700 32px/1 var(--display)">Apricot</div>
-        <div><div style="font:600 14px/1.4 var(--ui)">Needs a look: slipping, motion events</div><div class="mono" style="font-size:13px;margin-top:6px">#FFB54A · 11.0:1</div></div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Needs a look: slipping, motion events</div><div class="mono" style="font-size:13px;margin-top:6px">#FFBE5C · 10.4:1</div></div>
       </div>
       <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--apricot800);color:#fff;padding:10px" class="mono"><small>800 #9A5800</small></div><div style="flex:1;background:var(--apricot950);color:var(--apricot);padding:10px" class="mono"><small>950</small></div></div>
     </div>
     <div>
       <div style="height:300px;border-radius:24px;background:var(--tomato);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
         <div style="font:700 32px/1 var(--display)">Tomato</div>
-        <div><div style="font:600 14px/1.4 var(--ui)">Late · broken promise · destructive</div><div class="mono" style="font-size:13px;margin-top:6px">#FF7A66 · 7.6:1</div></div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Late · broken promise · destructive</div><div class="mono" style="font-size:13px;margin-top:6px">#FF8A76 · 7.4:1</div></div>
       </div>
       <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--tomato800);color:#fff;padding:10px" class="mono"><small>800 #C2341E</small></div><div style="flex:1;background:var(--tomato950);color:var(--tomato);padding:10px" class="mono"><small>950</small></div></div>
     </div>
     <div>
       <div style="height:300px;border-radius:24px;background:var(--frost);padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:var(--a950)">
         <div style="font:700 32px/1 var(--display)">Frost</div>
-        <div><div style="font:600 14px/1.4 var(--ui)">Cold chain, and nothing else</div><div class="mono" style="font-size:13px;margin-top:6px">#7FD6F0 · 11.7:1</div></div>
+        <div><div style="font:600 14px/1.4 var(--ui)">Cold chain, and nothing else</div><div class="mono" style="font-size:13px;margin-top:6px">#86D9F2 · 10.7:1</div></div>
       </div>
       <div style="display:flex;margin-top:12px;border-radius:12px;overflow:hidden;height:56px"><div style="flex:1;background:var(--frost800);color:#fff;padding:10px" class="mono"><small>800 #0A6F91</small></div><div style="flex:1;background:var(--frost950);color:var(--frost);padding:10px" class="mono"><small>950</small></div></div>
     </div>
@@ -215,20 +216,20 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 
 <!-- 6 NEUTRALS + CONTRAST -->
 <section class="page">
-  <h1>Twelve steps of asphalt.</h1>
+  <h1>Twelve steps of charcoal.</h1>
   <div style="display:flex;margin-top:28px;border-radius:18px;overflow:hidden;height:130px">
-    <div style="flex:1;background:#070A09;padding:12px;color:var(--a400)" class="mono"><small>1000<br>#070A09</small></div>
-    <div style="flex:1;background:#0B0F0E;padding:12px;color:var(--a400)" class="mono"><small>950<br>#0B0F0E</small></div>
-    <div style="flex:1;background:#141A18;padding:12px;color:var(--a400)" class="mono"><small>900<br>#141A18</small></div>
-    <div style="flex:1;background:#1C2321;padding:12px;color:var(--a400)" class="mono"><small>850<br>#1C2321</small></div>
-    <div style="flex:1;background:#252D2A;padding:12px;color:var(--a300)" class="mono"><small>800<br>#252D2A</small></div>
-    <div style="flex:1;background:#323C38;padding:12px;color:var(--a200)" class="mono"><small>700<br>#323C38</small></div>
-    <div style="flex:1;background:#4A5551;padding:12px;color:var(--a100)" class="mono"><small>600<br>#4A5551</small></div>
-    <div style="flex:1;background:#66726D;padding:12px;color:#fff" class="mono"><small>500<br>#66726D</small></div>
-    <div style="flex:1;background:#86928D;padding:12px;color:var(--a950)" class="mono"><small>400<br>#86928D</small></div>
-    <div style="flex:1;background:#A3AEA9;padding:12px;color:var(--a950)" class="mono"><small>300<br>#A3AEA9</small></div>
-    <div style="flex:1;background:#C9D1CE;padding:12px;color:var(--a950)" class="mono"><small>200<br>#C9D1CE</small></div>
-    <div style="flex:1;background:#ECF0EE;padding:12px;color:var(--a950)" class="mono"><small>100<br>#ECF0EE</small></div>
+    <div style="flex:1;background:#121316;padding:12px;color:var(--a400)" class="mono"><small>1000<br>#121316</small></div>
+    <div style="flex:1;background:#1A1C20;padding:12px;color:var(--a400)" class="mono"><small>950<br>#1A1C20</small></div>
+    <div style="flex:1;background:#23262B;padding:12px;color:var(--a400)" class="mono"><small>900<br>#23262B</small></div>
+    <div style="flex:1;background:#2D3036;padding:12px;color:var(--a400)" class="mono"><small>850<br>#2D3036</small></div>
+    <div style="flex:1;background:#33373D;padding:12px;color:var(--a300)" class="mono"><small>800<br>#33373D</small></div>
+    <div style="flex:1;background:#41464E;padding:12px;color:var(--a200)" class="mono"><small>700<br>#41464E</small></div>
+    <div style="flex:1;background:#5A606A;padding:12px;color:var(--a100)" class="mono"><small>600<br>#5A606A</small></div>
+    <div style="flex:1;background:#737983;padding:12px;color:#fff" class="mono"><small>500<br>#737983</small></div>
+    <div style="flex:1;background:#959BA5;padding:12px;color:var(--a950)" class="mono"><small>400<br>#959BA5</small></div>
+    <div style="flex:1;background:#BBC0C8;padding:12px;color:var(--a950)" class="mono"><small>300<br>#BBC0C8</small></div>
+    <div style="flex:1;background:#D9DCE1;padding:12px;color:var(--a950)" class="mono"><small>200<br>#D9DCE1</small></div>
+    <div style="flex:1;background:#F3F4F6;padding:12px;color:var(--a950)" class="mono"><small>100<br>#F3F4F6</small></div>
   </div>
   <div class="grid" style="grid-template-columns:1fr 1.25fr;gap:56px;margin-top:40px">
     <table>
@@ -246,18 +247,18 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
       <h3>Measured contrast (WCAG 2.2, ratio to 1)</h3>
       <table style="margin-top:8px">
         <tr><th>Text</th><th>on 950</th><th>on 900</th><th>on 850</th></tr>
-        <tr><td>Text 100</td><td class="m">16.8</td><td class="m">15.3</td><td class="m">13.9</td></tr>
-        <tr><td>Secondary 300</td><td class="m">8.4</td><td class="m">7.7</td><td class="m">7.0</td></tr>
-        <tr><td>Tertiary 400</td><td class="m">5.9</td><td class="m">5.4</td><td class="m">5.0</td></tr>
-        <tr><td style="color:var(--sprout)">Sprout</td><td class="m">14.6</td><td class="m">13.4</td><td class="m">12.1</td></tr>
-        <tr><td style="color:var(--apricot)">Apricot</td><td class="m">11.0</td><td class="m">10.0</td><td class="m">9.1</td></tr>
-        <tr><td style="color:var(--tomato)">Tomato</td><td class="m">7.6</td><td class="m">6.9</td><td class="m">6.3</td></tr>
-        <tr><td style="color:var(--frost)">Frost</td><td class="m">11.7</td><td class="m">10.7</td><td class="m">9.7</td></tr>
+        <tr><td>Text 100</td><td class="m">15.5</td><td class="m">13.8</td><td class="m">12.0</td></tr>
+        <tr><td>Secondary 300</td><td class="m">9.3</td><td class="m">8.3</td><td class="m">7.2</td></tr>
+        <tr><td>Tertiary 400</td><td class="m">6.1</td><td class="m">5.4</td><td class="m">4.7</td></tr>
+        <tr><td style="color:var(--sprout)">Sprout</td><td class="m">12.3</td><td class="m">11.0</td><td class="m">9.5</td></tr>
+        <tr><td style="color:var(--apricot)">Apricot</td><td class="m">10.4</td><td class="m">9.2</td><td class="m">8.0</td></tr>
+        <tr><td style="color:var(--tomato)">Tomato</td><td class="m">7.4</td><td class="m">6.6</td><td class="m">5.8</td></tr>
+        <tr><td style="color:var(--frost)">Frost</td><td class="m">10.7</td><td class="m">9.6</td><td class="m">8.3</td></tr>
       </table>
-      <p class="small" style="margin-top:16px">All pass AA (4.5) for body text; everything above Tertiary passes AAA (7). Text on a Sprout button is Asphalt 950 at 14.6. Asphalt 500 is for disabled states and decoration only, never for text a person needs.</p>
+      <p class="small" style="margin-top:16px">All pass AA (4.5) on every surface; text and the status colours pass AAA (7) on the page background. Text on a Sprout button is #16181B at 12.8. Charcoal 500 is for disabled states and decoration only, never for text a person needs.</p>
     </div>
   </div>
-  <div class="folio"><span>FreshRoute style sheet · Colour · Asphalt neutrals and contrast</span><span>06</span></div>
+  <div class="folio"><span>FreshRoute style sheet · Colour · Charcoal neutrals and contrast</span><span>06</span></div>
 </section>
 
 <!-- 7 DAYLIGHT -->
@@ -291,7 +292,7 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 
 <!-- 8 TYPE FACES -->
 <section class="page">
-  <h1>Signage, interface, record.</h1>
+  <h1>Two faces, one voice.</h1>
   <div class="grid" style="grid-template-columns:1.25fr 1fr 1fr;gap:40px;margin-top:40px">
     <div class="rule">
       <div class="label" style="color:var(--sprout)">Display</div>
@@ -308,15 +309,15 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
       <p class="small" style="margin-top:12px">We can't ship SF Pro as a web font (Apple's licence), so we call the system stack instead.</p>
     </div>
     <div class="rule">
-      <div class="label" style="color:var(--sprout)">Records</div>
-      <div style="font:600 46px/1.4 var(--mono);margin:22px 0 14px;letter-spacing:-.02em">Plex Mono</div>
-      <div style="font:500 20px/1.4 var(--mono);color:var(--a300)">09:47:12 HARD BRAKE 0.62g<br>VAN-2 · RPT-1043</div>
-      <p style="margin-top:20px">Timecodes, footage overlays, event logs and IDs, nothing else. It marks things that are records rather than UI, so the report reads like evidence.</p>
-      <p class="small" style="margin-top:12px">Open Font License, self-hosted. 500 and 600 weights only.</p>
+      <div class="label" style="color:var(--sprout)">Numbers</div>
+      <div style="font:700 68px/1 var(--ui);letter-spacing:-.02em;margin:22px 0 14px;font-variant-numeric:tabular-nums">10:11</div>
+      <div style="font:500 20px/1.4 var(--ui);color:var(--a300);font-variant-numeric:tabular-nums">9:47:12 · Hard brake 0.62g<br>Van 2 · report 1043</div>
+      <p style="margin-top:20px">Timecodes, event rows and IDs use the same system font with fixed-width digits. An earlier version set them in a monospace face, and it made the dark mode read like a computer terminal.</p>
+      <p class="small" style="margin-top:12px">No third font to load: two faces in the whole product.</p>
     </div>
   </div>
   <div class="note" style="margin-top:44px"><h3>The ticking rule</h3><p>Anything that changes while you watch (ETA, cold timer, countdown, speed) is set in the system face with <code>tabular-nums</code>, so digits don't jitter sideways. Overpass is only for numbers that sit still, such as a report headline.</p></div>
-  <div class="folio"><span>FreshRoute style sheet · Typography · three faces, three jobs</span><span>08</span></div>
+  <div class="folio"><span>FreshRoute style sheet · Typography · two faces</span><span>08</span></div>
 </section>
 
 <!-- 9 TYPE SCALE -->
@@ -332,7 +333,7 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
     <tr><td class="m">title.2</td><td><span style="font:600 22px/1.25 var(--ui)">3 stops · 42 min · 18.4 mi</span></td><td>System</td><td class="m">22/28 · 600</td><td>Sheet headers, section titles</td></tr>
     <tr><td class="m">body</td><td><span style="font:400 17px/1.45 var(--ui)">Ask for Dana at the back dock. Bread comes bagged.</span></td><td>System</td><td class="m">17/24 · 400</td><td>Everything readable at rest</td></tr>
     <tr><td class="m">footnote</td><td><span style="font:400 13px/1.4 var(--ui);color:var(--a300)">Updated 9:12 AM · from Van 2</span></td><td>System</td><td class="m">13/18 · 400</td><td>Meta, timestamps (never while moving)</td></tr>
-    <tr><td class="m">record</td><td><span style="font:500 14px/1.3 var(--mono)">09:47:12  HARD BRAKE  0.62g</span></td><td>Plex Mono</td><td class="m">14/20 · 500</td><td>Timecodes, event rows</td></tr>
+    <tr><td class="m">record</td><td><span style="font:500 14px/1.3 var(--ui);font-variant-numeric:tabular-nums">9:47:12 · Hard brake 0.62g</span></td><td>System</td><td class="m">14/20 · 500</td><td>Timecodes, event rows</td></tr>
     <tr><td class="m">label</td><td><span class="label" style="font-size:15px">Promised and forecast</span></td><td>System</td><td class="m">15/20 · 600</td><td>Section labels, chart legends; sentence case</td></tr>
   </table>
   <div class="folio"><span>FreshRoute style sheet · Typography · scale</span><span>09</span></div>
@@ -341,33 +342,33 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 <!-- 10 GLASS -->
 <section class="page" style="padding:0">
   <svg width="1600" height="1000" style="position:absolute;inset:0" viewBox="0 0 1600 1000">
-    <rect width="1600" height="1000" fill="#0F1513"/>
-    <path d="M0 640 C 300 600 520 760 900 700 S 1400 560 1600 600 L1600 1000 L0 1000Z" fill="#0C2530" opacity=".9"/><path d="M1300 0 C 1340 120 1440 200 1600 220 L1600 0Z" fill="#0C2530"/>
-    <rect x="1080" y="90" width="300" height="200" rx="16" fill="#142219"/>
+    <rect width="1600" height="1000" fill="#1E2125"/>
+    <path d="M0 640 C 300 600 520 760 900 700 S 1400 560 1600 600 L1600 1000 L0 1000Z" fill="#1C3744" opacity=".9"/><path d="M1300 0 C 1340 120 1440 200 1600 220 L1600 0Z" fill="#1C3744"/>
+    <rect x="1080" y="90" width="300" height="200" rx="16" fill="#233127"/>
     <g stroke="#2A3330" stroke-width="10" fill="none"><path d="M0 220 H1600"/><path d="M0 470 H1600"/><path d="M380 0 V1000"/><path d="M820 0 V1000"/><path d="M1260 0 V700"/></g>
     <g stroke="#202825" stroke-width="5" fill="none"><path d="M0 120 H1600"/><path d="M0 340 H1600"/><path d="M600 0 V700"/><path d="M1040 0 V700"/><path d="M180 0 V700"/><path d="M1460 0 V700"/></g>
-    <g stroke="#3A4541" stroke-width="18" fill="none"><path d="M0 560 C 400 520 700 380 1600 330"/></g>
-    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#0B0F0E" stroke-width="20" stroke-linejoin="round"/>
-    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round"/>
-    <circle cx="1420" cy="340" r="18" fill="#B8F25E" stroke="#0B0F0E" stroke-width="5"/>
-    <circle cx="380" cy="560" r="20" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/>
-    <rect y="944" width="1600" height="56" fill="#0B0F0E"/>
+    <g stroke="#4B515A" stroke-width="18" fill="none"><path d="M0 560 C 400 520 700 380 1600 330"/></g>
+    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#1A1C20" stroke-width="20" stroke-linejoin="round"/>
+    <path d="M380 1000 V300 H820 V220 H1420 V340" fill="none" stroke="#B4EC6A" stroke-width="12" stroke-linejoin="round"/>
+    <circle cx="1420" cy="340" r="18" fill="#B4EC6A" stroke="#1A1C20" stroke-width="5"/>
+    <circle cx="380" cy="560" r="20" fill="#F3F4F6" stroke="#1A1C20" stroke-width="6"/>
+    <rect y="944" width="1600" height="56" fill="#1A1C20"/>
   </svg>
   <div style="position:absolute;left:88px;top:72px;width:600px">
     <h1 style="font-size:56px">Glass is for things that float.</h1>
   </div>
   <div class="glass" style="position:absolute;left:88px;top:250px;width:520px;border-radius:28px;padding:26px 28px;display:flex;gap:22px;align-items:center">
-    <svg width="64" height="64" viewBox="0 0 64 64"><path d="M20 54V30a8 8 0 0 1 8-8h18" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg width="64" height="64" viewBox="0 0 64 64"><path d="M20 54V30a8 8 0 0 1 8-8h18" fill="none" stroke="#F3F4F6" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#F3F4F6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">0.4 mi</div><div style="font:600 26px/1.2 var(--ui);margin-top:6px">Right onto Loop 288</div></div>
   </div>
   <div class="glass" style="position:absolute;right:88px;top:250px;width:180px;height:180px;border-radius:90px;display:grid;place-items:center">
-    <svg width="160" height="160" viewBox="0 0 160 160" style="position:absolute"><circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="80" cy="80" r="70" fill="none" stroke="#B8F25E" stroke-width="10" stroke-linecap="round" stroke-dasharray="300 440" transform="rotate(-90 80 80)"/></svg>
+    <svg width="160" height="160" viewBox="0 0 160 160" style="position:absolute"><circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="80" cy="80" r="70" fill="none" stroke="#B4EC6A" stroke-width="10" stroke-linecap="round" stroke-dasharray="300 440" transform="rotate(-90 80 80)"/></svg>
     <div style="text-align:center"><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">10:11</div><div class="label" style="color:var(--sprout);margin-top:6px">On time</div></div>
   </div>
-  <div class="solid" style="position:absolute;left:88px;right:88px;bottom:64px;border-radius:28px;padding:30px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px;background:rgba(11,15,14,.94)">
-    <div><span class="do">Glass</span><p class="small">Floating controls over the map or video: maneuver card, ETA ring, camera window, toolbar, sheet grabber, tab bar. Material: 56% Asphalt 850, 24 px blur, 170% saturation, 1 px white 16% edge, 24% top highlight. Over busy map areas (behind the bottom tray) the tint rises to 80%.</p></div>
-    <div><span class="dont">Never glass</span><p class="small">Content: lists, tables, reports, forms, cards stacked on solid backgrounds. Glass on glass. Anything with more than two lines of body text. Those use solid Asphalt 900/850, like this panel.</p></div>
-    <div><span class="do">Fallbacks</span><p class="small"><code>prefers-reduced-transparency</code> and Low Power Mode switch glass to solid Asphalt 850 at 96%. Over bright map areas (Daylight), the tint rises to 72% so text keeps 4.5:1.</p></div>
+  <div class="solid" style="position:absolute;left:88px;right:88px;bottom:64px;border-radius:28px;padding:30px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px;background:rgba(26,28,32,.94)">
+    <div><span class="do">Glass</span><p class="small">Floating controls over the map or video: maneuver card, ETA ring, camera window, toolbar, sheet grabber, tab bar. Material: 62% Charcoal 850, 24 px blur, 170% saturation, 1 px white 16% edge, 24% top highlight. Over busy map areas (behind the bottom tray) the tint rises to 80%.</p></div>
+    <div><span class="dont">Never glass</span><p class="small">Content: lists, tables, reports, forms, cards stacked on solid backgrounds. Glass on glass. Anything with more than two lines of body text. Those use solid Charcoal 900/850, like this panel.</p></div>
+    <div><span class="do">Fallbacks</span><p class="small"><code>prefers-reduced-transparency</code> and Low Power Mode switch glass to solid Charcoal 850 at 96%. Over bright map areas (Daylight), the tint rises to 72% so text keeps 4.5:1.</p></div>
   </div>
   <div class="folio" style="color:var(--a400)"><span>FreshRoute style sheet · Liquid Glass · the material</span><span>10</span></div>
 </section>
@@ -427,7 +428,7 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
   <h1>Lucide outlines, plus five of our own.</h1>
   <p class="lede">Apple's SF Symbols are licensed for Apple-platform apps only, so the web app uses <b>Lucide</b> (ISC licence), registered as Astryx theme icons. Its line icons sit close to SF Symbols' regular weight. Stroke 1.75 at 24 px, 2.25 at 32 px and up; rounded caps and joins. Icons always sit next to a word, apart from universal ones (close, back, more).</p>
   <div style="margin-top:32px;border-bottom:1px solid var(--a800)"><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24h22"/><path d="M22 16l8 8-8 8"/><path d="M38 10v28" stroke-width="5"/></svg><h3 style="margin:0">Hard brake</h3><p class="small" style="font-size:16px">Forward arrow meeting a stop bar. Deceleration of 0.45 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 40V26a12 12 0 0 1 12-12h12"/><path d="M30 8l6 6-6 6"/><path d="M6 20c-2 4-2 10 0 14"/></svg><h3 style="margin:0">Sharp turn</h3><p class="small" style="font-size:16px">Turn arrow with a sway mark. Lateral force of 0.4 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--apricot)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34h10c4 0 5-10 10-10s6 10 10 10h10"/><path d="M24 8v8M18 12l6-4 6 4"/></svg><h3 style="margin:0">Bump</h3><p class="small" style="font-size:16px">Road bump with a lift arrow. Vertical spike of 0.5 g or more.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--frost)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4v22M5 9l20 12M5 21l20-12"/><circle cx="36" cy="36" r="9"/><path d="M36 31v5l3 2"/></svg><h3 style="margin:0">Cold timer</h3><p class="small" style="font-size:16px">Snowflake and clock, kept apart so both read at 24 px.</p></div><div style="display:grid;grid-template-columns:72px 220px 1fr;align-items:center;padding:16px 0;border-top:1px solid var(--a800)"><svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="var(--tomato)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="28" height="24" rx="5"/><path d="M32 20l12-6v20l-12-6"/><circle cx="18" cy="24" r="5" fill="var(--tomato)" stroke="none"/></svg><h3 style="margin:0">Recording</h3><p class="small" style="font-size:16px">Camera with a solid dot. The one Tomato that does not mean late.</p></div></div>
-  <div class="warnnote" style="margin-top:36px;max-width:1100px"><h3>The recording dot exception</h3><p class="small">A red recording dot is a universal convention and people look for it. It stays Tomato, but it's always a small dot with the word "REC" in Plex Mono, never a ring or a bar, so it can't be confused with the Late state.</p></div>
+  <div class="warnnote" style="margin-top:36px;max-width:1100px"><h3>The recording dot exception</h3><p class="small">A red recording dot is a universal convention and people look for it. It stays Tomato, but it's always a small dot with the word "Recording", never a ring or a bar, so it can't be confused with the Late state.</p></div>
   <p class="small" style="margin-top:22px">Thresholds are starting points from published fleet-telematics practice and get tuned with real drives during user testing. No emoji anywhere in the interface.</p>
   <div class="folio"><span>FreshRoute style sheet · Iconography</span><span>12</span></div>
 </section>
@@ -446,8 +447,8 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
         <div style="text-align:center"><svg width="120" height="120" style="border-radius:27px"><use href="#icon"/></svg><div class="label" style="margin-top:10px">iPhone 120</div></div>
         <div style="text-align:center"><svg width="60" height="60" style="border-radius:14px"><use href="#iconsm"/></svg><div class="label" style="margin-top:10px">60 (small cut)</div></div>
         <div style="text-align:center"><svg width="32" height="32" style="border-radius:7px"><use href="#iconsm"/></svg><div class="label" style="margin-top:10px">Favicon 32 (small cut)</div></div>
-        <div style="text-align:center"><svg width="120" height="120" style="border-radius:60px;background:#0B0F0E"><svg x="12" y="12" width="96" height="96"><use href="#mark"/></svg></svg><div class="label" style="margin-top:10px">Maskable</div></div>
-        <div style="text-align:center"><svg width="120" height="120" style="border-radius:27px;background:#ECF0EE;color:#0E1412"><use href="#markmono"/></svg><div class="label" style="margin-top:10px">Mono / tinted</div></div>
+        <div style="text-align:center"><svg width="120" height="120" style="border-radius:60px;background:#1A1C20"><svg x="12" y="12" width="96" height="96"><use href="#mark"/></svg></svg><div class="label" style="margin-top:10px">Maskable</div></div>
+        <div style="text-align:center"><svg width="120" height="120" style="border-radius:27px;background:#F3F4F6;color:#0E1412"><use href="#markmono"/></svg><div class="label" style="margin-top:10px">Mono / tinted</div></div>
       </div>
       <div style="display:flex;gap:48px;align-items:center;margin-top:48px" class="rule">
         <div style="display:flex;align-items:center;gap:16px"><svg width="52" height="52" style="border-radius:12px"><use href="#iconsm"/></svg><span style="font:700 40px/1 var(--display);letter-spacing:-.02em">FreshRoute</span></div>
@@ -462,46 +463,46 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 <!-- 14 MAP -->
 <section class="page" style="padding:0">
   <svg width="1600" height="1000" style="position:absolute;inset:0" viewBox="0 0 1600 1000">
-    <rect width="1600" height="1000" fill="#111715"/>
+    <rect width="1600" height="1000" fill="#202328"/>
     <g transform="translate(150 0)">
-    <path d="M900 0 C 940 200 1100 260 1120 420 S 1000 700 1060 1000 L1250 1000 C 1200 760 1300 520 1260 360 S 1080 120 1080 0Z" fill="#0C2530"/>
-    <rect x="160" y="560" width="260" height="190" rx="18" fill="#142219"/><rect x="1330" y="80" width="200" height="260" rx="18" fill="#142219"/>
-    <g fill="#161D1B"><rect x="460" y="140" width="140" height="90" rx="6"/><rect x="640" y="140" width="120" height="90" rx="6"/><rect x="460" y="280" width="300" height="110" rx="6"/><rect x="180" y="140" width="220" height="250" rx="6"/></g>
-    <g stroke="#232B28" stroke-width="7" fill="none"><path d="M0 110 H1600"/><path d="M0 420 H900"/><path d="M0 800 H1600"/><path d="M160 0 V1000"/><path d="M620 0 V1000"/><path d="M440 0 V1000"/><path d="M1300 0 V1000"/></g>
-    <g stroke="#3A4541" stroke-width="22" fill="none" stroke-linecap="round"><path d="M-20 520 C 400 500 760 260 1600 230"/></g>
-    <g stroke="#2E3734" stroke-width="13" fill="none"><path d="M780 0 V1000"/></g>
-    <path d="M160 1000 V800 H620 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#0B0F0E" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M160 1000 V800 H620 V560" fill="none" stroke="#4A5551" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M620 560 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M900 0 C 940 200 1100 260 1120 420 S 1000 700 1060 1000 L1250 1000 C 1200 760 1300 520 1260 360 S 1080 120 1080 0Z" fill="#1C3744"/>
+    <rect x="160" y="560" width="260" height="190" rx="18" fill="#233127"/><rect x="1330" y="80" width="200" height="260" rx="18" fill="#233127"/>
+    <g fill="#272A30"><rect x="460" y="140" width="140" height="90" rx="6"/><rect x="640" y="140" width="120" height="90" rx="6"/><rect x="460" y="280" width="300" height="110" rx="6"/><rect x="180" y="140" width="220" height="250" rx="6"/></g>
+    <g stroke="#30343B" stroke-width="7" fill="none"><path d="M0 110 H1600"/><path d="M0 420 H900"/><path d="M0 800 H1600"/><path d="M160 0 V1000"/><path d="M620 0 V1000"/><path d="M440 0 V1000"/><path d="M1300 0 V1000"/></g>
+    <g stroke="#4B515A" stroke-width="22" fill="none" stroke-linecap="round"><path d="M-20 520 C 400 500 760 260 1600 230"/></g>
+    <g stroke="#3B4048" stroke-width="13" fill="none"><path d="M780 0 V1000"/></g>
+    <path d="M160 1000 V800 H620 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#1A1C20" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M160 1000 V800 H620 V560" fill="none" stroke="#5A606A" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M620 560 V420 L780 330 C 900 300 1100 250 1300 236 V110" fill="none" stroke="#B4EC6A" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
     <g font-family="-apple-system,sans-serif" font-weight="600">
-      <circle cx="620" cy="560" r="22" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/><path d="M620 546 l9 18 -9 -5 -9 5z" fill="#0B0F0E"/>
-      <g transform="translate(160 800)"><circle r="22" fill="#4A5551" stroke="#0B0F0E" stroke-width="4"/><path d="M-9 0l6 6 12-13" stroke="#ECF0EE" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-      <g transform="translate(1000 268)"><circle r="22" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#0B0F0E">2</text></g>
-      <g transform="translate(1300 110)"><circle r="22" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#0B0F0E">3</text></g>
-      <g transform="translate(470 460)"><circle r="11" fill="#1C2321" stroke="#86928D" stroke-width="2.5"/></g>
-      <g transform="translate(1380 520)"><circle r="11" fill="#1C2321" stroke="#86928D" stroke-width="2.5"/></g>
-      <text x="1004" y="306" font-size="15" fill="#C9D1CE">Kroger · S Loop 288</text>
-      <text x="1330" y="160" font-size="15" fill="#C9D1CE">North Loop Food Pantry</text>
-      <text x="840" y="200" font-size="13" fill="#86928D" letter-spacing="1.5">LOOP 288</text>
-      <text x="486" y="452" font-size="13" fill="#86928D">Albertsons</text>
+      <circle cx="620" cy="560" r="22" fill="#F3F4F6" stroke="#1A1C20" stroke-width="6"/><path d="M620 546 l9 18 -9 -5 -9 5z" fill="#1A1C20"/>
+      <g transform="translate(160 800)"><circle r="22" fill="#5A606A" stroke="#1A1C20" stroke-width="4"/><path d="M-9 0l6 6 12-13" stroke="#F3F4F6" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <g transform="translate(1000 268)"><circle r="22" fill="#B4EC6A" stroke="#1A1C20" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#1A1C20">2</text></g>
+      <g transform="translate(1300 110)"><circle r="22" fill="#B4EC6A" stroke="#1A1C20" stroke-width="4"/><text y="7" text-anchor="middle" font-size="20" fill="#1A1C20">3</text></g>
+      <g transform="translate(470 460)"><circle r="11" fill="#2D3036" stroke="#959BA5" stroke-width="2.5"/></g>
+      <g transform="translate(1380 520)"><circle r="11" fill="#2D3036" stroke="#959BA5" stroke-width="2.5"/></g>
+      <text x="1004" y="306" font-size="15" fill="#D9DCE1">Kroger · S Loop 288</text>
+      <text x="1330" y="160" font-size="15" fill="#D9DCE1">North Loop Food Pantry</text>
+      <text x="840" y="200" font-size="13" fill="#959BA5" letter-spacing="1.5">LOOP 288</text>
+      <text x="486" y="452" font-size="13" fill="#959BA5">Albertsons</text>
     </g>
     </g>
-    <rect y="944" width="1600" height="56" fill="#0B0F0E"/>
+    <rect y="944" width="1600" height="56" fill="#1A1C20"/>
   </svg>
   <div class="solid" style="position:absolute;left:64px;top:64px;width:600px;border-radius:28px;padding:34px 36px;background:var(--a900)">
     <h1 style="font-size:46px">Quiet streets, one loud line.</h1>
-    <p class="small" style="font-size:15px">A custom MapLibre style on OpenFreeMap tiles (free and open). Base layers stay within Asphalt 900–700, so the route is the brightest thing on the iPad.</p>
+    <p class="small" style="font-size:15px">A custom MapLibre style on OpenFreeMap tiles (free and open). Base layers stay within Charcoal 900–700, so the route is the brightest thing on the iPad.</p>
     <table style="margin-top:20px">
-      <tr><td>Land · buildings</td><td class="m">#111715 · #161D1B</td></tr>
-      <tr><td>Streets · arterials · highways</td><td class="m">#232B28 · #2E3734 · #3A4541</td></tr>
-      <tr><td>Water · parks</td><td class="m">#0C2530 · #142219</td></tr>
-      <tr><td>Route ahead</td><td class="m">Sprout 12 px + Asphalt 950 casing</td></tr>
-      <tr><td>Route already driven</td><td class="m">Asphalt 600, same width</td></tr>
+      <tr><td>Land · buildings</td><td class="m">#202328 · #272A30</td></tr>
+      <tr><td>Streets · arterials · highways</td><td class="m">#30343B · #3B4048 · #4B515A</td></tr>
+      <tr><td>Water · parks</td><td class="m">#1C3744 · #233127</td></tr>
+      <tr><td>Route ahead</td><td class="m">Sprout 12 px + Charcoal 950 casing</td></tr>
+      <tr><td>Route already driven</td><td class="m">Charcoal 600, same width</td></tr>
       <tr><td>Stops · done stops</td><td class="m">Numbered Sprout pin · grey check</td></tr>
       <tr><td>Other donation stores</td><td class="m">Hollow grey dot, label on zoom</td></tr>
-      <tr><td>Labels</td><td class="m">System 13–15 px, Asphalt 200/400</td></tr>
+      <tr><td>Labels</td><td class="m">System 13–15 px, Charcoal 200/400</td></tr>
     </table>
-    <p class="small" style="margin-top:16px">When the route is late, the line ahead turns Apricot or Tomato to match the ring. The truck puck is Asphalt 100 with a heading wedge, never a car illustration.</p>
+    <p class="small" style="margin-top:16px">When the route is late, the line ahead turns Apricot or Tomato to match the ring. The truck puck is Charcoal 100 with a heading wedge, never a car illustration.</p>
   </div>
   <div class="folio"><span>FreshRoute style sheet · The map</span><span>14</span></div>
 </section>
@@ -513,21 +514,21 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
     <div class="solid" style="border-radius:24px;padding:28px 30px">
       <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>ETA accuracy · Van 2 · 19 Nov</h3><span class="mono small">Arrived 10:19 · promised 10:13 · +6 min</span></div>
       <svg viewBox="0 0 760 300" width="100%" style="margin-top:18px">
-        <g font-family="IBM Plex Mono" font-size="11" fill="#86928D">
+        <g font-family="-apple-system, sans-serif" font-size="11" fill="#959BA5">
           <text x="0" y="40">10:30</text><text x="0" y="130">10:13</text><text x="0" y="220">10:00</text>
           <text x="60" y="292">9:12</text><text x="240" y="292">9:30</text><text x="420" y="292">9:50</text><text x="620" y="292">10:10</text>
         </g>
-        <g stroke="#252D2A"><path d="M56 36H760M56 216H760"/></g>
-        <path d="M56 126H760" stroke="#B8F25E" stroke-width="2" stroke-dasharray="6 6"/>
-        <text x="700" y="118" font-family="IBM Plex Mono" font-size="11" fill="#B8F25E">PROMISE</text>
-        <rect x="56" y="104" width="704" height="44" fill="#B8F25E" opacity=".06"/>
-        <path d="M56 130 L160 128 L240 122 L300 126 L360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#ECF0EE" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#FFB54A" stroke-width="3" stroke-linejoin="round"/>
-        <g fill="#FFB54A"><circle cx="410" cy="96" r="5"/></g>
-        <text x="416" y="80" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-size="13" fill="#FFB54A">Train at Mingo Rd · +7 min</text>
-        <g><rect x="240" y="244" width="4" height="12" fill="#FFB54A"/><rect x="520" y="244" width="4" height="12" fill="#FFB54A"/><rect x="300" y="244" width="40" height="12" fill="none" stroke="#66726D" stroke-dasharray="3 3"/><rect x="160" y="244" width="70" height="12" rx="3" fill="#7FD6F0" opacity=".85"/></g>
+        <g stroke="#33373D"><path d="M56 36H760M56 216H760"/></g>
+        <path d="M56 126H760" stroke="#B4EC6A" stroke-width="2" stroke-dasharray="6 6"/>
+        <text x="700" y="118" font-family="-apple-system, sans-serif" font-size="11" fill="#B4EC6A">Promise</text>
+        <rect x="56" y="104" width="704" height="44" fill="#B4EC6A" opacity=".06"/>
+        <path d="M56 130 L160 128 L240 122 L300 126 L360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#F3F4F6" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M360 112 L410 96 L470 92 L540 98 L610 100 L700 98" fill="none" stroke="#FFBE5C" stroke-width="3" stroke-linejoin="round"/>
+        <g fill="#FFBE5C"><circle cx="410" cy="96" r="5"/></g>
+        <text x="416" y="80" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-size="13" fill="#FFBE5C">Train at Mingo Rd · +7 min</text>
+        <g><rect x="240" y="244" width="4" height="12" fill="#FFBE5C"/><rect x="520" y="244" width="4" height="12" fill="#FFBE5C"/><rect x="300" y="244" width="40" height="12" fill="none" stroke="#737983" stroke-dasharray="3 3"/><rect x="160" y="244" width="70" height="12" rx="3" fill="#86D9F2" opacity=".85"/></g>
       </svg>
-      <div style="display:flex;gap:22px;margin-top:6px" class="small"><span><span class="dot" style="background:#ECF0EE"></span> Forecast</span><span><span class="dot" style="background:var(--sprout)"></span> Promise ±3 min band</span><span><span class="dot" style="background:var(--apricot)"></span> Slipping / motion</span><span><span class="dot" style="background:var(--frost)"></span> Cold loaded</span><span>⋯ Recording gap</span></div>
+      <div style="display:flex;gap:22px;margin-top:6px" class="small"><span><span class="dot" style="background:#F3F4F6"></span> Forecast</span><span><span class="dot" style="background:var(--sprout)"></span> Promise ±3 min band</span><span><span class="dot" style="background:var(--apricot)"></span> Slipping / motion</span><span><span class="dot" style="background:var(--frost)"></span> Cold loaded</span><span>⋯ Recording gap</span></div>
     </div>
     <div>
       <h3>Rules</h3>
@@ -537,7 +538,7 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
         <li style="margin-top:8px">Annotations name the cause in plain words, taken from the driver's "what got in the way" answer.</li>
         <li style="margin-top:8px">Event ticks under the chart use the same track as the video scrubber, so the chart and the footage line up.</li>
         <li style="margin-top:8px">Every metric has a baseline: "+6 min vs. 9 min average on this route".</li>
-        <li style="margin-top:8px">Axis and tick text: Plex Mono 11–12 px, Asphalt 400. No 3D, no pies, no gradient fills.</li>
+        <li style="margin-top:8px">Axis and tick text: system font 11–12 px, Charcoal 400. No 3D, no pies, no gradient fills.</li>
       </ul>
     </div>
   </div>
@@ -575,35 +576,35 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 <!-- 17 IN USE -->
 <section class="page" style="padding:56px 88px">
   <h1 style="font-size:44px;margin-bottom:24px">Navigation, iPad landscape, on time.</h1>
-  <div style="position:relative;width:1424px;height:800px;border-radius:40px;overflow:hidden;border:10px solid #1A1F1D;box-shadow:0 40px 120px rgba(0,0,0,.6)">
+  <div style="position:relative;width:1424px;height:800px;border-radius:40px;overflow:hidden;border:10px solid #26292E;box-shadow:0 40px 120px rgba(0,0,0,.6)">
     <svg width="1404" height="780" viewBox="0 0 1404 780" style="position:absolute;inset:0">
-      <rect width="1404" height="780" fill="#111715"/>
-      <path d="M1180 0 C 1220 160 1080 260 1000 380 S 880 600 930 780 L1110 780 C 1060 600 1220 420 1300 300 S 1404 100 1404 0Z" fill="#0C2530"/>
-      <rect x="120" y="470" width="240" height="170" rx="16" fill="#142219"/>
-      <g fill="#161D1B"><rect x="420" y="120" width="130" height="80" rx="6"/><rect x="580" y="120" width="110" height="80" rx="6"/><rect x="160" y="120" width="200" height="220" rx="6"/></g>
-      <g stroke="#232B28" stroke-width="7" fill="none"><path d="M0 90 H1404"/><path d="M0 380 H760"/><path d="M0 560 H1404"/><path d="M140 0 V620"/><path d="M560 0 V620"/><path d="M400 0 V620"/><path d="M760 0 V620"/></g>
-      <g stroke="#3A4541" stroke-width="20" fill="none" stroke-linecap="round"><path d="M-20 450 C 360 430 680 230 1404 200"/></g>
-      <path d="M-20 560 H400 V470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#0B0F0E" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
-      <path d="M-20 560 H400 V470 H500" fill="none" stroke="#4A5551" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
-      <path d="M500 470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#B8F25E" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="500" cy="470" r="22" fill="#ECF0EE" stroke="#0B0F0E" stroke-width="6"/><path d="M514 470 l-18 9 5 -9 -5 -9z" fill="#0B0F0E"/>
-      <g transform="translate(840 256)"><circle r="20" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#0B0F0E">2</text></g>
-      <g transform="translate(1060 300)"><circle r="20" fill="#B8F25E" stroke="#0B0F0E" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#0B0F0E">3</text></g>
+      <rect width="1404" height="780" fill="#202328"/>
+      <path d="M1180 0 C 1220 160 1080 260 1000 380 S 880 600 930 780 L1110 780 C 1060 600 1220 420 1300 300 S 1404 100 1404 0Z" fill="#1C3744"/>
+      <rect x="120" y="470" width="240" height="170" rx="16" fill="#233127"/>
+      <g fill="#272A30"><rect x="420" y="120" width="130" height="80" rx="6"/><rect x="580" y="120" width="110" height="80" rx="6"/><rect x="160" y="120" width="200" height="220" rx="6"/></g>
+      <g stroke="#30343B" stroke-width="7" fill="none"><path d="M0 90 H1404"/><path d="M0 380 H760"/><path d="M0 560 H1404"/><path d="M140 0 V620"/><path d="M560 0 V620"/><path d="M400 0 V620"/><path d="M760 0 V620"/></g>
+      <g stroke="#4B515A" stroke-width="20" fill="none" stroke-linecap="round"><path d="M-20 450 C 360 430 680 230 1404 200"/></g>
+      <path d="M-20 560 H400 V470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#1A1C20" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M-20 560 H400 V470 H500" fill="none" stroke="#5A606A" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M500 470 H560 V380 L700 290 C 820 260 960 240 1060 236 V300" fill="none" stroke="#B4EC6A" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="500" cy="470" r="22" fill="#F3F4F6" stroke="#1A1C20" stroke-width="6"/><path d="M514 470 l-18 9 5 -9 -5 -9z" fill="#1A1C20"/>
+      <g transform="translate(840 256)"><circle r="20" fill="#B4EC6A" stroke="#1A1C20" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#1A1C20">2</text></g>
+      <g transform="translate(1060 300)"><circle r="20" fill="#B4EC6A" stroke="#1A1C20" stroke-width="4"/><text y="7" text-anchor="middle" font-family="system-ui,-apple-system,Helvetica,sans-serif" font-weight="700" font-size="18" fill="#1A1C20">3</text></g>
     </svg>
     <!-- camera top-left -->
     <div class="glass" style="position:absolute;left:24px;top:24px;width:260px;height:170px;border-radius:24px;overflow:hidden;padding:0">
       <svg style="position:absolute;inset:6px;border-radius:18px;filter:blur(.6px)" width="248" height="158" viewBox="0 0 248 158"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7C93A3"/><stop offset=".55" stop-color="#B9B39C"/></linearGradient></defs><rect width="248" height="80" fill="url(#sky)"/><rect y="64" width="248" height="22" fill="#4E5A4A"/><rect x="18" y="52" width="26" height="24" fill="#5F6A63"/><rect x="190" y="46" width="44" height="32" fill="#6B6F66"/><path d="M0 158 L112 78 L136 78 L248 158Z" fill="#3B403E"/><rect y="78" width="248" height="80" fill="#2B302E" opacity=".35"/><path d="M124 82 V158" stroke="#E8E2C8" stroke-width="2.5" stroke-dasharray="9 9"/><path d="M60 158 L118 80M188 158 L130 80" stroke="#D9DCD6" stroke-width="1.5" opacity=".7"/><rect x="108" y="66" width="34" height="22" rx="3" fill="#C9CEC9"/><rect x="110" y="82" width="8" height="3" fill="#C2341E"/><rect x="132" y="82" width="8" height="3" fill="#C2341E"/></svg>
-      <div style="position:absolute;left:16px;top:14px;display:flex;align-items:center;gap:6px;font:600 12px/1 var(--mono);color:#ECF0EE;background:rgba(11,15,14,.55);padding:5px 8px;border-radius:8px"><span class="dot" style="background:var(--tomato)"></span>REC · FRONT</div>
-      <div style="position:absolute;right:16px;bottom:14px;font:500 12px/1 var(--mono);color:#ECF0EE">09:47:12</div>
+      <div style="position:absolute;left:16px;top:14px;display:flex;align-items:center;gap:6px;font:600 12px/1 var(--mono);color:#F3F4F6;background:rgba(26,28,32,.55);padding:5px 8px;border-radius:8px"><span class="dot" style="background:var(--tomato)"></span>Recording</div>
+      <div style="position:absolute;right:16px;bottom:14px;font:500 12px/1 var(--mono);color:#F3F4F6">09:47:12</div>
     </div>
     <!-- maneuver -->
     <div class="glass" style="position:absolute;left:304px;top:24px;width:520px;border-radius:24px;padding:20px 24px;display:flex;gap:20px;align-items:center">
-      <svg width="56" height="56" viewBox="0 0 64 64"><path d="M20 56V30a8 8 0 0 1 8-8h18" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#ECF0EE" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="56" height="56" viewBox="0 0 64 64"><path d="M20 56V30a8 8 0 0 1 8-8h18" fill="none" stroke="#F3F4F6" stroke-width="7" stroke-linecap="round"/><path d="M38 12l10 10-10 10" fill="none" stroke="#F3F4F6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <div><div style="font:700 40px/1 var(--ui);font-variant-numeric:tabular-nums">0.4 mi</div><div style="font:600 26px/1.2 var(--ui);margin-top:6px">Right onto Loop 288</div></div>
     </div>
     <!-- ring -->
     <div class="glass" style="position:absolute;right:24px;top:24px;width:176px;height:176px;border-radius:88px;display:grid;place-items:center">
-      <svg width="156" height="156" viewBox="0 0 156 156" style="position:absolute"><circle cx="78" cy="78" r="68" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="78" cy="78" r="68" fill="none" stroke="#B8F25E" stroke-width="10" stroke-linecap="round" stroke-dasharray="290 428" transform="rotate(-90 78 78)"/></svg>
+      <svg width="156" height="156" viewBox="0 0 156 156" style="position:absolute"><circle cx="78" cy="78" r="68" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="10"/><circle cx="78" cy="78" r="68" fill="none" stroke="#B4EC6A" stroke-width="10" stroke-linecap="round" stroke-dasharray="290 428" transform="rotate(-90 78 78)"/></svg>
       <div style="text-align:center"><div style="font:700 38px/1 var(--ui);font-variant-numeric:tabular-nums">10:11</div><div class="label" style="color:var(--sprout);margin-top:6px">✓ On time</div></div>
     </div>
     <!-- cold chip -->
@@ -611,8 +612,8 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
     <!-- bottom bar -->
     <div class="glass dense" style="position:absolute;left:24px;right:24px;bottom:24px;border-radius:28px;padding:16px 16px 16px 28px;display:flex;align-items:center;gap:28px">
       <div style="flex:1"><div style="font:700 24px/1.1 var(--display)">Kroger<span class="sep">·</span>S Loop 288</div><div style="font:400 16px/1.4 var(--ui);color:var(--a300);margin-top:4px;font-variant-numeric:tabular-nums">Stop 2 of 3 · 6 min · 2.1 mi · window closes 10:30</div></div>
-      <div style="display:flex;gap:6px;align-items:center"><span class="dot" style="background:#4A5551;width:12px;height:12px"></span><span style="width:40px;height:3px;background:#4A5551"></span><span class="dot" style="background:var(--sprout);width:14px;height:14px"></span><span style="width:40px;height:3px;background:var(--a700)"></span><span class="dot" style="background:var(--a600);width:12px;height:12px"></span></div>
-      <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);display:grid;place-items:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ECF0EE" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
+      <div style="display:flex;gap:6px;align-items:center"><span class="dot" style="background:#5A606A;width:12px;height:12px"></span><span style="width:40px;height:3px;background:#5A606A"></span><span class="dot" style="background:var(--sprout);width:14px;height:14px"></span><span style="width:40px;height:3px;background:var(--a700)"></span><span class="dot" style="background:var(--a600);width:12px;height:12px"></span></div>
+      <div style="width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.08);display:grid;place-items:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F3F4F6" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></div>
       <div style="height:64px;padding:0 28px;border-radius:20px;background:var(--sprout);color:var(--a950);font:600 19px/64px var(--ui)">I've arrived</div>
     </div>
   </div>
@@ -665,24 +666,23 @@ pre .k{color:var(--sprout)} pre .s{color:var(--frost)} pre .c{color:var(--a500)}
 <pre style="margin-top:18px"><span class="k">export const</span> freshroute = defineTheme({
   name: <span class="s">'freshroute'</span>,
   extends: neutralTheme,
-  palette: themePalette({ accent: <span class="s">'#B8F25E'</span>, neutral: <span class="s">'#66726D'</span>,
-    success: <span class="s">'#B8F25E'</span>, warning: <span class="s">'#FFB54A'</span>,
-    danger: <span class="s">'#FF7A66'</span>, info: <span class="s">'#7FD6F0'</span> }),
+  palette: themePalette({ accent: <span class="s">'#B4EC6A'</span>, neutral: <span class="s">'#737983'</span>,
+    success: <span class="s">'#B4EC6A'</span>, warning: <span class="s">'#FFBE5C'</span>,
+    danger: <span class="s">'#FF8A76'</span>, info: <span class="s">'#86D9F2'</span> }),
   typography: {
     scale: { base: 17, ratio: 1.2 },
     body:    { family: <span class="s">'-apple-system'</span>, fallbacks: <span class="s">'"Segoe UI", Roboto, sans-serif'</span> },
     heading: { family: <span class="s">'Overpass'</span>, url: <span class="s">'/fonts/overpass.css'</span> },
-    code:    { family: <span class="s">'IBM Plex Mono'</span>, url: <span class="s">'/fonts/plex-mono.css'</span> },
   },
   radius: { base: 12, multiplier: 1 },
   motion: { tempo: 1, character: <span class="s">'standard'</span> },
   tokens: {
-    <span class="s">'--color-background-surface'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#141A18'</span>],
-    <span class="s">'--color-on-accent'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#0B0F0E'</span>],
-    <span class="s">'--color-accent'</span>: [<span class="s">'#3C7A0C'</span>, <span class="s">'#B8F25E'</span>],  <span class="c">// [daylight, dark]</span>
+    <span class="s">'--color-background-surface'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#23262B'</span>],
+    <span class="s">'--color-on-accent'</span>: [<span class="s">'#FFFFFF'</span>, <span class="s">'#1A1C20'</span>],
+    <span class="s">'--color-accent'</span>: [<span class="s">'#3C7A0C'</span>, <span class="s">'#B4EC6A'</span>],  <span class="c">// [daylight, dark]</span>
   },
 });</pre>
-      <p class="small" style="margin-top:12px">Accent and success share Sprout on purpose: the primary action is the on-time path. Focus rings and selection use Asphalt 100, so focus never reads as a status. Token names follow Astryx's theming docs (read 19 Nov 2026). Astryx is in beta, so exact names get confirmed against <code>astryx theme template</code> at build time.</p>
+      <p class="small" style="margin-top:12px">Accent and success share Sprout on purpose: the primary action is the on-time path. Focus rings and selection use Charcoal 100, so focus never reads as a status. Token names follow Astryx's theming docs (read 19 Nov 2026). Astryx is in beta, so exact names get confirmed against <code>astryx theme template</code> at build time.</p>
     </div>
     <table>
       <tr><th style="width:42%">FreshRoute piece</th><th>Astryx component</th></tr>

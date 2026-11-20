@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C2622"/><stop offset="1" stop-color="#080B0A"/></linearGradient>
-    <linearGradient id="sp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D6FB92"/><stop offset="1" stop-color="#A3E041"/></linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2D33"/><stop offset="1" stop-color="#16181B"/></linearGradient>
+    <linearGradient id="sp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C8F48C"/><stop offset="1" stop-color="#9FD95A"/></linearGradient>
   </defs>
   <rect width="1024" height="1024" fill="url(#bg)"/>
   <!-- the stretch still to drive -->
-  <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B8F25E" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/>
+  <path d="M 249.2 634.6 A 290 290 0 0 1 412.8 239.5" fill="none" stroke="#B4EC6A" stroke-opacity=".22" stroke-width="100" stroke-linecap="round"/>
   <!-- the stretch already driven: the promise ring -->
   <path d="M 734.2 325.6 A 290 290 0 1 1 249.2 634.6" fill="none" stroke="url(#sp)" stroke-width="100" stroke-linecap="round"/>
   <!-- the truck -->
-  <circle cx="249.2" cy="634.6" r="26" fill="#0B0F0E"/>
+  <circle cx="249.2" cy="634.6" r="26" fill="#16181B"/>
   <!-- the destination: fresh food -->
   <g transform="translate(588 218) rotate(-12)">
     <path d="M -110 0 C -60 -72 60 -72 110 0 C 60 72 -60 72 -110 0 Z" fill="url(#sp)"/>
