@@ -1,3 +1,4 @@
+import {simNow} from '../../lib/simclock.js';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, Badge} from '@astryxdesign/core';
 import {Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
@@ -86,13 +87,13 @@ function useHeadsUp(drives, parent) {
     if (!drives) return;
     const fresh = [];
     for (const d of drives.filter(isActive)) {
-      const left = (forecastOf(d) - Date.now()) / 60000;
+      const left = (forecastOf(d) - simNow(d)) / 60000;
       // Only the closest threshold fires, so opening the page late gives one alert, not two.
       for (const m of [5, 15]) {
         const key = `${d.id}:${m}`;
         if (left <= m && left > 0 && d.status === 'en-route-bank' && !sent.current[key]) {
           sent.current[`${d.id}:5`] = sent.current[`${d.id}:15`] = 1;
-          const msg = `${d.van} arrives in about ${Math.max(1, Math.round(left))} min (${clockAmPm(forecastOf(d))})${d.coldStartAt ? `, cold food out ${hms(Date.now() - d.coldStartAt)}` : ''}.`;
+          const msg = `${d.van} arrives in about ${Math.max(1, Math.round(left))} min (${clockAmPm(forecastOf(d))})${d.coldStartAt ? `, cold food out ${hms(simNow(d) - d.coldStartAt)}` : ''}.`;
           fresh.push({id: key, msg});
           if (globalThis.Notification?.permission === 'granted') new globalThis.Notification('FreshRoute', {body: msg, icon: '/icons/icon-192.png', tag: key});
         }
@@ -173,7 +174,7 @@ function Live() {
             const f = forecastOf(d);
             const st = etaState(f, d.promiseAt);
             const next = (d.stops || []).find((s) => !s.departedAt);
-            const cold = d.coldStartAt ? Date.now() - d.coldStartAt : 0;
+            const cold = d.coldStartAt ? simNow(d) - d.coldStartAt : 0;
             return (
               <a key={d.id} className="truck-card" href={`/bank/truck/${d.id}`} onClick={(e) => (e.preventDefault(), navigate(`/bank/truck/${d.id}`))}>
                 <Ring forecast={f} promise={d.promiseAt} progress={progressOf(d)} size={96} stroke={8} timeSize={20} />
@@ -184,6 +185,7 @@ function Live() {
                   <div className="row wrap" style={{gap: 'var(--space-xs)'}}>
                     {d.coldStartAt && <span className={`chip ${coldState(cold) === 'cold' ? 'frost' : coldState(cold)}`}><Cold size={14} />{hms(cold)}</span>}
                     <span className="chip">Updated {clock(d.last?.t || d.updated)}</span>
+                    {d.sim > 0 && <span className="chip" title="Times are drive time, which runs faster than the clock on the wall">Simulated at {d.clock?.speed || d.sim}×</span>}
                   </div>
                 </div>
               </a>
@@ -215,7 +217,7 @@ function TruckDetail({id}) {
   const last = d.points?.[d.points.length - 1];
   const f = last?.eta || d.promiseAt;
   const st = etaState(f, d.promiseAt);
-  const cold = d.coldStartAt ? (d.arrivedBankAt || Date.now()) - d.coldStartAt : 0;
+  const cold = d.coldStartAt ? (d.arrivedBankAt || simNow(d)) - d.coldStartAt : 0;
   const ready = Object.fromEntries((d.events || []).filter((e) => e.kind === 'store-ready').map((e) => [e.data.storeId, e.data.ready]));
   const reasons = (d.events || []).filter((e) => e.kind === 'reason' || e.kind === 'delay').slice(-3);
   const coords = d.routeCoords || [];
@@ -233,13 +235,13 @@ function TruckDetail({id}) {
         <div>
           <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
           <h1 style={{marginTop: 'var(--space-sm)'}}>{d.van}<span className="sep">·</span>{d.driver}</h1>
-          <div className="muted">{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}</div>
+          <div className="muted">{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}{d.sim > 0 ? ` · simulated at ${d.clock?.speed || d.sim}×, so times run on drive time (now ${clockAmPm(simNow(d))})` : ''}</div>
         </div>
         <Button label="Full report" icon={<FileText size={18} />} onClick={() => navigate(`/bank/report/${d.id}`)} />
       </div>
       <div className="detail">
         <section className="stack">
-          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={Date.now()} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} />
+          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={d.deliveredAt || simNow(d)} live={d.status !== 'delivered'} noCamera={d.camera === 'none'} speed={d.clock?.speed || 1} />
           {d.segments?.length > 0 && <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Video arrives in 10-second pieces, so it runs about 10 to 20 seconds behind. The driver agreed to recording when they signed up.</p>}
           <div className="mapbox"><MapView route={coords} trail={(d.points || []).map((p) => [p.lon, p.lat])} state={st.key} markers={markers} puck={last ? {lon: last.lon, lat: last.lat, hdg: last.hdg || 0} : null} fitKey={d.id} label="Map of this truck" legendAt="bl"
             legend={{title: 'This truck\'s trip', items: [['line', 'Road still to drive'], ['line trail', 'Where it has been'], ['stopnum', 'Pickup stops, in order'], ['pin bank', 'Drop-off at the pantry']]}} /></div>

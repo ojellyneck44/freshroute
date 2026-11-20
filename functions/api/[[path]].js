@@ -186,7 +186,7 @@ async function storeLink(env, method, driveId, storeId, request) {
   if (method === 'POST') {
     const body = await readJson(request);
     await env.DB.prepare('INSERT INTO events (drive, t, kind, data) VALUES (?, ?, ?, ?)')
-      .bind(driveId, Date.now(), 'store-ready', JSON.stringify({storeId, ready: !!body.ready})).run();
+      .bind(driveId, d.clock ? d.clock.sim0 + (Date.now() - d.clock.real0) * d.clock.speed : Date.now(), 'store-ready', JSON.stringify({storeId, ready: !!body.ready})).run();
     return json({ok: true});
   }
   const last = await env.DB.prepare('SELECT t, eta FROM points WHERE drive = ? ORDER BY t DESC LIMIT 1').bind(driveId).first();

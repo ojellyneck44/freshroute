@@ -1,3 +1,4 @@
+import {simNow} from '../lib/simclock.js';
 import {useEffect, useMemo, useState} from 'react';
 import {Button, Banner} from '@astryxdesign/core';
 import {ArrowLeft, Share2} from 'lucide-react';
@@ -37,7 +38,7 @@ export default function Report({id, back}) {
   if (err) return <main className="center-page" tabIndex={-1}><div className="form"><Banner status="error" title="Couldn't open this report" description={err} /><Button label="Back" onClick={() => navigate(back)} /></div></main>;
   if (!d) return <main className="center-page muted" aria-busy="true">Loading report…</main>;
 
-  const end = arrivedAt(d) || d.updated || Date.now();
+  const end = arrivedAt(d) || simNow(d);
   const st = etaState(end, d.promiseAt);
   const coldMs = d.coldStartAt ? end - d.coldStartAt : 0;
   const motion = (d.events || []).filter((e) => e.kind === 'motion');
@@ -72,7 +73,7 @@ export default function Report({id, back}) {
         {!String(d.id).startsWith('local-') && <Button variant="ghost" label="Share with the pantry" icon={<Share2 size={18} />} onClick={share} />}
       </div>
       <header className="stack" style={{margin: 'var(--space-lg) 0 var(--space-xl)', gap: 'var(--space-sm)'}}>
-        <div className="label">{day(d.startedAt)} · {d.van} · {d.driver}</div>
+        <div className="label">{day(d.startedAt)} · {d.van} · {d.driver}{d.sim > 0 ? ` · simulated drive, ${d.clock?.speed || d.sim}× speed` : ''}</div>
         <h1 style={{fontSize: 'var(--fs-numeral)'}}>Drive report</h1>
         <div className="big-delta" style={{color: `var(--fr-${st.key === 'on-time' ? 'sprout' : st.key === 'slipping' ? 'apricot' : 'tomato'})`}}>
           {d.status === 'delivered' || arrivedAt(d)
@@ -101,7 +102,7 @@ export default function Report({id, back}) {
       <section className="detail" style={{marginTop: 'var(--space-2xl)'}}>
         <div className="stack">
           <h2>Footage</h2>
-          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={end} seekTo={seek} />
+          <Footage segments={d.segments} events={d.events || []} start={d.startedAt} end={end} seekTo={seek} speed={d.clock?.speed || 1} />
           <p className="faint" style={{margin: 0, fontSize: 'var(--fs-sub)'}}>Ticks: apricot = motion or delay, green = stops, dashed = recording gap. Tap one to jump there.</p>
         </div>
         <div className="stack">

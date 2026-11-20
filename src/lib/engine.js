@@ -4,6 +4,7 @@ import {api, send} from './api.js';
 import {getState, setState} from './state.js';
 import {storeById, BANK} from '../data/stores.js';
 import {route as osrmRoute} from './osrm.js';
+import {simNow, newClock, rebase} from './simclock.js';
 
 // The drive engine: turns GPS (or the test simulator) into progress, the next turn,
 // a live forecast against the locked promise, arrival at stops, and the record the food bank sees.
@@ -44,15 +45,15 @@ export async function planRoute(storeIds) {
 }
 
 // Promise = start + driving time + a planned dwell at each pickup, rounded up to the minute.
-// speed > 1 only for the test simulator, so a sped-up drive is measured against a sped-up promise.
-export function promiseFor(route, stopsCount, start = Date.now(), speed = 1) {
+// Always in real minutes: the simulator speeds up the drive clock instead of shrinking the plan.
+export function promiseFor(route, stopsCount, start = Date.now()) {
   const at = [];
   let t = start;
   route.legs.forEach((leg, i) => {
-    t += (leg.duration * 1000) / speed;
+    t += leg.duration * 1000;
     if (i < stopsCount) {
       at.push(Math.ceil(t / 60000) * 60000);
-      t += DWELL_MS / speed;
+      t += DWELL_MS;
     }
   });
   return {stops: at, final: Math.ceil(t / 60000) * 60000};
@@ -62,7 +63,7 @@ export function promiseFor(route, stopsCount, start = Date.now(), speed = 1) {
 export async function startDrive({storeIds, plan, sim = 0, camera, sound = true, sample = false}) {
   const {stops, route} = plan || (await planRoute(storeIds));
   const now = Date.now();
-  const promise = promiseFor(route, stops.length, now, sim || 1);
+  const promise = promiseFor(route, stops.length, now);
   const {profile, code} = getState();
   const legEnds = [];
   let acc = 0;
@@ -89,6 +90,7 @@ export async function startDrive({storeIds, plan, sim = 0, camera, sound = true,
     coldStartAt: null,
     delays: [],
     sim,
+    clock: newClock(sim || 1, now),
   };
   try {
     const {id} = await api('drives', {method: 'POST', body: summary(), code});
@@ -115,7 +117,7 @@ export function patchDrive(patch) {
   bump();
 }
 export function logEvent(kind, data) {
-  const e = {t: Date.now(), kind, data};
+  const e = {t: now(), kind, data};
   (drive.events ||= []).push(e);
   persist();
   if (shared()) send(`drives/${drive.id}/events`, e);
@@ -136,6 +138,9 @@ export function resumeDrive() {
   return null;
 }
 
+const now = () => simNow(drive);
+export const driveNow = () => simNow(drive);
+
 let watchId = null, simTimer = null, postTimer = null, patchTimer = null, buffer = [];
 function begin() {
   const cum = cumulative(drive.route.coords);
@@ -143,7 +148,7 @@ function begin() {
   if (drive.sim) startSim();
   else if ('geolocation' in navigator) {
     watchId = navigator.geolocation.watchPosition(
-      (p) => onPosition({lat: p.coords.latitude, lon: p.coords.longitude, spd: p.coords.speed, hdg: p.coords.heading, t: p.timestamp}),
+      (p) => onPosition({lat: p.coords.latitude, lon: p.coords.longitude, spd: p.coords.speed, hdg: p.coords.heading, t: now()}),
       (err) => {
         live.gpsError = err.code === 1 ? 'Location is off for FreshRoute. Turn it on in Settings to navigate.' : 'Waiting for GPS…';
         bump();
@@ -222,7 +227,7 @@ async function reroute(p) {
   }
 }
 
-function update(t = Date.now()) {
+function update(t = now()) {
   const target = currentTarget();
   const legI = target.i;
   const {legs, legEnds} = drive.route;
@@ -231,10 +236,9 @@ function update(t = Date.now()) {
   const legLeft = Math.max(0, legEnds[legI] - Math.max(live.along, legStart));
   const legFrac = legEnds[legI] - legStart ? legLeft / (legEnds[legI] - legStart) : 0;
   const atStop = target.kind === 'stop' && target.arrivedAt;
-  const k1 = 1 / (drive.sim || 1);
-  const dwell = DWELL_MS * k1;
-  let remain = atStop ? Math.max(0, dwell - (t - target.arrivedAt)) : legs[legI].duration * 1000 * legFrac * k1;
-  for (let k = legI + 1; k < legs.length; k++) remain += legs[k].duration * 1000 * k1;
+  const dwell = DWELL_MS;
+  let remain = atStop ? Math.max(0, dwell - (t - target.arrivedAt)) : legs[legI].duration * 1000 * legFrac;
+  for (let k = legI + 1; k < legs.length; k++) remain += legs[k].duration * 1000;
   const stopsAhead = drive.stops.filter((s, k) => k > legI || (k === legI && !s.arrivedAt)).length;
   remain += stopsAhead * dwell;
   const extra = drive.delays.reduce((a, d) => a + (d.active ? Math.max(0, d.until - t) : 0), 0);
@@ -242,10 +246,10 @@ function update(t = Date.now()) {
   live.legLeft = legLeft;
 
   // Per-stop ETA for the store link: time to reach that stop.
-  let acc = t + (atStop ? 0 : legs[legI].duration * 1000 * legFrac * k1) + extra;
+  let acc = t + (atStop ? 0 : legs[legI].duration * 1000 * legFrac) + extra;
   drive.stops.forEach((s, k) => {
     if (k < legI || s.arrivedAt) return;
-    if (k > legI) acc += dwell + legs[k].duration * 1000 * k1;
+    if (k > legI) acc += dwell + legs[k].duration * 1000;
     s.etaAt = Math.round(acc);
   });
 
@@ -288,7 +292,7 @@ function update(t = Date.now()) {
 
 export function arrive(i) {
   const s = drive.stops[i];
-  s.arrivedAt = Date.now();
+  s.arrivedAt = now();
   logEvent('arrived', {storeId: s.storeId, name: s.name});
   patchDrive({stops: drive.stops, status: 'at-pickup'});
 }
@@ -297,9 +301,9 @@ export function arrive(i) {
 export function loaded(i, counts) {
   const s = drive.stops[i];
   s.counts = counts;
-  s.departedAt = Date.now();
+  s.departedAt = now();
   const hasCold = s.items.some((it) => it.storage === 'cold' || it.storage === 'frozen');
-  if (hasCold && !drive.coldStartAt) drive.coldStartAt = Date.now();
+  if (hasCold && !drive.coldStartAt) drive.coldStartAt = now();
   logEvent('loaded', {storeId: s.storeId, name: s.name, counts, cold: hasCold});
   const next = drive.stops.find((x) => !x.departedAt);
   patchDrive({stops: drive.stops, coldStartAt: drive.coldStartAt, status: next ? 'en-route-pickup' : 'en-route-bank'});
@@ -308,23 +312,23 @@ export function loaded(i, counts) {
 export function skipStop(i, reason) {
   const s = drive.stops[i];
   s.skipped = reason || 'Skipped';
-  s.departedAt = Date.now();
-  s.arrivedAt ||= Date.now();
+  s.departedAt = now();
+  s.arrivedAt ||= now();
   logEvent('skipped', {storeId: s.storeId, name: s.name, reason});
   const next = drive.stops.find((x) => !x.departedAt);
   patchDrive({stops: drive.stops, status: next ? 'en-route-pickup' : 'en-route-bank'});
 }
 
 export function addDelay(reason, minutes) {
-  const t = Date.now();
-  drive.delays.push({t, reason, minutes, until: t + (minutes * 60000) / (drive.sim || 1), active: true});
+  const t = now();
+  drive.delays.push({t, reason, minutes, until: t + minutes * 60000, active: true});
   logEvent('delay', {reason, minutes});
   patchDrive({delays: drive.delays});
 }
 
 export function finishDrive({dropCounts, feedback}) {
   endEngine();
-  const t = Date.now();
+  const t = now();
   drive.status = 'delivered';
   drive.deliveredAt = t;
   drive.arrivedBankAt ||= t;
@@ -352,9 +356,19 @@ export function finishDrive({dropCounts, feedback}) {
 // ---------- Test simulator ----------
 // Moves along the route at the routed speed × multiplier and waits at each stop until "Loaded".
 export function setSimSpeed(x) {
+  drive.clock = rebase(drive, x);
   drive.sim = x;
-  persist();
-  if (x && !simTimer) startSim();
+  if (shared()) send(`drives/${drive.id}`, {clock: drive.clock, sim: x}, 'PATCH');
+  if (!x) {
+    // Back to real GPS: stop moving the van ourselves and listen to the device again.
+    drive.simAlong = live.along;
+    endEngine();
+    persist();
+    begin();
+  } else {
+    persist();
+    if (!simTimer) startSim();
+  }
   bump();
 }
 function startSim() {
@@ -363,9 +377,10 @@ function startSim() {
   watchId = null;
   let lastT = Date.now();
   simTimer = setInterval(() => {
-    const t = Date.now();
-    const dt = (t - lastT) / 1000;
-    lastT = t;
+    const real = Date.now();
+    const dt = (real - lastT) / 1000; // wall seconds; distance below scales by speed
+    lastT = real;
+    const t = now();
     const target = currentTarget();
     const waiting = (target.kind === 'stop' && drive.stops[target.i].arrivedAt) || drive.status === 'arrived-bank' || drive.status === 'delivered';
     const delayed = drive.delays.some((d) => d.active && d.until > t);

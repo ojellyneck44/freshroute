@@ -64,3 +64,15 @@ test('claims list short and damaged lines with pounds', () => {
   assert.equal(c.length, 1);
   assert.equal(c[0].missingLb, 40);
 });
+
+import {simNow, newClock, rebase} from './simclock.js';
+test('drive clock: 8x runs 8 minutes per real minute, and changing speed does not jump', () => {
+  const t0 = 1_000_000;
+  const d = {clock: newClock(8, t0)};
+  assert.equal(simNow(d, t0 + 60000) - t0, 8 * 60000);
+  const before = simNow(d, t0 + 60000);
+  d.clock = rebase(d, 2, t0 + 60000);
+  assert.equal(simNow(d, t0 + 60000), before);
+  assert.equal(simNow(d, t0 + 120000) - before, 2 * 60000);
+  assert.equal(simNow({}, 42), 42); // drives without a clock (older, or real) use the wall clock
+});

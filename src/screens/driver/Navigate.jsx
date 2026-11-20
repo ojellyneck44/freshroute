@@ -4,11 +4,11 @@ import {ArrowUp, ArrowUpRight, ArrowUpLeft, CornerUpRight, CornerUpLeft, RotateC
 import MapView from '../../components/MapView.jsx';
 import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
-import {useDrive, resumeDrive, currentTarget, arrive, loaded, skipStop, addDelay, finishDrive, setSimSpeed, logEvent} from '../../lib/engine.js';
+import {useDrive, resumeDrive, currentTarget, arrive, loaded, skipStop, addDelay, finishDrive, setSimSpeed, logEvent, driveNow} from '../../lib/engine.js';
 import {session, startCapture, stopCapture, useCamera} from '../../lib/session.js';
 import {useAppState, setState, navigate} from '../../lib/state.js';
 import {instruction} from '../../lib/osrm.js';
-import {clock, deltaText, etaState, hms, miles, coldState} from '../../lib/format.js';
+import {clock, clockAmPm, deltaText, etaState, hms, miles, coldState} from '../../lib/format.js';
 import {pending} from '../../lib/api.js';
 import {motionLabel} from '../../lib/motion.js';
 import {useIsTest} from '../../components/TestMode.jsx';
@@ -22,7 +22,7 @@ export default function Navigate() {
   const {drive, live} = useDrive();
   const [overlay, setOverlay] = useState(null); // 'progress' | 'pickup' | 'end'
   const [toast, setToast] = useState(null);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => driveNow());
   const isTest = useIsTest();
   const camRef = useRef(null);
 
@@ -59,7 +59,7 @@ export default function Navigate() {
     })();
     const onVis = () => logEvent(document.visibilityState === 'hidden' ? 'gap-start' : 'gap-end', {});
     document.addEventListener('visibilitychange', onVis);
-    const t = setInterval(() => setNow(Date.now()), 1000);
+    const t = setInterval(() => setNow(driveNow()), 1000); // drive time: runs faster in the simulator
     return () => {
       alive = false;
       document.removeEventListener('visibilitychange', onVis);
@@ -155,6 +155,7 @@ export default function Navigate() {
         <div className="glass dense" style={{position: 'absolute', zIndex: 6, left: 'var(--space-lg)', bottom: 'calc(var(--size-count) + var(--space-3xl) + var(--space-lg))', borderRadius: 'var(--r-panel)', padding: 'var(--space-sm) var(--space-md)'}} aria-label="Simulator">
           <div className="row">
             <span className="label">Simulator</span>
+            <span className="num muted" style={{fontSize: 'var(--fs-sub)'}} title="All times on this drive run on this clock">Drive time {clockAmPm(now)}</span>
             <SegmentedControl label="Simulation speed" value={String(drive.sim || 0)} onChange={(v) => setSimSpeed(Number(v))} size="sm">
               {[0, 1, 4, 8].map((x) => <SegmentedControlItem key={x} value={String(x)} label={x ? `${x}×` : 'GPS'} />)}
             </SegmentedControl>

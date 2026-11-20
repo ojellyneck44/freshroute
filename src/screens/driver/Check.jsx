@@ -85,7 +85,7 @@ export default function Check() {
     }
   };
 
-  const promise = plan ? promiseFor(plan.route, plan.stops.length, Date.now(), sim || 1) : null;
+  const promise = plan ? promiseFor(plan.route, plan.stops.length, Date.now()) : null;
   const usb = devices.filter((d) => !/front|back|face ?time|rear|integrated/i.test(d.label));
   const Item = ({ok, icon: I, title, children}) => (
     <li className="row" style={{alignItems: 'flex-start', padding: 'var(--space-lg) 0', borderBottom: '1px solid var(--fr-line)'}}>

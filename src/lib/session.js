@@ -3,6 +3,7 @@
 import {SegmentRecorder, makeUploader, openFeeds} from './recorder.js';
 import {watchMotion} from './motion.js';
 import {getState} from './state.js';
+import {simNow} from './simclock.js';
 
 export const session = {stream: null, camera: 'front', feeds: null, recorder: null, uploader: null, stopMotion: null, wake: null, motionOk: false};
 
@@ -37,7 +38,7 @@ export function startCapture(drive, onMotion, headingRate) {
   const shared = !String(drive.id).startsWith('local-');
   if (session.stream && !session.recorder) {
     session.uploader = shared ? makeUploader(drive.id, getState().code, session.camera) : null;
-    session.recorder = new SegmentRecorder(session.stream, (blob, idx, t0, t1) => session.uploader?.add(blob, idx, t0, t1));
+    session.recorder = new SegmentRecorder(session.stream, (blob, idx, t0, t1) => session.uploader?.add(blob, idx, simNow(drive, t0), simNow(drive, t1)) /* footage sits on the drive clock */);
     try {
       session.recorder.start();
     } catch {

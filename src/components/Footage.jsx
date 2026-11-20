@@ -29,7 +29,9 @@ export const eventText = (e) => {
  * Plays a drive's video segments as one timeline, Ring-style: scrub bar with event ticks.
  * live: keeps jumping to the newest segment (the manager's near-live view).
  */
-export default function Footage({segments = [], events = [], start, end, live = false, seekTo, noCamera = false}) {
+// speed: the drive clock's speed. Simulated drives record real-time video on a faster drive clock,
+// so one second of video covers `speed` seconds of the drive.
+export default function Footage({segments = [], events = [], start, end, live = false, seekTo, noCamera = false, speed = 1}) {
   const [muted, setMuted] = useState(true); // autoplay needs muted; the viewer turns sound on
   const v = useRef(null);
   const pendingSeek = useRef(0);
@@ -52,7 +54,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
     const k = segs.findIndex((s) => time >= s.t0 && time < s.t1);
     const idx = k === -1 ? segs.findIndex((s) => s.t0 > time) : k;
     if (idx === -1) return;
-    const off = Math.max(0, (time - segs[idx].t0) / 1000);
+    const off = Math.max(0, (time - segs[idx].t0) / 1000 / speed);
     if (idx === i && v.current) v.current.currentTime = off;
     else {
       pendingSeek.current = off;
@@ -91,7 +93,7 @@ export default function Footage({segments = [], events = [], start, end, live = 
             if (pendingSeek.current) e.currentTarget.currentTime = pendingSeek.current;
             pendingSeek.current = 0;
           }}
-          onTimeUpdate={(e) => setT(cur.t0 + e.currentTarget.currentTime * 1000)}
+          onTimeUpdate={(e) => setT(cur.t0 + e.currentTarget.currentTime * 1000 * speed)}
           onEnded={() => setI((x) => Math.min(segs.length - 1, x + 1))}
         />
         <button className="rec vidsound" onClick={() => setMuted((m) => !m)} aria-pressed={!muted} aria-label={muted ? 'Turn sound on' : 'Turn sound off'}>{muted ? <VolumeX size={16} aria-hidden="true" /> : <Volume2 size={16} aria-hidden="true" />}{muted ? 'Sound off' : 'Sound on'}</button>
