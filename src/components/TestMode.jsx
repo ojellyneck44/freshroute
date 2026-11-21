@@ -22,6 +22,13 @@ export const TASKS = [
   {id: 'P5', who: 'Pantry', text: 'Start a sample pickup run and find out when it will be back'},
   {id: 'P6', who: 'Pantry', text: 'Find how long cold food was out of the fridge on the last pickup run'},
   {id: 'P7', who: 'Pantry', text: 'Read what drivers said about a store'},
+  {id: 'L1', who: 'Pantry', text: 'Add today\'s delivery from the food bank: order number = your initials plus 1234 (e.g. SM-1234), arriving in the next two hours, with three items, one of them frozen'},
+  {id: 'L2', who: 'Pantry', text: 'The driver just called: they will be there in about 30 minutes. Record it'},
+  {id: 'L3', who: 'Food bank driver', text: 'Join as a food bank driver and set up your deliveries'},
+  {id: 'L4', who: 'Food bank driver', text: 'Start the delivery for your order'},
+  {id: 'L5', who: 'Food bank driver', text: 'Find out whether you will reach the pantry inside its window'},
+  {id: 'L6', who: 'Food bank driver', text: 'Finish the delivery at the pantry'},
+  {id: 'L7', who: 'Pantry', text: 'Receive your order. Everything arrived except one case is missing'},
 ];
 const SUS = [
   'I think that I would like to use FreshRoute frequently.',

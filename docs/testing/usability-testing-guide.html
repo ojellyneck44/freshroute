@@ -68,17 +68,18 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
   <div>
     <div class="kicker">Group guide · November 2026</div>
     <h1>Test FreshRoute<br>on your own</h1>
-    <p class="lede" style="margin-top:12pt">For the four of us. Each person tests the app alone, on their own time, with their own phone or iPad and their own car. Nobody else to schedule. About 90 minutes each, then one group meeting to put it together.</p>
+    <p class="lede" style="margin-top:12pt">For the four of us. Each person tests the app alone, on their own time, with their own phone or iPad and their own car. Nobody else to schedule. About 2 hours each, then one group meeting to put it together.</p>
   </div>
   <div>
     <ol class="toc">
       <li><b>1</b>How this works</li>
       <li><b>2</b>Set up your device</li>
       <li><b>3</b>Part A: at home</li>
-      <li><b>4</b>Part B: your drive</li>
-      <li><b>5</b>Part C: write it up</li>
-      <li><b>6</b>The group meeting</li>
-      <li><b>7</b>Printouts: checklist and problem log</li>
+      <li><b>4</b>Part A2: the delivery loop</li>
+      <li><b>5</b>Part B: your drive</li>
+      <li><b>6</b>Part C: write it up</li>
+      <li><b>7</b>The group meeting</li>
+      <li><b>8</b>Printouts: checklist and problem log</li>
     </ol>
     <p class="small muted" style="margin-top:14pt">App: freshroute.pages.dev · Test mode: hold the FreshRoute logo for a second · The store schedules, donations and food bank orders in the app are sample data. The stores are real places.</p>
   </div>
@@ -87,12 +88,13 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
 <section class="section">
   <div class="kicker">1</div>
   <h2>How this works</h2>
-  <p>Each of us plays both users: the volunteer who drives pickups, and the person at the pantry waiting for food. You time yourself with the test panel built into the app, talk out loud while a recording runs, and write down every problem you hit. At the end we compare notes.</p>
+  <p>Each of us plays all three users: the volunteer who drives pickups, the person at the pantry waiting for food, and the food bank's truck driver bringing it. You time yourself with the test panel built into the app, talk out loud while a recording runs, and write down every problem you hit. At the end we compare notes.</p>
 
   <table>
     <tr><th style="width:22%">Part</th><th>What you do</th><th style="width:14%">Time</th></tr>
     <tr><td><b>Set up</b></td><td>Install the app, allow permissions, turn on test mode.</td><td>10 min</td></tr>
     <tr><td><b>A. At home</b></td><td>The pantry tasks, then a simulated drive with the driver tasks. Sitting down, nothing moving.</td><td>30 min</td></tr>
+    <tr><td><b>A2. Delivery loop</b></td><td>One delivery from start to finish: add it as the pantry, drive it as the food bank driver (simulated), receive it as the pantry.</td><td>20 min</td></tr>
     <tr><td><b>B. Your drive</b></td><td>A real 2-store route in your own car, in Denton, in daylight.</td><td>30 to 45 min</td></tr>
     <tr><td><b>C. Write-up</b></td><td>The survey, export your results, fill in the problem log.</td><td>15 min</td></tr>
     <tr><td><b>Group meeting</b></td><td>All four results together; agree what to fix first.</td><td>45 min</td></tr>
@@ -170,6 +172,29 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
 
 <section class="section">
   <div class="kicker">4</div>
+  <h2>Part A2: the delivery loop</h2>
+  <p>This follows one order from the food bank to the pantry door, and you play both ends. The app saves the delivery on the server, so it carries over when you switch roles.</p>
+  <div class="box green">
+    <h3>Two devices make this easier</h3>
+    <p style="margin:0">If you have a phone and an iPad, be the pantry on one and the food bank driver on the other, with test mode on both. With one device: do L1 and L2, then <b>Reset app for next participant</b> (Log tab), join as the food bank driver for L3 to L6, reset again, and join as the pantry for L7. Resetting keeps your results and the delivery.</p>
+  </div>
+  <table>
+    <tr><th style="width:6%"></th><th style="width:16%">As</th><th style="width:38%">Task</th><th>Done when</th></tr>
+    <tr><td class="id">L1</td><td>Pantry</td><td>Add today's delivery from the food bank: order number = your initials plus 1234 (e.g. SM-1234), arriving in the next two hours, with three items, one of them frozen.</td><td>Your order is on Incoming, with 3 lines and 1 cold or frozen.</td></tr>
+    <tr><td class="id">L2</td><td>Pantry</td><td>The driver just called: they'll be there in about 30 minutes. Record it.</td><td>The card says when the driver called and when they'll arrive.</td></tr>
+    <tr><td class="id">L3</td><td>Food bank driver</td><td>Join as a food bank driver and set up your deliveries.</td><td>You're on the Deliveries screen.</td></tr>
+    <tr><td class="id">L4</td><td>Food bank driver</td><td>Start the delivery for your order. (Turn on Simulate the drive at 8×; the warehouse is in Fort Worth.)</td><td>Navigation is running toward the pantry.</td></tr>
+    <tr><td class="id">L5</td><td>Food bank driver</td><td>Find out whether you'll reach the pantry inside its window.</td><td>You can say the time and whether it's on time.</td></tr>
+    <tr><td class="id">L6</td><td>Food bank driver</td><td>Finish the delivery at the pantry. (At 8×, the drive takes about 6 minutes.)</td><td>The delivery report is on screen.</td></tr>
+    <tr><td class="id">L7</td><td>Pantry</td><td>Receive your order. Everything arrived except one case is missing.</td><td>One line marked Short, signed, and a credit to claim in Receiving.</td></tr>
+  </table>
+  <h3>Watch for</h3>
+  <p>Does typing the invoice lines make sense, and did the frozen item get marked cold? With two devices, glance at the pantry side during L4 to L6: does the card update live and the truck move on the map? Does anything on the food bank driver's screens still talk about "pickups" or "stores"?</p>
+  <p class="small muted">The demo pantry is shared by all four of us: remove any of your orders you didn't receive (Remove, on the card).</p>
+</section>
+
+<section class="section">
+  <div class="kicker">5</div>
   <h2>Part B: your drive</h2>
   <p>This is the part the simulator can't fake: real GPS, sun on the screen, a turn you miss, a parking lot bigger than the app expects. You're alone, so the app's own recording is your note-taker: it records video and sound once the drive starts, so talk out loud.</p>
 
@@ -203,7 +228,7 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
 </section>
 
 <section class="section">
-  <div class="kicker">5</div>
+  <div class="kicker">6</div>
   <h2>Part C: write it up</h2>
   <ol class="steps">
     <li><b>Do the survey.</b> Test panel, Survey tab: 10 statements, 1 to 5. Answer for the whole app, both parts. The panel works out your score (0 to 100).</li>
@@ -230,7 +255,7 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
 </section>
 
 <section class="section">
-  <div class="kicker">6</div>
+  <div class="kicker">7</div>
   <h2>The group meeting</h2>
   <p>Once all four folders are in. One person shares their screen and keeps the merged list; everyone else reads out their log.</p>
   <ol class="steps">
@@ -252,7 +277,7 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
 </section>
 
 <section class="section">
-  <div class="kicker">7</div>
+  <div class="kicker">8</div>
   <h2>Your checklist</h2>
   <h3>Set up</h3>
   <ul class="check">
@@ -266,6 +291,7 @@ code { font: 9.5pt ui-monospace, "SF Mono", Menlo, monospace; background: var(--
     <li>Screen recording on, microphone on (optional)</li>
     <li>First set of tasks done (pantry or driver, whichever is mine first)</li>
     <li>Reset app, second set done</li>
+    <li>Delivery loop L1 to L7 done; leftover orders removed</li>
   </ul>
   <h3>Part B: my drive</h3>
   <ul class="check">

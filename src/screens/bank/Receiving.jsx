@@ -129,7 +129,7 @@ export function DeliveryCard({d, onChanged}) {
           <Button variant={here ? 'primary' : 'secondary'} size="lg" label={here ? 'Receive delivery' : 'Open the order'} icon={<PackageCheck size={18} />} onClick={() => navigate(`/bank/receive/${d.id}`)} />
         )}
         {d.drive && <Button variant="ghost" label="Watch the truck" icon={<Video size={18} />} onClick={() => navigate(`/bank/truck/${d.drive.id}`)} />}
-        {d.real && !d.receipt && !d.drive && <Button variant="ghost" label="Remove" icon={<Trash2 size={18} />} onClick={remove} />}
+        {d.real && !d.receipt && <Button variant="ghost" label="Remove" icon={<Trash2 size={18} />} onClick={remove} />}
         {cold > 0 && !d.receipt && <span className="faint" style={{fontSize: 'var(--fs-sub)'}}>Bring the pallet blanket: cold lines can't be received without it.</span>}
       </div>
     </article>
