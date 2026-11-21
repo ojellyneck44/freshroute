@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {TextInput, Switch, CheckboxInput, Button, Banner} from '@astryxdesign/core';
 import {ArrowLeft} from 'lucide-react';
-import {useAppState, setState, navigate, homeFor, getState} from '../../lib/state.js';
+import {useAppState, setState, navigate, homeFor, getState, saveProfile} from '../../lib/state.js';
 import {BANK} from '../../data/stores.js';
 
 // D1b: your name, your vehicle, and the recording agreement (shown once, at sign-up).
@@ -17,7 +17,7 @@ export default function Setup() {
   const save = () => {
     if (!name.trim()) return setError('Add your name so the pantry knows who is driving.');
     if (!consent) return setError('Recording is part of every FreshRoute drive. Agree to the recording terms to continue.');
-    setState({profile: {name: name.trim(), van: van.trim() || 'Volunteer vehicle', plate: plate.trim().toUpperCase(), cold, consent: true}});
+    saveProfile({name: name.trim(), van: van.trim() || 'Volunteer vehicle', plate: plate.trim().toUpperCase(), cold, consent: true, consentAt: Date.now()});
     navigate(homeFor(getState().role));
   };
 

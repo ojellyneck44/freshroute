@@ -63,6 +63,7 @@ export default function Haul() {
               </div>
               <div className="row wrap" style={{gap: 'var(--space-xs)'}}>
                 <span className="chip">Order {x.order}</span>
+                {x.addedBy?.name && <span className="chip">Added by {x.addedBy.name}</span>}
                 {x.lines?.length > 0 && <span className="chip">{x.lines.length} lines{lb ? `, ${lb.toLocaleString()} lb` : ''}</span>}
                 {cold > 0 && <span className="chip frost"><Cold size={14} />{cold} cold or frozen</span>}
                 {x.driveId && <span className="chip apricot">Started earlier</span>}

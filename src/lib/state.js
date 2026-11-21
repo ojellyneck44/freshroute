@@ -10,6 +10,7 @@ const initial = {
   prefs: {theme: 'auto', camera: '', headsUp: true},
   route: [], // [{storeId}] being planned
   haul: null, // delivery id a food bank driver is about to start
+  profileId: null, // who is using this device (a person at the pantry, see /api/profiles)
   driveId: null, // active drive on this device
   lastReport: null,
 };
@@ -64,3 +65,18 @@ export const homeFor = (role) => (role === 'hauler' ? '/haul' : role === 'bank' 
 export const drives = (role) => role === 'driver' || role === 'hauler';
 // How a pantry or store recognises the vehicle: description plus plate.
 export const vehicleText = (van, plate) => [van, plate && `plate ${plate}`].filter(Boolean).join(', ');
+
+// Sign in as a person from the pantry's list.
+export function signInAs(p) {
+  setState({role: p.role, profileId: p.id, profile: {name: p.name, van: p.van || '', plate: p.plate || '', cold: !!p.cold, consent: !!p.consentAt}, route: [], haul: null, driveId: null, lastReport: null});
+}
+// Hand the device to someone else at the same pantry: keep the join code, forget the person.
+export function switchPerson() {
+  setState({role: null, profileId: null, profile: {...initial.profile}, route: [], haul: null, driveId: null, lastReport: null});
+}
+// Save profile edits on this device and for the person on the server.
+export function saveProfile(patch) {
+  setState((s) => ({profile: {...s.profile, ...patch}}));
+  const id = getState().profileId;
+  if (id) import('./api.js').then(({send}) => send(`profiles/${id}`, patch, 'PATCH'));
+}

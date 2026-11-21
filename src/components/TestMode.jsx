@@ -1,3 +1,4 @@
+import {getState} from '../lib/state.js';
 import PracticeArea from './PracticeArea.jsx';
 import {useEffect, useState, useSyncExternalStore} from 'react';
 import {Button, Badge, SegmentedControl, SegmentedControlItem, Selector} from '@astryxdesign/core';
@@ -118,7 +119,7 @@ function csv(log) {
 export function Facilitator() {
   const on = useIsTest();
   const [open, setOpen] = useState(true);
-  const [p, setP] = useState(() => sessionStorage.getItem('freshroute:p') || 'P1');
+  const [p, setP] = useState(() => sessionStorage.getItem('freshroute:p') || getState().profile.name || 'P1'); // defaults to the signed-in person
   const [task, setTask] = useState('D1');
   const [start, setStart] = useState(null);
   const [now, setNow] = useState(Date.now());

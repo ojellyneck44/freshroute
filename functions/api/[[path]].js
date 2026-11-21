@@ -143,6 +143,34 @@ export async function onRequest({request, env, params}) {
       return new Response(obj.body, {headers});
     }
 
+    // ---- /api/profiles[/:id]  (people at this pantry: name and role, no password)
+    if (parts[0] === 'profiles') {
+      const id = parts[1];
+      if (!id && method === 'GET') {
+        const {results} = await env.DB.prepare('SELECT id, data, updated FROM profiles WHERE bank = ? ORDER BY updated DESC LIMIT 200').bind(bank).all();
+        return json(results.map((r) => ({...JSON.parse(r.data), id: r.id, updated: r.updated})));
+      }
+      if (!id && method === 'POST') {
+        const body = await readJson(request);
+        const name = String(body.name || '').trim().slice(0, 60);
+        if (!name || !['driver', 'hauler', 'bank'].includes(body.role)) return bad('name and role are required');
+        const pid = newId();
+        await env.DB.prepare('INSERT INTO profiles (id, bank, data, updated) VALUES (?, ?, ?, ?)').bind(pid, bank, JSON.stringify({...body, name}), Date.now()).run();
+        return json({id: pid});
+      }
+      if (id && method === 'PATCH') {
+        const row = await env.DB.prepare('SELECT data FROM profiles WHERE id = ? AND bank = ?').bind(id, bank).first();
+        if (!row) return bad('Profile not found', 404);
+        const data = {...JSON.parse(row.data), ...(await readJson(request))};
+        await env.DB.prepare('UPDATE profiles SET data = ?, updated = ? WHERE id = ?').bind(JSON.stringify(data), Date.now(), id).run();
+        return json({ok: true});
+      }
+      if (id && method === 'DELETE') {
+        await env.DB.prepare('DELETE FROM profiles WHERE id = ? AND bank = ?').bind(id, bank).run();
+        return json({ok: true});
+      }
+    }
+
     // ---- /api/nearby?lat=&lon=  (practice area: real supermarkets near a point, from OpenStreetMap)
     if (parts[0] === 'nearby' && method === 'GET') {
       const lat = Number(url.searchParams.get('lat')), lon = Number(url.searchParams.get('lon'));

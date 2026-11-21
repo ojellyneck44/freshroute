@@ -1,14 +1,14 @@
 import PracticeArea from '../../components/PracticeArea.jsx';
 import {useIsTest, setTestMode} from '../../components/TestMode.jsx';
 import {Button, SegmentedControl, SegmentedControlItem, Switch, TextInput} from '@astryxdesign/core';
-import {ArrowLeft, LogOut} from 'lucide-react';
-import {useAppState, setState, navigate, resetState, homeFor, getState} from '../../lib/state.js';
+import {ArrowLeft, LogOut, Users} from 'lucide-react';
+import {useAppState, setState, navigate, resetState, homeFor, getState, saveProfile, switchPerson} from '../../lib/state.js';
 
 // D14: preferences.
 export default function Prefs() {
   const isTest = useIsTest();
   const {profile, prefs, code} = useAppState();
-  const setProfile = (p) => setState((s) => ({profile: {...s.profile, ...p}}));
+  const setProfile = saveProfile;
   const setPrefs = (p) => setState((s) => ({prefs: {...s.prefs, ...p}}));
   return (
     <main className="center-page" tabIndex={-1} style={{placeItems: 'start center'}}>
@@ -37,6 +37,7 @@ export default function Prefs() {
         </div>
         <PracticeArea />
         <Switch label="Test mode" description="Shows the usability testing panel: task script, timer, survey and export. You can also hold the FreshRoute logo for a second." value={isTest} onChange={setTestMode} labelSpacing="spread" labelPosition="start" />
+        <Button label="Switch person" icon={<Users size={18} />} onClick={() => (switchPerson(), navigate('/', {replace: true}))} />
         <Button variant="destructive" label="Sign out of this iPad" icon={<LogOut size={18} />} onClick={() => confirm('Sign out? Your name, vehicle and planned route are removed from this iPad. Finished drives stay with the food bank.') && (resetState(), navigate('/', {replace: true}))} />
       </div>
     </main>

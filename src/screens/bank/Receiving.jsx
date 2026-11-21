@@ -4,7 +4,7 @@ import {Button, Banner, Badge, SegmentedControl, SegmentedControlItem, Switch, T
 import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send, Phone, Video, Trash2} from 'lucide-react';
 import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
-import {navigate} from '../../lib/state.js';
+import {navigate, getState} from '../../lib/state.js';
 import {api} from '../../lib/api.js';
 import {simNow} from '../../lib/simclock.js';
 import {route as osrmRoute} from '../../lib/osrm.js';
@@ -117,6 +117,7 @@ export function DeliveryCard({d, onChanged}) {
         </div>
       </div>
       {d.truck && <div className="muted" style={{fontSize: 'var(--fs-sub)'}}>Look for: {d.truck}</div>}
+      {d.addedBy?.name && <div className="faint" style={{fontSize: 'var(--fs-sub)'}}>Added by {d.addedBy.name}</div>}
       {d.real && !d.drive && !d.receipt && (
         <div className="row wrap" role="group" aria-label="Driver called ahead">
           <span className="muted row" style={{gap: 'var(--space-xs)'}}><Phone size={16} aria-hidden="true" />Driver called? Arriving in about</span>
@@ -154,7 +155,7 @@ function ReceiveForm({order}) {
   const [temp, setTemp] = useState('');
   const [blanket, setBlanket] = useState(false);
   const [photos, setPhotos] = useState([]);
-  const [receiver, setReceiver] = useState('');
+  const [receiver, setReceiver] = useState(getState().profile.name || '');
   const [err, setErr] = useState(null);
   const coldLines = order.lines.filter(isCold);
   const set = (name, patch) => setLines((x) => ({...x, [name]: {...x[name], ...patch}}));
@@ -166,7 +167,7 @@ function ReceiveForm({order}) {
     if (coldLines.length && temp.trim() === '') return setErr('Take the temperature of a cold case and enter it. The food bank asks for it at every drop-off.');
     if (!receiver.trim()) return setErr('Add your name. It signs the invoice for the pantry.');
     const all = loadReceipts();
-    const receipt = {id, order: order.order || id, at: Date.now(), lines, orderLines: order.lines, temp: temp.trim(), blanket, receiver: receiver.trim(), photos: photos.length, note: note.trim(), real: !!order.real};
+    const receipt = {id, order: order.order || id, at: Date.now(), lines, orderLines: order.lines, temp: temp.trim(), blanket, receiver: receiver.trim(), receiverId: getState().profileId, photos: photos.length, note: note.trim(), real: !!order.real};
     all[id] = receipt;
     saveReceipts(all);
     // Real deliveries keep the receipt on the server too, so every iPad at the pantry sees it.
@@ -349,7 +350,8 @@ export function AddDelivery({onDone}) {
     const lines = linesMode === 'sample' ? ORDER_LINES : linesMode === 'type' ? parsed : [];
     setBusy(true);
     try {
-      await api('deliveries', {method: 'POST', body: {order: order.trim(), windowStart, windowEnd, truck: truck.trim(), lines, addedAt: Date.now()}});
+      const me = getState();
+      await api('deliveries', {method: 'POST', body: {addedBy: me.profileId ? {id: me.profileId, name: me.profile.name} : null, order: order.trim(), windowStart, windowEnd, truck: truck.trim(), lines, addedAt: Date.now()}});
       navigate('/bank');
     } catch (e) {
       setErr(`Couldn't save the delivery. ${e.message}.`);

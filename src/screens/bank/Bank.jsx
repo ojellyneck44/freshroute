@@ -2,7 +2,7 @@ import {motion} from 'motion/react';
 import {simNow} from '../../lib/simclock.js';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, Badge} from '@astryxdesign/core';
-import {Plus, Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
+import {Users, Plus, Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, Share2} from 'lucide-react';
 import {DeliveryCard, Receive, Receiving, AddDelivery, useParentDelivery, useDeliveries, realView} from './Receiving.jsx';
 import {PARENT, HUB} from '../../data/deliveries.js';
 import {destPin} from '../../components/pins.js';
@@ -12,7 +12,7 @@ import Footage, {eventText} from '../../components/Footage.jsx';
 import {Cold, Wordmark} from '../../components/Glyphs.jsx';
 import Report from '../Report.jsx';
 import {api} from '../../lib/api.js';
-import {navigate, resetState, useAppState} from '../../lib/state.js';
+import {navigate, useAppState, switchPerson, getState} from '../../lib/state.js';
 import {clock, clockAmPm, day, deltaText, etaState, hms, coldState, duration} from '../../lib/format.js';
 import {stores, nextWindow, BANK} from '../../data/stores.js';
 import {startDrive, useDrive} from '../../lib/engine.js';
@@ -56,13 +56,13 @@ export default function Bank({path}) {
           <a key={key} href={href} aria-current={cur === key ? 'page' : undefined} onClick={(e) => (e.preventDefault(), navigate(href))}><I size={20} aria-hidden="true" />{label}</a>
         ))}
         <div className="grow" />
-        <div className="muted" style={{padding: '0 var(--space-md)', fontSize: 'var(--fs-sub)'}}>{BANK.name}</div>
-        <a href="/" onClick={(e) => (e.preventDefault(), confirm('Sign out of FreshRoute on this device?') && (resetState(), navigate('/', {replace: true})))}><LogOut size={20} aria-hidden="true" />Sign out</a>
+        <div className="muted" style={{padding: '0 var(--space-md)', fontSize: 'var(--fs-sub)'}}>{getState().profile.name ? `${getState().profile.name} · ` : ''}{BANK.name}</div>
+        <a href="/" onClick={(e) => (e.preventDefault(), switchPerson(), navigate('/', {replace: true}))}><Users size={20} aria-hidden="true" />Switch person</a>
       </nav>
       <main className="main" id="content" tabIndex={-1}>
         <div className="mobilehead spread">
           <Wordmark size={26} />
-          <Button variant="ghost" label="Sign out" icon={<LogOut size={18} />} onClick={() => confirm('Sign out of FreshRoute on this device?') && (resetState(), navigate('/', {replace: true}))} />
+          <Button variant="ghost" label="Switch person" icon={<Users size={18} />} onClick={() => (switchPerson(), navigate('/', {replace: true}))} />
         </div>
         {page === 'live' && <Live />}
         {page === 'truck' && <TruckDetail id={parts[3]} />}
@@ -80,6 +80,20 @@ export default function Bank({path}) {
       </nav>
     </div>
   );
+}
+
+// "Everyone" or "Just mine": what the signed-in person added, received or drove. Remembered per device.
+function useMine() {
+  const [mine, setMine] = useState(() => sessionStorage.getItem('freshroute:mine') === '1');
+  const set = (v) => (sessionStorage.setItem('freshroute:mine', v ? '1' : ''), setMine(v));
+  const me = getState().profileId;
+  const chips = me ? (
+    <div className="row wrap" role="group" aria-label="Whose activity">
+      <button className="chip" aria-pressed={!mine} onClick={() => set(false)}>Everyone</button>
+      <button className="chip" aria-pressed={mine} onClick={() => set(true)}>Just mine</button>
+    </div>
+  ) : null;
+  return {mine: mine && !!me, me, chips};
 }
 
 // Heads-up at 15 and 5 minutes out (Cody: "oh, the truck's here"), and at 30 and 10 for the food bank truck.
@@ -132,17 +146,19 @@ function Live() {
   const [drives, err] = usePoll('drives');
   const parent = useParentDelivery();
   const [deliveries, reloadDeliveries] = useDeliveries();
+  const {mine, me, chips} = useMine();
   const [alerts, dismiss] = useHeadsUp(drives, parent);
   const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
   const [starting, setStarting] = useState(false);
   const {drive: localSim} = useDrive();
   // Food bank delivery runs belong to their delivery card; everything else is a volunteer pickup run.
-  const active = (drives || []).filter((d) => isActive(d) && d.kind !== 'delivery').sort((a, b) => forecastOf(a) - forecastOf(b));
+  const active = (drives || []).filter((d) => isActive(d) && d.kind !== 'delivery' && (!mine || d.profileId === me)).sort((a, b) => forecastOf(a) - forecastOf(b));
   const runFor = (id) => (drives || []).filter((d) => d.kind === 'delivery' && d.deliveryId === id).sort((a, b) => b.startedAt - a.startedAt)[0];
   const today = new Date().toDateString();
   const real = (deliveries || [])
     .map((x) => realView(x, runFor(x.id)))
     .filter((x) => !x.receipt || new Date(x.receipt.at).toDateString() === today) // received ones stay until the end of the day
+    .filter((x) => !mine || x.addedBy?.id === me || x.receipt?.receiverId === me)
     .sort((a, b) => a.windowStart - b.windowStart);
   const sample = async () => {
     setStarting(true);
@@ -166,6 +182,7 @@ function Live() {
         <div>
           <div className="label">{new Date().toLocaleDateString([], {weekday: 'long', month: 'long', day: 'numeric'})}</div>
           <h1>Incoming today</h1>
+          {chips && <div style={{marginTop: 'var(--space-sm)'}}>{chips}</div>}
         </div>
         <div className="row wrap">
           <Button variant="primary" label="Add a delivery" icon={<Plus size={18} />} onClick={() => navigate('/bank/delivery/new')} />
@@ -181,7 +198,7 @@ function Live() {
       <div className="trucks">
         <section className="stack" aria-label="Incoming food">
           {real.map((x) => <DeliveryCard key={x.id} d={x} onChanged={reloadDeliveries} />)}
-          <DeliveryCard d={parent} />
+          {!mine && <DeliveryCard d={parent} />}
           <h2 className="as-h3" style={{marginTop: 'var(--space-lg)'}}>Volunteer pickup runs</h2>
           {drives === null && !err && <p className="muted" aria-busy="true">Loading pickup runs…</p>}
           {drives && active.length === 0 && (
@@ -300,10 +317,11 @@ function TruckDetail({id}) {
 // M3: finished drives.
 function Reports() {
   const [drives, err] = usePoll('drives', 30000);
-  const done = (drives || []).filter((d) => d.status === 'delivered' && d.kind !== 'delivery').sort((a, b) => b.startedAt - a.startedAt);
+  const {mine, me, chips} = useMine();
+  const done = (drives || []).filter((d) => d.status === 'delivered' && d.kind !== 'delivery' && (!mine || d.profileId === me)).sort((a, b) => b.startedAt - a.startedAt);
   return (
     <>
-      <div className="main-head"><div><h1>Pickup runs</h1><p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>Every finished volunteer run: on-time return, cold food time, counts and video.</p></div></div>
+      <div className="main-head"><div><h1>Pickup runs</h1><p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>Every finished volunteer run: on-time return, cold food time, counts and video.</p>{chips && <div style={{marginTop: 'var(--space-sm)'}}>{chips}</div>}</div></div>
       {err && <Banner status="warning" title="Can't reach FreshRoute right now" description="Retrying." />}
       {drives && done.length === 0 && <div className="empty"><h2 className="as-h3">No finished drives yet</h2><p>Reports appear here as soon as a driver taps Finish drive. You don't need the driver's approval to open them.</p></div>}
       {done.length > 0 && (

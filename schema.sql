@@ -48,3 +48,12 @@ CREATE TABLE IF NOT EXISTS deliveries (
   updated INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS deliveries_bank ON deliveries (bank, updated);
+
+-- People at a pantry (prototype "accounts": a name and a role, no password). data: {name, role, van, plate, cold, consentAt}.
+CREATE TABLE IF NOT EXISTS profiles (
+  id TEXT PRIMARY KEY,
+  bank TEXT NOT NULL,
+  data TEXT NOT NULL,
+  updated INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS profiles_bank ON profiles (bank, updated);
