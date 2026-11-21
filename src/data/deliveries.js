@@ -110,9 +110,34 @@ function sampleReceipts() {
 }
 
 // What a receipt claims: short and damaged lines with their pounds.
+// A receipt keeps the order's own lines (orderLines); older sample receipts use the sample invoice.
 export function claimsOf(receipt) {
-  return ORDER_LINES.filter((l) => receipt.lines[l.name] && receipt.lines[l.name].status !== 'ok').map((l) => {
+  return (receipt.orderLines || ORDER_LINES).filter((l) => receipt.lines?.[l.name] && receipt.lines[l.name].status !== 'ok').map((l) => {
     const r = receipt.lines[l.name];
     return {...l, status: r.status, missing: r.cases, missingLb: Math.round((l.lb / l.cases) * r.cases), note: r.note};
   });
 }
+
+// Invoice lines typed or pasted by the pantry, one per line: "4 Canned green beans", "2 x Frozen chicken (frozen)".
+// A leading number is the case count; "cold", "chilled" or "frozen" in the line marks it as cold storage.
+export function parseLines(text) {
+  return String(text || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const m = l.match(/^(\d+)\s*(?:x|×|cases?\s+of|cases?)?\s+(.+)$/i);
+      const cases = m ? Math.max(1, Number(m[1])) : 1;
+      const name = (m ? m[2] : l).replace(/\s*\((cold|chilled|frozen)\)\s*$/i, '').trim();
+      const storage = /\bfrozen\b/i.test(l) ? 'frozen' : /\b(cold|chilled)\b/i.test(l) ? 'cold' : 'dry';
+      return {name, pack: cases === 1 ? '1 case' : `${cases} cases`, cases, lb: 0, storage};
+    });
+}
+
+// 'HH:MM' on the given day, as a timestamp.
+export const atTime = (day, hhmm) => {
+  const [h, m] = String(hhmm || '0:0').split(':').map(Number);
+  const d = new Date(day);
+  d.setHours(h || 0, m || 0, 0, 0);
+  return d.getTime();
+};

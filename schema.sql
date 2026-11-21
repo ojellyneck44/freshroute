@@ -38,3 +38,13 @@ CREATE TABLE IF NOT EXISTS notes (
   tags TEXT
 );
 CREATE INDEX IF NOT EXISTS notes_store ON notes (store, t);
+
+-- Deliveries from the parent food bank to the pantry: order, window, invoice lines, the driver's
+-- call-ahead time, the food bank driver's live run (driveId) and the pantry's receipt, in `data` (JSON).
+CREATE TABLE IF NOT EXISTS deliveries (
+  id TEXT PRIMARY KEY,
+  bank TEXT NOT NULL,
+  data TEXT NOT NULL,
+  updated INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS deliveries_bank ON deliveries (bank, updated);

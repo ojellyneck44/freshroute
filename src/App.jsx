@@ -1,7 +1,7 @@
 import {lazy, Suspense, useEffect} from 'react';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
-import {useAppState, usePath, navigate} from './lib/state.js';
+import {useAppState, usePath, navigate, homeFor, drives} from './lib/state.js';
 import {useTheme} from './lib/theme.js';
 import {Facilitator, useTestMode} from './components/TestMode.jsx';
 import Welcome from './screens/Welcome.jsx';
@@ -25,6 +25,7 @@ const Prefs = load(() => import('./screens/driver/Prefs.jsx'));
 const ReportPage = load(() => import('./screens/Report.jsx'));
 const Bank = load(() => import('./screens/bank/Bank.jsx'));
 const StoreLink = load(() => import('./screens/StoreLink.jsx'));
+const Haul = load(() => import('./screens/driver/Haul.jsx'));
 
 const TITLES = {
   '/': 'FreshRoute',
@@ -33,6 +34,7 @@ const TITLES = {
   '/drive/check': 'Before you drive · FreshRoute',
   '/drive/nav': 'Navigation · FreshRoute',
   '/drive/prefs': 'Preferences · FreshRoute',
+  '/haul': 'Deliveries · FreshRoute',
   '/bank': 'Trucks on the road · FreshRoute',
   '/bank/reports': 'Drive reports · FreshRoute',
   '/bank/stores': 'Stores · FreshRoute',
@@ -56,10 +58,9 @@ export default function App() {
   useEffect(() => {
     if (path.startsWith('/s/')) return;
     if (!role && path !== '/') navigate('/', {replace: true});
-    else if (role === 'driver' && driveId && (path === '/' || path === '/drive')) navigate('/drive/nav', {replace: true});
-    else if (role === 'driver' && !consent && path !== '/setup') navigate('/setup', {replace: true});
-    else if (role === 'driver' && path === '/') navigate('/drive', {replace: true});
-    else if (role === 'bank' && path === '/') navigate('/bank', {replace: true});
+    else if (drives(role) && driveId && (path === '/' || path === homeFor(role))) navigate('/drive/nav', {replace: true});
+    else if (drives(role) && !consent && path !== '/setup') navigate('/setup', {replace: true});
+    else if (role && path === '/') navigate(homeFor(role), {replace: true});
   }, [path, role, driveId, consent]);
 
   let screen;
@@ -70,7 +71,8 @@ export default function App() {
   else if (path === '/drive/check') screen = <Check />;
   else if (path === '/drive/nav') screen = <Navigate />;
   else if (path === '/drive/prefs') screen = <Prefs />;
-  else if (path.startsWith('/drive/report/')) screen = <ReportPage id={path.split('/')[3]} back="/drive" />;
+  else if (path === '/haul') screen = <Haul />;
+  else if (path.startsWith('/drive/report/')) screen = <ReportPage id={path.split('/')[3]} back={homeFor(role)} />;
   else if (path.startsWith('/bank')) screen = <Bank path={path} />;
   else screen = <Welcome />;
 

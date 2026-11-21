@@ -143,6 +143,34 @@ export async function onRequest({request, env, params}) {
       return new Response(obj.body, {headers});
     }
 
+    // ---- /api/deliveries[/:id]  (food bank deliveries to this pantry)
+    if (parts[0] === 'deliveries') {
+      const id = parts[1];
+      if (!id && method === 'GET') {
+        const since = Date.now() - 7 * 86400000; // the last week is plenty for the board and receiving
+        const {results} = await env.DB.prepare('SELECT id, data, updated FROM deliveries WHERE bank = ? AND updated > ? ORDER BY updated DESC LIMIT 100').bind(bank, since).all();
+        return json(results.map((r) => ({...JSON.parse(r.data), id: r.id, updated: r.updated})));
+      }
+      if (!id && method === 'POST') {
+        const body = await readJson(request);
+        if (!body.order || !body.windowStart || !body.windowEnd) return bad('order, windowStart and windowEnd are required');
+        const newDelivery = newId();
+        await env.DB.prepare('INSERT INTO deliveries (id, bank, data, updated) VALUES (?, ?, ?, ?)').bind(newDelivery, bank, JSON.stringify(body), Date.now()).run();
+        return json({id: newDelivery});
+      }
+      if (id && method === 'PATCH') {
+        const row = await env.DB.prepare('SELECT data FROM deliveries WHERE id = ? AND bank = ?').bind(id, bank).first();
+        if (!row) return bad('Delivery not found', 404);
+        const data = {...JSON.parse(row.data), ...(await readJson(request))};
+        await env.DB.prepare('UPDATE deliveries SET data = ?, updated = ? WHERE id = ?').bind(JSON.stringify(data), Date.now(), id).run();
+        return json({ok: true});
+      }
+      if (id && method === 'DELETE') {
+        await env.DB.prepare('DELETE FROM deliveries WHERE id = ? AND bank = ?').bind(id, bank).run();
+        return json({ok: true});
+      }
+    }
+
     // ---- /api/notes?store=  (driver feedback that feeds store descriptions)
     if (parts[0] === 'notes') {
       if (method === 'GET') {

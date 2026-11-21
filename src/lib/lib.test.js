@@ -76,3 +76,12 @@ test('drive clock: 8x runs 8 minutes per real minute, and changing speed does no
   assert.equal(simNow(d, t0 + 120000) - before, 2 * 60000);
   assert.equal(simNow({}, 42), 42); // drives without a clock (older, or real) use the wall clock
 });
+
+import {parseLines} from '../data/deliveries.js';
+test('invoice lines: case counts and cold storage from plain text', () => {
+  const l = parseLines('4 Canned green beans\n2 x Frozen chicken leg quarters\nLarge eggs (cold)\n\n');
+  assert.equal(l.length, 3);
+  assert.deepEqual([l[0].cases, l[0].name, l[0].storage], [4, 'Canned green beans', 'dry']);
+  assert.deepEqual([l[1].cases, l[1].storage], [2, 'frozen']);
+  assert.deepEqual([l[2].cases, l[2].name, l[2].storage], [1, 'Large eggs', 'cold']);
+});

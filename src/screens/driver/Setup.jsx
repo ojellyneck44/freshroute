@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {TextInput, Switch, CheckboxInput, Button, Banner} from '@astryxdesign/core';
 import {ArrowLeft} from 'lucide-react';
-import {useAppState, setState, navigate} from '../../lib/state.js';
+import {useAppState, setState, navigate, homeFor, getState} from '../../lib/state.js';
 import {BANK} from '../../data/stores.js';
 
 // D1b: your name, your vehicle, and the recording agreement (shown once, at sign-up).
@@ -17,14 +17,14 @@ export default function Setup() {
     if (!name.trim()) return setError('Add your name so the pantry knows who is driving.');
     if (!consent) return setError('Recording is part of every FreshRoute drive. Agree to the recording terms to continue.');
     setState({profile: {name: name.trim(), van: van.trim() || 'Volunteer vehicle', cold, consent: true}});
-    navigate('/drive');
+    navigate(homeFor(getState().role));
   };
 
   return (
     <main className="center-page" tabIndex={-1}>
       <div className="form">
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => (setState({role: null}), navigate('/'))} /></div>
-        <h1>Set up your pickup runs</h1>
+        <h1>{getState().role === 'hauler' ? 'Set up your deliveries' : 'Set up your pickup runs'}</h1>
         <TextInput label="Your name" value={name} onChange={setName} autoComplete="name" placeholder="First and last name" />
         <TextInput label="Your vehicle" value={van} onChange={setVan} placeholder="e.g. Silver Honda Odyssey, plate ends 4KD" description="Stores and the pantry use this to spot you at the dock." />
         <Switch label="This vehicle has cold storage" description="Pickups with chilled or frozen food are marked for you either way." value={cold} onChange={setCold} labelSpacing="spread" labelPosition="start" />

@@ -1,8 +1,9 @@
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Switch, Selector} from '@astryxdesign/core';
 import {ArrowLeft, Camera, Activity, MapPin, Sun, CheckCircle2, Circle} from 'lucide-react';
-import {useAppState, setState, navigate} from '../../lib/state.js';
-import {planRoute, promiseFor, startDrive} from '../../lib/engine.js';
+import {useAppState, setState, navigate, getState} from '../../lib/state.js';
+import {planRoute, planDelivery, promiseFor, startDrive} from '../../lib/engine.js';
+import {api} from '../../lib/api.js';
 import {listCameras} from '../../lib/recorder.js';
 import {askMotionPermission} from '../../lib/motion.js';
 import {session, useCamera, keepAwake} from '../../lib/session.js';
@@ -30,8 +31,10 @@ export default function Check() {
   const [err, setErr] = useState(null);
   const video = useRef(null);
 
+  const haul = useAppState((s) => s.haul); // a food bank delivery instead of a pickup run
   useEffect(() => {
-    if (!route.length) navigate('/drive', {replace: true});
+    if (haul) planDelivery().then(setPlan).catch((e) => setErr(e.message));
+    else if (!route.length) navigate('/drive', {replace: true});
     else planRoute(route.map((r) => r.storeId)).then(setPlan).catch((e) => setErr(e.message));
   }, []);
 
@@ -76,8 +79,10 @@ export default function Check() {
     try {
       await keepAwake();
       setState((s) => ({prefs: {...s.prefs, camera, sound}}));
-      await startDrive({storeIds: route.map((r) => r.storeId), plan, sim, camera, sound});
-      setState({route: []});
+      const d = await startDrive({storeIds: route.map((r) => r.storeId), plan, sim, camera, sound, kind: haul ? 'delivery' : 'pickup', deliveryId: haul});
+      // Tell the pantry's delivery card which live run is theirs.
+      if (haul && !String(d.id).startsWith('local-')) await api(`deliveries/${haul}`, {method: 'PATCH', body: {driveId: d.id, truck: getState().profile.van}}).catch(() => {});
+      setState(haul ? {haul: null} : {route: []});
       navigate('/drive/nav', {replace: true});
     } catch (e) {
       setErr(e.message);
@@ -100,7 +105,7 @@ export default function Check() {
   return (
     <main className="overlay" tabIndex={-1} style={{animation: 'none'}}>
       <div className="overlay-inner">
-        <div className="back"><Button variant="ghost" label="Back to route" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} /></div>
+        <div className="back"><Button variant="ghost" label={haul ? 'Back to deliveries' : 'Back to route'} icon={<ArrowLeft size={18} />} onClick={() => navigate(haul ? '/haul' : '/drive')} /></div>
         <div className="progress-grid">
           <section className="stack" aria-labelledby="ready">
             <h1 id="ready">Before you drive</h1>
@@ -153,7 +158,7 @@ export default function Check() {
               <div className="label">Your promise to {BANK.name}</div>
               {promise ? (
                 <>
-                  <div className="big-delta num">Back by {clockAmPm(promise.final)}</div>
+                  <div className="big-delta num">{haul ? 'At the pantry by' : 'Back by'} {clockAmPm(promise.final)}</div>
                   <ol className="stack" style={{margin: 0, padding: 0, listStyle: 'none', gap: 'var(--space-2xs)'}}>
                     {route.map((r, i) => <li key={r.storeId} className="num">{i + 1}. {storeById(r.storeId).name}, {storeById(r.storeId).address} · {clock(promise.stops[i])}</li>)}
                   </ol>

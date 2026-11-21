@@ -31,7 +31,10 @@ input, textarea, [contenteditable='true'] { -webkit-user-select: text; user-sele
 .astryx-button { min-height: var(--fr-target); min-width: var(--fr-target); }
 .astryx-segmented-control-item { min-height: var(--fr-target); }
 /* Astryx text fields: the real <input> fills a 44 px box, and text stays at 17 px so iOS doesn't zoom on focus. */
-.astryx-text-input, .astryx-number-input, .astryx-text-area, .astryx-selector { min-height: var(--fr-target); }
+.astryx-text-input, .astryx-number-input, .astryx-text-area, .astryx-selector, .astryx-time-input { min-height: var(--fr-target); }
+/* The time field centres its own text: the 44 px rule below goes on its box, not its inner input. */
+.astryx-field .astryx-time-input input:not([type='checkbox']):not([type='radio']) { min-height: 0; }
+.fields2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .astryx-text-input { padding-block: 0; }
 .astryx-text-input input, .astryx-number-input input, .astryx-text-area textarea, .astryx-field input:not([type='checkbox']):not([type='radio']), .astryx-field textarea {
   font-size: var(--fs-body);

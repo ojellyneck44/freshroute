@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {TextInput, Button, Banner} from '@astryxdesign/core';
-import {Truck, Building2} from 'lucide-react';
+import {Truck, Building2, Warehouse} from 'lucide-react';
 import {setState, navigate} from '../lib/state.js';
 import {api} from '../lib/api.js';
 import {Mark, Wordmark} from '../components/Glyphs.jsx';
@@ -14,7 +14,7 @@ export default function Welcome() {
 
   async function join(useCode = code) {
     setError(null);
-    if (!role) return setError('Choose whether you drive pickups or run the pantry.');
+    if (!role) return setError("Choose who's using this iPad.");
     const c = useCode.trim().toUpperCase();
     if (!c) return setError('Enter the join code from your pantry.');
     setBusy(true);
@@ -27,7 +27,7 @@ export default function Welcome() {
     }
     setBusy(false);
     setState({role, code: c});
-    navigate(role === 'driver' ? '/setup' : '/bank');
+    navigate(role === 'bank' ? '/bank' : '/setup');
   }
 
   return (
@@ -52,6 +52,10 @@ export default function Welcome() {
           <button className="role-btn" aria-pressed={role === 'bank'} onClick={() => setRole('bank')}>
             <span className="ico"><Building2 size={24} aria-hidden="true" /></span>
             <span><span className="store-name">I run a pantry</span><br /><span className="muted">Incoming deliveries, receiving, credits and reports</span></span>
+          </button>
+          <button className="role-btn" aria-pressed={role === 'hauler'} onClick={() => setRole('hauler')}>
+            <span className="ico"><Warehouse size={24} aria-hidden="true" /></span>
+            <span><span className="store-name">I drive for the food bank</span><br /><span className="muted">Deliver orders to pantries with a live arrival time</span></span>
           </button>
           <TextInput label="Pantry join code" value={code} onChange={setCode} placeholder="e.g. DENTON-DEMO" autoComplete="off" onEnter={() => join()} description="Your pantry gives you this code. It links this iPad to the pantry's deliveries and pickup runs." />
           {error && <Banner status="error" title={error} />}

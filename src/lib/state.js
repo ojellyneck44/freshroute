@@ -3,11 +3,12 @@ import {useSyncExternalStore} from 'react';
 // Small persisted app state. Everything a driver or manager sets up lives here.
 const KEY = 'freshroute:v1';
 const initial = {
-  role: null, // 'driver' | 'bank'
+  role: null, // 'driver' (pantry volunteer) | 'hauler' (food bank truck driver) | 'bank' (the pantry)
   code: '', // food bank join code
   profile: {name: '', van: '', cold: false, consent: false},
   prefs: {theme: 'auto', camera: '', headsUp: true},
   route: [], // [{storeId}] being planned
+  haul: null, // delivery id a food bank driver is about to start
   driveId: null, // active drive on this device
   lastReport: null,
 };
@@ -56,3 +57,7 @@ export function navigate(path, {replace = false} = {}) {
 addEventListener('popstate', () => routeSubs.forEach((f) => f()));
 export const usePath = () =>
   useSyncExternalStore((f) => (routeSubs.add(f), () => routeSubs.delete(f)), () => location.pathname + location.search);
+
+// Each role's home screen.
+export const homeFor = (role) => (role === 'hauler' ? '/haul' : role === 'bank' ? '/bank' : '/drive');
+export const drives = (role) => role === 'driver' || role === 'hauler';

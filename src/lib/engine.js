@@ -3,6 +3,7 @@ import {cumulative, project, pointAt, distance} from './geo.js';
 import {api, send} from './api.js';
 import {getState, setState} from './state.js';
 import {storeById, BANK} from '../data/stores.js';
+import {PARENT} from '../data/deliveries.js';
 import {route as osrmRoute} from './osrm.js';
 import {simNow, newClock, rebase} from './simclock.js';
 
@@ -44,6 +45,12 @@ export async function planRoute(storeIds) {
   return {stops, route: r};
 }
 
+// A food bank delivery run: from the food bank warehouse straight to the pantry, no pickups on the way.
+export async function planDelivery() {
+  const r = await osrmRoute([PARENT, BANK]);
+  return {stops: [], route: r};
+}
+
 // Promise = start + driving time + a planned dwell at each pickup, rounded up to the minute.
 // Always in real minutes: the simulator speeds up the drive clock instead of shrinking the plan.
 export function promiseFor(route, stopsCount, start = Date.now()) {
@@ -60,7 +67,7 @@ export function promiseFor(route, stopsCount, start = Date.now()) {
 }
 
 // ---------- Start / stop ----------
-export async function startDrive({storeIds, plan, sim = 0, camera, sound = true, sample = false}) {
+export async function startDrive({storeIds, plan, sim = 0, camera, sound = true, sample = false, kind = 'pickup', deliveryId = null}) {
   const {stops, route} = plan || (await planRoute(storeIds));
   const now = Date.now();
   const promise = promiseFor(route, stops.length, now);
@@ -79,7 +86,9 @@ export async function startDrive({storeIds, plan, sim = 0, camera, sound = true,
     sample,
     startedAt: now,
     promiseAt: promise.final,
-    status: 'en-route-pickup',
+    kind, // 'pickup': a pantry volunteer's run to stores; 'delivery': the food bank truck bringing an order
+    deliveryId,
+    status: stops.length ? 'en-route-pickup' : 'en-route-bank',
     stops: stops.map((s, i) => ({
       storeId: s.id, name: s.name, address: s.address, lat: s.lat, lon: s.lon,
       items: s.items, promiseAt: promise.stops[i], etaAt: promise.stops[i],

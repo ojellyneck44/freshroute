@@ -1,8 +1,8 @@
 import {simNow} from '../../lib/simclock.js';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, Badge} from '@astryxdesign/core';
-import {Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
-import {DeliveryCard, Receive, Receiving, useParentDelivery} from './Receiving.jsx';
+import {Plus, Inbox, ClipboardCheck, FileText, Store, Bell, BellOff, ArrowLeft, Play, LogOut, Share2} from 'lucide-react';
+import {DeliveryCard, Receive, Receiving, AddDelivery, useParentDelivery, useDeliveries, realView} from './Receiving.jsx';
 import {PARENT, HUB} from '../../data/deliveries.js';
 import {destPin} from '../../components/pins.js';
 import MapView from '../../components/MapView.jsx';
@@ -45,7 +45,7 @@ export default function Bank({path}) {
     ['/bank/reports', 'reports', 'Pickup runs', FileText],
     ['/bank/stores', 'stores', 'Stores', Store],
   ];
-  const cur = page === 'truck' || page === 'receive' ? 'live' : page === 'report' ? 'reports' : page;
+  const cur = page === 'truck' || page === 'receive' || page === 'delivery' ? 'live' : page === 'report' ? 'reports' : page;
   return (
     <div className="shell">
       <a className="skip" href="#content">Skip to content</a>
@@ -66,6 +66,7 @@ export default function Bank({path}) {
         {page === 'live' && <Live />}
         {page === 'truck' && <TruckDetail id={parts[3]} />}
         {page === 'receive' && <Receive id={parts[3]} />}
+        {page === 'delivery' && <AddDelivery />}
         {page === 'receiving' && <Receiving />}
         {page === 'reports' && <Reports />}
         {page === 'report' && <Report id={parts[3]} back="/bank/reports" />}
@@ -129,11 +130,19 @@ function useHeadsUp(drives, parent) {
 function Live() {
   const [drives, err] = usePoll('drives');
   const parent = useParentDelivery();
+  const [deliveries, reloadDeliveries] = useDeliveries();
   const [alerts, dismiss] = useHeadsUp(drives, parent);
   const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
   const [starting, setStarting] = useState(false);
   const {drive: localSim} = useDrive();
-  const active = (drives || []).filter(isActive).sort((a, b) => forecastOf(a) - forecastOf(b));
+  // Food bank delivery runs belong to their delivery card; everything else is a volunteer pickup run.
+  const active = (drives || []).filter((d) => isActive(d) && d.kind !== 'delivery').sort((a, b) => forecastOf(a) - forecastOf(b));
+  const runFor = (id) => (drives || []).filter((d) => d.kind === 'delivery' && d.deliveryId === id).sort((a, b) => b.startedAt - a.startedAt)[0];
+  const today = new Date().toDateString();
+  const real = (deliveries || [])
+    .map((x) => realView(x, runFor(x.id)))
+    .filter((x) => !x.receipt || new Date(x.receipt.at).toDateString() === today) // received ones stay until the end of the day
+    .sort((a, b) => a.windowStart - b.windowStart);
   const sample = async () => {
     setStarting(true);
     try {
@@ -147,6 +156,7 @@ function Live() {
     destPin('hub', 'hub', HUB.lon, HUB.lat, `${HUB.name}, shared stop`),
     destPin('foodbank', 'parent-wh', PARENT.lon, PARENT.lat, `${PARENT.name} warehouse`),
     ...(parent.pos && !parent.receipt ? [{id: 'parent', lon: parent.pos[0], lat: parent.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck, ${phaseLabel(parent)}`}] : []),
+    ...real.filter((x) => x.pos && !x.receipt && x.phase !== 'here').map((x) => ({id: 'dl-' + x.id, lon: x.pos[0], lat: x.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck for order ${x.order}`, onClick: () => navigate(`/bank/truck/${x.drive.id}`)})),
     ...active.filter((d) => d.last).map((d) => ({id: d.id, lon: d.last.lon, lat: d.last.lat, className: 'truck-dot', style: {background: STATE_VAR[etaState(forecastOf(d), d.promiseAt).key]}, label: `${d.van}, ${etaState(forecastOf(d), d.promiseAt).label}`, onClick: () => navigate(`/bank/truck/${d.id}`)})),
   ];
   return (
@@ -157,6 +167,7 @@ function Live() {
           <h1>Incoming today</h1>
         </div>
         <div className="row wrap">
+          <Button variant="primary" label="Add a delivery" icon={<Plus size={18} />} onClick={() => navigate('/bank/delivery/new')} />
           {perm === 'default' && <Button label="Turn on arrival alerts" icon={<Bell size={18} />} onClick={() => Notification.requestPermission().then(setPerm)} />}
           {perm === 'granted' && <Badge variant="success" label="Arrival alerts on" icon={<Bell size={14} />} />}
           {perm === 'denied' && <Badge variant="neutral" label="Alerts blocked in browser settings" icon={<BellOff size={14} />} />}
@@ -168,6 +179,7 @@ function Live() {
       </div>
       <div className="trucks">
         <section className="stack" aria-label="Incoming food">
+          {real.map((x) => <DeliveryCard key={x.id} d={x} onChanged={reloadDeliveries} />)}
           <DeliveryCard d={parent} />
           <h2 className="as-h3" style={{marginTop: 'var(--space-lg)'}}>Volunteer pickup runs</h2>
           {drives === null && !err && <p className="muted" aria-busy="true">Loading pickup runs…</p>}
@@ -287,7 +299,7 @@ function TruckDetail({id}) {
 // M3: finished drives.
 function Reports() {
   const [drives, err] = usePoll('drives', 30000);
-  const done = (drives || []).filter((d) => d.status === 'delivered').sort((a, b) => b.startedAt - a.startedAt);
+  const done = (drives || []).filter((d) => d.status === 'delivered' && d.kind !== 'delivery').sort((a, b) => b.startedAt - a.startedAt);
   return (
     <>
       <div className="main-head"><div><h1>Pickup runs</h1><p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>Every finished volunteer run: on-time return, cold food time, counts and video.</p></div></div>

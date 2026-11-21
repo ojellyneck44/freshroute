@@ -7,7 +7,7 @@ import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
 import {useDrive, resumeDrive, currentTarget, arrive, loaded, skipStop, addDelay, finishDrive, setSimSpeed, logEvent, driveNow} from '../../lib/engine.js';
 import {session, startCapture, stopCapture, useCamera} from '../../lib/session.js';
-import {useAppState, setState, navigate} from '../../lib/state.js';
+import {useAppState, setState, navigate, homeFor, getState} from '../../lib/state.js';
 import {instruction} from '../../lib/osrm.js';
 import {clock, clockAmPm, deltaText, etaState, hms, miles, coldState} from '../../lib/format.js';
 import {pending} from '../../lib/api.js';
@@ -31,8 +31,8 @@ export default function Navigate() {
   useEffect(() => {
     if (finishing.current) return;
     // No saved drive to resume (cleared storage, finished elsewhere): drop the stale id, or App sends us straight back here.
-    if (!drive && driveId && !resumeDrive()) (setState({driveId: null}), navigate('/drive', {replace: true}));
-    if (!drive && !driveId) navigate('/drive', {replace: true});
+    if (!drive && driveId && !resumeDrive()) (setState({driveId: null}), navigate(homeFor(getState().role), {replace: true}));
+    if (!drive && !driveId) navigate(homeFor(getState().role), {replace: true});
   }, [drive, driveId]);
 
   // Camera, recording and motion markers run for the whole drive.
@@ -101,7 +101,7 @@ export default function Navigate() {
     <main className="mapshell" data-screen tabIndex={-1}>
       <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
       <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
-        legend={{title: 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ['stopnum', 'Pickup stops'], ['dest pantry', 'Drop-off at your pantry']]}} />
+        legend={{title: drive.kind === 'delivery' ? 'Your delivery' : 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ...(drive.stops.length ? [['stopnum', 'Pickup stops']] : []), ['dest pantry', drive.kind === 'delivery' ? `Deliver to ${drive.dest.name}` : 'Drop-off at your pantry']]}} />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
         {session.stream ? <span className="rec"><i aria-hidden="true" />Recording</span> : <div className="cam-off">Camera off</div>}
@@ -148,7 +148,7 @@ export default function Navigate() {
             <button className="btn primary drive" onClick={() => arrive(target.i)}>I've arrived</button>
           )
         ) : (
-          <button className="btn primary drive" onClick={() => setOverlay('end')}>I'm back at the pantry</button>
+          <button className="btn primary drive" onClick={() => setOverlay('end')}>{drive.kind === 'delivery' ? "I'm at the pantry" : "I'm back at the pantry"}</button>
         )}
       </div>
 
@@ -299,6 +299,7 @@ function Pickup({drive, i, onClose}) {
 
 // D11 + D12: drop-off counts, what got in the way, finish.
 function EndDrive({drive, onClose, onFinishing}) {
+  if (drive.kind === 'delivery') return <EndDelivery drive={drive} onClose={onClose} onFinishing={onFinishing} />;
   const picked = {};
   drive.stops.forEach((s) => s.counts && Object.entries(s.counts).forEach(([k, v]) => (picked[k] = (picked[k] || 0) + v)));
   const [drop, setDrop] = useState(picked);
@@ -343,6 +344,28 @@ function EndDrive({drive, onClose, onFinishing}) {
         </div>
         <div style={{marginTop: 'var(--space-md)'}}><TextArea label="Tell us more" isOptional value={text} onChange={setText} placeholder="e.g. Kroger's dock was blocked by a delivery truck" /></div>
         <button className="btn primary drive" style={{marginTop: 'var(--space-xl)', width: '100%'}} onClick={finish} aria-disabled={busy}>Finish drive</button>
+      </div>
+    </div>
+  );
+}
+
+// A food bank delivery ends at the pantry's door: the pantry checks the order in on their own iPad.
+function EndDelivery({drive, onClose, onFinishing}) {
+  const [text, setText] = useState('');
+  const finish = () => {
+    onFinishing();
+    stopCapture();
+    const id = finishDrive({dropCounts: {}, feedback: {tags: [], text}});
+    navigate(`/drive/report/${id}`, {replace: true});
+  };
+  return (
+    <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="end">
+      <div className="overlay-inner" style={{maxWidth: 'var(--size-form)'}}>
+        <Button variant="ghost" label="Back to map" icon={<ChevronLeft size={20} />} onClick={onClose} />
+        <h1 id="end" style={{marginTop: 'var(--space-lg)'}}>Delivered to {drive.dest.name}</h1>
+        <p className="muted" style={{margin: 'var(--space-2xs) 0 var(--space-xl)'}}>The pantry checks the order in, line by line, on their iPad and signs for it there. Finish once they've signed.</p>
+        <TextArea label="Anything the pantry or the food bank should know?" isOptional value={text} onChange={setText} placeholder="e.g. Dock was blocked, unloaded at the front door" />
+        <button className="btn primary drive" style={{marginTop: 'var(--space-xl)', width: '100%'}} onClick={finish}>Finish delivery</button>
       </div>
     </div>
   );

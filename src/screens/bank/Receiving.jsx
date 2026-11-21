@@ -1,14 +1,16 @@
 import {useEffect, useState} from 'react';
-import {Button, Banner, Badge, SegmentedControl, SegmentedControlItem, Switch, TextInput} from '@astryxdesign/core';
-import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send} from 'lucide-react';
+import {Button, Banner, Badge, SegmentedControl, SegmentedControlItem, Switch, TextInput, TextArea, TimeInput} from '@astryxdesign/core';
+import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send, Phone, Video, Trash2} from 'lucide-react';
 import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
 import {navigate} from '../../lib/state.js';
+import {api} from '../../lib/api.js';
+import {simNow} from '../../lib/simclock.js';
 import {route as osrmRoute} from '../../lib/osrm.js';
 import {cumulative, pointAt} from '../../lib/geo.js';
 import {clock, clockAmPm, day, etaState, miles} from '../../lib/format.js';
 import {BANK} from '../../data/stores.js';
-import {PARENT, HUB, deliveryFor, orderLb, isCold, creditDeadline, loadReceipts, saveReceipts, claimsOf} from '../../data/deliveries.js';
+import {PARENT, HUB, TRUCK, ORDER_LINES, deliveryFor, orderLb, isCold, creditDeadline, loadReceipts, saveReceipts, claimsOf, parseLines, atTime} from '../../data/deliveries.js';
 
 const STATE_VAR = {'on-time': 'var(--fr-sprout)', slipping: 'var(--fr-apricot)', late: 'var(--fr-tomato)', unknown: 'var(--fr-text-3)'};
 
@@ -44,44 +46,90 @@ export function useParentDelivery() {
   return d;
 }
 
+// Real deliveries the pantry entered (shared through the server), refreshed every 8 seconds.
+export function useDeliveries(ms = 8000) {
+  const [list, setList] = useState(null);
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const run = () => api('deliveries').then((x) => alive && setList(x)).catch(() => alive && setList((l) => l || []));
+    run();
+    const t = setInterval(run, ms);
+    return () => ((alive = false), clearInterval(t));
+  }, [tick]);
+  return [list, () => setTick((x) => x + 1)];
+}
+
+// A real delivery as the board shows it. `drive` is the food bank driver's live run, when they use FreshRoute.
+export function realView(x, drive) {
+  const now = drive ? simNow(drive) : Date.now();
+  const done = drive && ['arrived-bank', 'delivered'].includes(drive.status);
+  const eta = drive ? (done ? drive.arrivedBankAt || drive.deliveredAt || now : drive.last?.eta || drive.promiseAt) : x.calledEta || null;
+  return {
+    ...x, real: true, lines: x.lines || [], truck: x.truck || drive?.van || '', etaAt: eta, drive,
+    receipt: x.receipt || loadReceipts()[x.id] || null,
+    phase: done ? 'here' : drive ? 'road' : x.calledEta ? 'called' : 'waiting',
+    pos: drive?.last ? [drive.last.lon, drive.last.lat] : null,
+    progress: drive ? (done ? 1 : Math.min(0.98, Math.max(0.02, (now - drive.startedAt) / Math.max(1, eta - drive.startedAt)))) : 0,
+  };
+}
+
 export const phaseText = (d) =>
   d.receipt ? `Received ${clockAmPm(d.receipt.at)} by ${d.receipt.receiver}`
   : d.phase === 'here' ? `At your door since ${clockAmPm(d.etaAt)}`
   : d.phase === 'hub' ? `At the ${HUB.place}, your stop is next`
+  : d.phase === 'road' && d.real ? `On the way to you${d.drive?.driver ? ` with ${d.drive.driver}` : ''}, live from FreshRoute`
   : d.phase === 'road' ? `On the way to you, ${miles(d.milesLeft ?? 0)} out`
+  : d.phase === 'called' ? `Driver called at ${clockAmPm(d.calledAt)}: about ${clockAmPm(d.calledEta)}`
+  : d.phase === 'waiting' ? 'Not on the road yet'
   : `On the road from the ${PARENT.place}, ${HUB.place} first`;
 
 // The food bank delivery on the Incoming board.
-export function DeliveryCard({d}) {
+export function DeliveryCard({d, onChanged}) {
   const here = d.phase === 'here';
   const st = etaState(d.etaAt, d.windowEnd);
   const cold = d.lines.filter(isCold).length;
-  const progress = d.phase === 'here' ? 1 : d.phase === 'road' ? 0.6 + 0.4 * d.legFrac[1] : d.phase === 'hub' ? 0.6 : 0.6 * d.legFrac[0];
+  const lb = orderLb(d.lines);
+  const progress = d.real ? d.progress : d.phase === 'here' ? 1 : d.phase === 'road' ? 0.6 + 0.4 * d.legFrac[1] : d.phase === 'hub' ? 0.6 : 0.6 * d.legFrac[0];
+  const patch = (body) => api(`deliveries/${d.id}`, {method: 'PATCH', body}).then(onChanged);
+  // The driver's call before leaving the previous stop, logged with one tap.
+  const called = (min) => patch({calledAt: Date.now(), calledEta: Date.now() + min * 60000});
+  const remove = () => confirm(`Remove order ${d.order}? It disappears from every iPad at the pantry.`) && api(`deliveries/${d.id}`, {method: 'DELETE'}).then(onChanged);
   return (
     <article className="panel delivery stack" aria-labelledby={`dl-${d.id}`}>
       <div className="row" style={{alignItems: 'flex-start', gap: 'var(--space-lg)'}}>
         <Ring forecast={d.receipt ? d.receipt.at : d.etaAt} promise={d.windowEnd} progress={d.receipt ? 1 : progress} size={112} stroke={9} timeSize={22} />
         <div className="grow stack" style={{gap: 'var(--space-2xs)'}}>
-          <div className="label">From {PARENT.name}</div>
-          <h2 className="as-h3 nowrap" id={`dl-${d.id}`}>Order {d.id}</h2>
+          <div className="label">From {PARENT.name}{d.real ? '' : ' · sample delivery'}</div>
+          <h2 className="as-h3 nowrap" id={`dl-${d.id}`}>Order {d.order || d.id}</h2>
           <div style={{color: d.receipt ? 'var(--fr-sprout)' : here ? 'var(--fr-text)' : STATE_VAR[st.key], fontWeight: 600}}>{phaseText(d)}</div>
-          {!here && !d.receipt && (
+          {!here && !d.receipt && !d.etaAt && <div className="muted">Expected in your window. When the driver calls ahead, log it below.</div>}
+          {!here && !d.receipt && d.etaAt && (
             <div className="muted">{st.delta > 0 ? `Arrives about ${clockAmPm(d.etaAt)}, after your window closes at ${clockAmPm(d.windowEnd)}` : `Arrives about ${clockAmPm(d.etaAt)}, inside your window`}{d.reason ? `. ${d.reason}.` : '.'}</div>
           )}
           <div className="row wrap" style={{gap: 'var(--space-xs)', marginTop: 'var(--space-xs)'}}>
             <span className="chip">Window {clock(d.windowStart)} to {clockAmPm(d.windowEnd)}</span>
-            <span className="chip">{d.lines.length} lines, {orderLb(d.lines).toLocaleString()} lb</span>
+            {d.drive?.sim > 0 && <span className="chip" title="Times are drive time, which runs faster than the clock on the wall">Simulated at {d.drive.clock?.speed || d.drive.sim}×</span>}
+            {d.lines.length > 0 && <span className="chip">{d.lines.length} lines{lb ? `, ${lb.toLocaleString()} lb` : ''}</span>}
             {cold > 0 && <span className="chip frost"><Cold size={14} />{cold} cold or frozen</span>}
           </div>
         </div>
       </div>
-      <div className="muted" style={{fontSize: 'var(--fs-sub)'}}>Look for: {d.truck}</div>
+      {d.truck && <div className="muted" style={{fontSize: 'var(--fs-sub)'}}>Look for: {d.truck}</div>}
+      {d.real && !d.drive && !d.receipt && (
+        <div className="row wrap" role="group" aria-label="Driver called ahead">
+          <span className="muted row" style={{gap: 'var(--space-xs)'}}><Phone size={16} aria-hidden="true" />Driver called? Arriving in about</span>
+          {[15, 30, 45, 60].map((m) => <button key={m} className="chip" onClick={() => called(m)}>{m} min</button>)}
+        </div>
+      )}
       <div className="row wrap">
         {d.receipt ? (
           <Button label="See the receipt" icon={<PackageCheck size={18} />} onClick={() => navigate('/bank/receiving')} />
         ) : (
           <Button variant={here ? 'primary' : 'secondary'} size="lg" label={here ? 'Receive delivery' : 'Open the order'} icon={<PackageCheck size={18} />} onClick={() => navigate(`/bank/receive/${d.id}`)} />
         )}
+        {d.drive && <Button variant="ghost" label="Watch the truck" icon={<Video size={18} />} onClick={() => navigate(`/bank/truck/${d.drive.id}`)} />}
+        {d.real && !d.receipt && !d.drive && <Button variant="ghost" label="Remove" icon={<Trash2 size={18} />} onClick={remove} />}
         {cold > 0 && !d.receipt && <span className="faint" style={{fontSize: 'var(--fs-sub)'}}>Bring the pallet blanket: cold lines can't be received without it.</span>}
       </div>
     </article>
@@ -91,7 +139,16 @@ export function DeliveryCard({d}) {
 // Check a delivery in against the invoice, line by line, before the driver leaves.
 export function Receive({id}) {
   const d = useParentDelivery();
-  const order = d.id === id ? d : {...d, id, phase: 'here'}; // an older order still waiting to be checked in
+  const [list] = useDeliveries(30000);
+  const real = list?.find((x) => x.id === id);
+  if (!id.startsWith('AI-') && !real) return <p className="muted" aria-busy={list === null}>{list === null ? 'Loading the order…' : 'That order is no longer on the board.'}</p>;
+  const order = real ? realView(real) : d.id === id ? d : {...d, id, phase: 'here'}; // an older sample order still waiting to be checked in
+  return <ReceiveForm key={id} order={order} />;
+}
+
+function ReceiveForm({order}) {
+  const id = order.id;
+  const [note, setNote] = useState('');
   const [lines, setLines] = useState(() => Object.fromEntries(order.lines.map((l) => [l.name, {status: 'ok', cases: 0}])));
   const [temp, setTemp] = useState('');
   const [blanket, setBlanket] = useState(false);
@@ -108,9 +165,11 @@ export function Receive({id}) {
     if (coldLines.length && temp.trim() === '') return setErr('Take the temperature of a cold case and enter it. The food bank asks for it at every drop-off.');
     if (!receiver.trim()) return setErr('Add your name. It signs the invoice for the pantry.');
     const all = loadReceipts();
-    all[id] = {id, at: Date.now(), lines, temp: temp.trim(), blanket, receiver: receiver.trim(), photos: photos.length};
+    const receipt = {id, order: order.order || id, at: Date.now(), lines, orderLines: order.lines, temp: temp.trim(), blanket, receiver: receiver.trim(), photos: photos.length, note: note.trim(), real: !!order.real};
+    all[id] = receipt;
     saveReceipts(all);
-    navigate('/bank/receiving');
+    // Real deliveries keep the receipt on the server too, so every iPad at the pantry sees it.
+    (order.real ? api(`deliveries/${id}`, {method: 'PATCH', body: {receipt}}).catch(() => {}) : Promise.resolve()).then(() => navigate('/bank/receiving'));
   };
 
   return (
@@ -118,13 +177,14 @@ export function Receive({id}) {
       <div className="main-head">
         <div>
           <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
-          <h1 style={{marginTop: 'var(--space-sm)'}}>Receive order {id}</h1>
+          <h1 style={{marginTop: 'var(--space-sm)'}}>Receive order {order.order || id}</h1>
           <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>{order.phase === 'here' ? 'The truck is here.' : phaseText(order) + '.'} Check each line against the invoice, then sign before the driver leaves.</p>
         </div>
       </div>
       <div className="receive">
         <section aria-labelledby="lines-h" className="stack">
           <h2 id="lines-h" className="as-h3">Invoice lines</h2>
+          {order.lines.length === 0 && <TextArea label="No invoice lines were entered for this order" description="Write down anything short, damaged or not ordered." value={note} onChange={setNote} />}
           <ul className="lines">
             {order.lines.map((l) => {
               const r = lines[l.name];
@@ -132,7 +192,7 @@ export function Receive({id}) {
                 <li key={l.name} className={r.status !== 'ok' ? 'flag' : ''}>
                   <div className="grow">
                     <div className="store-name">{l.name}</div>
-                    <div className="muted" style={{fontSize: 'var(--fs-sub)'}}>{l.cases} {l.cases === 1 ? 'case' : 'cases'} of {l.pack} · {l.lb} lb{isCold(l) ? ` · ${l.storage}` : ''}</div>
+                    <div className="muted" style={{fontSize: 'var(--fs-sub)'}}>{l.lb ? `${l.cases} ${l.cases === 1 ? 'case' : 'cases'} of ${l.pack} · ${l.lb} lb` : l.pack}{isCold(l) ? ` · ${l.storage}` : ''}</div>
                   </div>
                   <SegmentedControl label={`${l.name} status`} value={r.status} onChange={(status) => set(l.name, {status, cases: status === 'ok' ? 0 : Math.max(1, r.cases)})} size="sm">
                     <SegmentedControlItem value="ok" label="Received" />
@@ -185,12 +245,17 @@ export function Receive({id}) {
 // Credits to claim and every delivery checked in.
 export function Receiving() {
   const [receipts, setReceipts] = useState(loadReceipts);
-  const list = Object.values(receipts).sort((a, b) => b.at - a.at);
-  const open = list.filter((r) => claimsOf(r).length && !r.creditSentAt);
+  const [server] = useDeliveries(30000);
+  // Receipts signed on another iPad come from the server; this iPad's own copy wins if both exist.
+  const merged = {...Object.fromEntries((server || []).filter((x) => x.receipt).map((x) => [x.id, x.receipt])), ...receipts};
+  const list = Object.values(merged).sort((a, b) => b.at - a.at);
+  const open = list.filter((r) => (claimsOf(r).length || r.note) && !r.creditSentAt);
   const send = (r) => {
-    const all = {...receipts, [r.id]: {...r, creditSentAt: Date.now()}};
+    const sent = {...r, creditSentAt: Date.now()};
+    const all = {...receipts, [r.id]: sent};
     saveReceipts(all);
     setReceipts(all);
+    if (r.real) api(`deliveries/${r.id}`, {method: 'PATCH', body: {receipt: sent}}).catch(() => {});
   };
   return (
     <>
@@ -211,13 +276,14 @@ export function Receiving() {
             <article key={r.id} className="panel stack">
               <div className="spread wrap">
                 <div>
-                  <div className="store-name">Order {r.id}</div>
+                  <div className="store-name">Order {r.order || r.id}</div>
                   <div className="muted">Received {day(r.at)} by {r.receiver}{r.photos ? ` · ${r.photos} photos` : ''}</div>
                 </div>
                 <span className={`chip ${hoursLeft < 24 ? 'late' : hoursLeft < 48 ? 'slipping' : ''}`}>{hoursLeft < 0 ? 'Past the deadline' : `Claim by ${day(due)}, 5 PM`}</span>
               </div>
               <ul className="claims">
-                {c.map((l) => <li key={l.name}><span>{l.name}: {l.missing} {l.missing === 1 ? 'case' : 'cases'} {l.status}{l.note ? ` (${l.note})` : ''}</span><span className="num">{l.missingLb} lb</span></li>)}
+                {r.note && <li><span>{r.note}</span></li>}
+                {c.map((l) => <li key={l.name}><span>{l.name}: {l.missing} {l.missing === 1 ? 'case' : 'cases'} {l.status}{l.note ? ` (${l.note})` : ''}</span><span className="num">{l.missingLb ? `${l.missingLb} lb` : ''}</span></li>)}
               </ul>
               <div className="row wrap">
                 <Button variant="primary" label="Send credit request" icon={<Send size={18} />} onClick={() => send(r)} />
@@ -235,14 +301,14 @@ export function Receiving() {
             <tbody>
               {list.map((r) => {
                 const c = claimsOf(r);
-                const lb = orderLb(deliveryFor(r.at).lines) - c.reduce((a, l) => a + l.missingLb, 0);
+                const lb = orderLb(r.orderLines || ORDER_LINES) - c.reduce((a, l) => a + l.missingLb, 0);
                 return (
                   <tr key={r.id}>
                     <td className="num nowrap">{day(r.at)}<div className="muted">{clockAmPm(r.at)}</div></td>
-                    <td>{r.id}{r.sample && <div className="muted">Sample</div>}</td>
-                    <td className="num">{lb.toLocaleString()} lb</td>
+                    <td>{r.order || r.id}{r.sample && <div className="muted">Sample</div>}</td>
+                    <td className="num">{lb ? `${lb.toLocaleString()} lb` : 'n/a'}</td>
                     <td className="num">{r.temp ? `${r.temp} °F` : 'n/a'}{r.temp && r.blanket ? ', blanket' : ''}</td>
-                    <td>{c.length === 0 ? 'None' : r.creditSentAt ? <Badge variant="neutral" label={`${c.length} sent ${day(r.creditSentAt)}`} /> : <Badge variant="orange" label={`${c.length} to send`} />}</td>
+                    <td>{c.length === 0 && !r.note ? 'None' : r.creditSentAt ? <Badge variant="neutral" label={`Sent ${day(r.creditSentAt)}`} /> : <Badge variant="orange" label="To send" />}</td>
                     <td>{r.receiver}</td>
                   </tr>
                 );
@@ -255,3 +321,80 @@ export function Receiving() {
   );
 }
 
+
+// Add a real delivery from the food bank: what the pantry knows from the ordering portal.
+export function AddDelivery({onDone}) {
+  const [order, setOrder] = useState('');
+  const [when, setWhen] = useState('today');
+  // Default window: the next 2 hours, starting on the hour.
+  const next = new Date().getHours() + 1;
+  const hh = (h) => `${String(h % 24).padStart(2, '0')}:00`;
+  const [start, setStart] = useState(hh(next));
+  const [end, setEnd] = useState(hh(next + 2));
+  const [truck, setTruck] = useState('');
+  const [linesMode, setLinesMode] = useState('type');
+  const [text, setText] = useState('');
+  const [err, setErr] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const parsed = parseLines(text);
+
+  const save = async () => {
+    setErr(null);
+    if (!order.trim()) return setErr('Add the order or invoice number from the ordering portal.');
+    const dayStart = new Date();
+    if (when === 'tomorrow') dayStart.setDate(dayStart.getDate() + 1);
+    const windowStart = atTime(dayStart, start), windowEnd = atTime(dayStart, end);
+    if (!(windowEnd > windowStart)) return setErr('The window has to end after it starts.');
+    const lines = linesMode === 'sample' ? ORDER_LINES : linesMode === 'type' ? parsed : [];
+    setBusy(true);
+    try {
+      await api('deliveries', {method: 'POST', body: {order: order.trim(), windowStart, windowEnd, truck: truck.trim(), lines, addedAt: Date.now()}});
+      navigate('/bank');
+    } catch (e) {
+      setErr(`Couldn't save the delivery. ${e.message}.`);
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="main-head">
+        <div>
+          <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
+          <h1 style={{marginTop: 'var(--space-sm)'}}>Add a delivery</h1>
+          <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>From your order confirmation in {PARENT.name}'s ordering portal. Every iPad at the pantry sees it.</p>
+        </div>
+      </div>
+      <div className="form stack">
+        <TextInput label="Order or invoice number" value={order} onChange={setOrder} placeholder="e.g. AI-48213" autoComplete="off" />
+        <div className="stack" style={{gap: 'var(--space-sm)'}}>
+          <span className="label">Delivery day</span>
+          <SegmentedControl label="Delivery day" value={when} onChange={setWhen} layout="fill">
+            <SegmentedControlItem value="today" label="Today" />
+            <SegmentedControlItem value="tomorrow" label="Tomorrow" />
+          </SegmentedControl>
+        </div>
+        <div className="fields2">
+          <TimeInput label="Window opens" value={start} onChange={(v) => setStart(v || '')} />
+          <TimeInput label="Window closes" value={end} onChange={(v) => setEnd(v || '')} />
+        </div>
+        <TextInput label="Truck to look for (optional)" value={truck} onChange={setTruck} placeholder={`e.g. ${TRUCK}`} />
+        <div className="stack" style={{gap: 'var(--space-sm)'}}>
+          <span className="label">Invoice lines</span>
+          <SegmentedControl label="Invoice lines" value={linesMode} onChange={setLinesMode} layout="fill">
+            <SegmentedControlItem value="type" label="Type them" />
+            <SegmentedControlItem value="sample" label="Use the sample" />
+            <SegmentedControlItem value="none" label="Skip" />
+          </SegmentedControl>
+          {linesMode === 'type' && (
+            <TextArea label="One line per item" description='Start with the case count, and add "(cold)" or "(frozen)" where it applies. e.g. "4 Canned green beans" or "2 Frozen chicken (frozen)".' value={text} onChange={setText} />
+          )}
+          {linesMode === 'type' && parsed.length > 0 && <span className="muted" style={{fontSize: 'var(--fs-sub)'}}>{parsed.length} {parsed.length === 1 ? 'line' : 'lines'}, {parsed.reduce((a, l) => a + l.cases, 0)} cases{parsed.some(isCold) ? `, ${parsed.filter(isCold).length} cold or frozen` : ''}</span>}
+          {linesMode === 'none' && <span className="muted" style={{fontSize: 'var(--fs-sub)'}}>You can still receive it, with a note for anything wrong.</span>}
+        </div>
+        {err && <Banner status="error" title={err} />}
+        <Button variant="primary" size="lg" label="Add to Incoming" isLoading={busy} onClick={save} />
+      </div>
+    </>
+  );
+}

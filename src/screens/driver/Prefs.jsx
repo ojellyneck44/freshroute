@@ -1,7 +1,7 @@
 import {useIsTest, setTestMode} from '../../components/TestMode.jsx';
 import {Button, SegmentedControl, SegmentedControlItem, Switch, TextInput} from '@astryxdesign/core';
 import {ArrowLeft, LogOut} from 'lucide-react';
-import {useAppState, setState, navigate, resetState} from '../../lib/state.js';
+import {useAppState, setState, navigate, resetState, homeFor, getState} from '../../lib/state.js';
 
 // D14: preferences.
 export default function Prefs() {
@@ -12,7 +12,7 @@ export default function Prefs() {
   return (
     <main className="center-page" tabIndex={-1} style={{placeItems: 'start center'}}>
       <div className="form">
-        <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive')} /></div>
+        <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(homeFor(getState().role))} /></div>
         <h1>Preferences</h1>
         <TextInput label="Your name" value={profile.name} onChange={(name) => setProfile({name})} autoComplete="name" />
         <TextInput label="Your vehicle" value={profile.van} onChange={(van) => setProfile({van})} placeholder="e.g. Silver Honda Odyssey, plate ends 4KD" description="Stores and the pantry use this to spot you at the dock." />
