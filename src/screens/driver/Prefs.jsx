@@ -1,3 +1,4 @@
+import PracticeArea from '../../components/PracticeArea.jsx';
 import {useIsTest, setTestMode} from '../../components/TestMode.jsx';
 import {Button, SegmentedControl, SegmentedControlItem, Switch, TextInput} from '@astryxdesign/core';
 import {ArrowLeft, LogOut} from 'lucide-react';
@@ -15,7 +16,10 @@ export default function Prefs() {
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => navigate(homeFor(getState().role))} /></div>
         <h1>Preferences</h1>
         <TextInput label="Your name" value={profile.name} onChange={(name) => setProfile({name})} autoComplete="name" />
-        <TextInput label="Your vehicle" value={profile.van} onChange={(van) => setProfile({van})} placeholder="e.g. Silver Honda Odyssey, plate ends 4KD" description="Stores and the pantry use this to spot you at the dock." />
+        <div className="fields2 vehicle">
+          <TextInput label="Vehicle" value={profile.van} onChange={(van) => setProfile({van})} placeholder="e.g. Silver Honda Odyssey" description="Make, model and colour." />
+          <TextInput label="License plate" value={profile.plate || ''} onChange={(v) => setProfile({plate: v.toUpperCase()})} placeholder="e.g. KDF 4821" autoComplete="off" isOptional />
+        </div>
         <Switch label="This vehicle has cold storage" value={profile.cold} onChange={(cold) => setProfile({cold})} labelSpacing="spread" labelPosition="start" />
         <div className="stack" style={{gap: 'var(--space-sm)'}}>
           <span className="label">Appearance</span>
@@ -31,6 +35,7 @@ export default function Prefs() {
           <strong>{code}</strong>
           <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>You agreed to drive recording on {profile.consent ? 'this device' : 'no device yet'}. Video, sound (if on), location and motion markers are shared with your food bank during drives only.</p>
         </div>
+        <PracticeArea />
         <Switch label="Test mode" description="Shows the usability testing panel: task script, timer, survey and export. You can also hold the FreshRoute logo for a second." value={isTest} onChange={setTestMode} labelSpacing="spread" labelPosition="start" />
         <Button variant="destructive" label="Sign out of this iPad" icon={<LogOut size={18} />} onClick={() => confirm('Sign out? Your name, vehicle and planned route are removed from this iPad. Finished drives stay with the food bank.') && (resetState(), navigate('/', {replace: true}))} />
       </div>

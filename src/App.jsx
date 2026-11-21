@@ -1,3 +1,4 @@
+import {MotionConfig} from 'motion/react';
 import {lazy, Suspense, useEffect} from 'react';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
@@ -5,6 +6,7 @@ import {useAppState, usePath, navigate, homeFor, drives} from './lib/state.js';
 import {useTheme} from './lib/theme.js';
 import {Facilitator, useTestMode} from './components/TestMode.jsx';
 import Welcome from './screens/Welcome.jsx';
+import MoreBelow from './components/MoreBelow.jsx';
 
 // After a deploy, an open tab may ask for screen files that no longer exist: reload once to get the new ones.
 const load = (f) =>
@@ -78,7 +80,10 @@ export default function App() {
 
   return (
     <Theme theme={neutralTheme} mode={mode}>
+      <MotionConfig reducedMotion="user" transition={{type: 'spring', stiffness: 420, damping: 34}}>
       <Suspense fallback={<div className="center-page muted" aria-busy="true">Loading…</div>}>{screen}</Suspense>
+      </MotionConfig>
+      <MoreBelow />
       <Facilitator />
     </Theme>
   );

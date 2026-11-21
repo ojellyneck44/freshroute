@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {Button} from '@astryxdesign/core';
 import {Settings, Truck, Plus, FileText} from 'lucide-react';
 import {Cold} from '../../components/Glyphs.jsx';
-import {useAppState, setState, navigate} from '../../lib/state.js';
+import {useAppState, setState, navigate, vehicleText} from '../../lib/state.js';
 import {api} from '../../lib/api.js';
 import {clock, clockAmPm, day} from '../../lib/format.js';
 import {BANK} from '../../data/stores.js';
@@ -23,7 +23,7 @@ export default function Haul() {
     setBusy(true);
     const start = new Date();
     start.setMinutes(0, 0, 0);
-    await api('deliveries', {method: 'POST', body: {order: `PRACTICE-${String(start.getHours()).padStart(2, '0')}${String(new Date().getMinutes()).padStart(2, '0')}`, windowStart: start.getTime(), windowEnd: start.getTime() + 2 * 3600000, truck: profile.van, lines: ORDER_LINES, practice: true}}).catch(() => {});
+    await api('deliveries', {method: 'POST', body: {order: `PRACTICE-${String(start.getHours()).padStart(2, '0')}${String(new Date().getMinutes()).padStart(2, '0')}`, windowStart: start.getTime(), windowEnd: start.getTime() + 2 * 3600000, truck: vehicleText(profile.van, profile.plate), lines: ORDER_LINES, practice: true}}).catch(() => {});
     setBusy(false);
     reload();
   };

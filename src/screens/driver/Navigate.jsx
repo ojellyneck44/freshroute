@@ -1,3 +1,4 @@
+import {motion} from 'motion/react';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, TextArea, Dialog} from '@astryxdesign/core';
 import {ArrowUp, ArrowUpRight, ArrowUpLeft, CornerUpRight, CornerUpLeft, RotateCcw, Flag, X, Share2, WifiOff, PackageCheck, SkipForward, ChevronLeft} from 'lucide-react';
@@ -96,12 +97,25 @@ export default function Navigate() {
     destPin('pantry', 'bank', drive.dest.lon, drive.dest.lat, drive.dest.name),
   ];
   const offline = !navigator.onLine || pending() > 20;
+  // Only the road to the next stop: the whole multi-stop route doubles back on itself and gets hard to read.
+  const leg = (() => {
+    const {coords, legEnds} = drive.route;
+    const cum = live.cum || [];
+    const from = target.i > 0 ? legEnds[target.i - 1] : 0;
+    const to = legEnds[target.i] ?? cum[cum.length - 1];
+    let a = cum.findIndex((c) => c >= from);
+    let z = cum.findIndex((c) => c >= to - 1);
+    if (a < 0) a = 0;
+    if (z < 0) z = coords.length - 1;
+    a = Math.max(0, a - 1);
+    return {coords: coords.slice(a, z + 1), split: Math.max(0, Math.min(z - a, (live.idx ?? 0) - a))};
+  })();
 
   return (
     <main className="mapshell" data-screen tabIndex={-1}>
       <h1 className="sr-only">Navigation to {target.kind === 'bank' ? drive.dest.name : target.name}</h1>
-      <MapView route={drive.route.coords} split={live.idx} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
-        legend={{title: drive.kind === 'delivery' ? 'Your delivery' : 'Your drive', items: [['puck', 'You'], ['line', 'Road ahead (turns amber or red if running late)'], ['line done', 'Already driven'], ...(drive.stops.length ? [['stopnum', 'Pickup stops']] : []), ['dest pantry', drive.kind === 'delivery' ? `Deliver to ${drive.dest.name}` : 'Drop-off at your pantry']]}} />
+      <MapView route={leg.coords} split={leg.split} state={st.key} markers={markers} puck={live.pos ? {lon: live.pos[0], lat: live.pos[1], hdg: live.hdg} : null} follow="nav" label="Navigation map" legendAt="nav"
+        legend={{title: drive.kind === 'delivery' ? 'Your delivery' : 'Your drive', items: [['puck', 'You'], ['line', 'Road to your next stop (amber or red if running late)'], ['line done', 'Already driven'], ...(drive.stops.length ? [['stopnum', 'Pickup stops']] : []), ['dest pantry', drive.kind === 'delivery' ? `Deliver to ${drive.dest.name}` : 'Drop-off at your pantry']]}} />
       <div className="nav-cam glass" aria-label="Drive camera">
         <video ref={camRef} autoPlay playsInline muted style={{padding: 'var(--space-xs)'}} />
         {session.stream ? <span className="rec"><i aria-hidden="true" />Recording</span> : <div className="cam-off">Camera off</div>}
@@ -270,7 +284,7 @@ function Pickup({drive, i, onClose}) {
               </div>
               <div className="stepper">
                 <button onClick={() => set(it.name, counts[it.name] - 1)} aria-label={`One fewer ${it.name}`}>−</button>
-                <output aria-live="polite" aria-label={`${it.name} count`}>{counts[it.name]}</output>
+                <output aria-live="polite" aria-label={`${it.name} count`}><motion.span key={counts[it.name]} initial={{scale: 1.4, opacity: 0.6}} animate={{scale: 1, opacity: 1}} style={{display: 'inline-block'}}>{counts[it.name]}</motion.span></output>
                 <button onClick={() => set(it.name, counts[it.name] + 1)} aria-label={`One more ${it.name}`}>+</button>
               </div>
             </div>
@@ -329,7 +343,7 @@ function EndDrive({drive, onClose, onFinishing}) {
                 <div><div className="store-name">{k}</div><div className="muted" style={{fontSize: 'var(--fs-label)'}}>Picked up {v}</div></div>
                 <div className="stepper">
                   <button onClick={() => setDrop((d) => ({...d, [k]: Math.max(0, (d[k] ?? 0) - 1)}))} aria-label={`One fewer ${k}`}>−</button>
-                  <output aria-live="polite" aria-label={`${k} unloaded`}>{drop[k] ?? 0}</output>
+                  <output aria-live="polite" aria-label={`${k} unloaded`}><motion.span key={drop[k] ?? 0} initial={{scale: 1.4, opacity: 0.6}} animate={{scale: 1, opacity: 1}} style={{display: 'inline-block'}}>{drop[k] ?? 0}</motion.span></output>
                   <button onClick={() => setDrop((d) => ({...d, [k]: (d[k] ?? 0) + 1}))} aria-label={`One more ${k}`}>+</button>
                 </div>
               </div>

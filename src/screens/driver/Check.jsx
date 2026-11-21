@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Switch, Selector} from '@astryxdesign/core';
 import {ArrowLeft, Camera, Activity, MapPin, Sun, CheckCircle2, Circle} from 'lucide-react';
-import {useAppState, setState, navigate, getState} from '../../lib/state.js';
+import {useAppState, setState, navigate, getState, vehicleText} from '../../lib/state.js';
 import {planRoute, planDelivery, promiseFor, startDrive} from '../../lib/engine.js';
 import {api} from '../../lib/api.js';
 import {listCameras} from '../../lib/recorder.js';
@@ -81,7 +81,7 @@ export default function Check() {
       setState((s) => ({prefs: {...s.prefs, camera, sound}}));
       const d = await startDrive({storeIds: route.map((r) => r.storeId), plan, sim, camera, sound, kind: haul ? 'delivery' : 'pickup', deliveryId: haul});
       // Tell the pantry's delivery card which live run is theirs.
-      if (haul && !String(d.id).startsWith('local-')) await api(`deliveries/${haul}`, {method: 'PATCH', body: {driveId: d.id, truck: getState().profile.van}}).catch(() => {});
+      if (haul && !String(d.id).startsWith('local-')) await api(`deliveries/${haul}`, {method: 'PATCH', body: {driveId: d.id, truck: vehicleText(getState().profile.van, getState().profile.plate)}}).catch(() => {});
       setState(haul ? {haul: null} : {route: []});
       navigate('/drive/nav', {replace: true});
     } catch (e) {

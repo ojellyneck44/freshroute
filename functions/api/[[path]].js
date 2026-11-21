@@ -143,6 +143,25 @@ export async function onRequest({request, env, params}) {
       return new Response(obj.body, {headers});
     }
 
+    // ---- /api/nearby?lat=&lon=  (practice area: real supermarkets near a point, from OpenStreetMap)
+    if (parts[0] === 'nearby' && method === 'GET') {
+      const lat = Number(url.searchParams.get('lat')), lon = Number(url.searchParams.get('lon'));
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return bad('lat and lon are required');
+      const q = `[out:json][timeout:20];(node["shop"="supermarket"](around:8000,${lat.toFixed(4)},${lon.toFixed(4)});way["shop"="supermarket"](around:8000,${lat.toFixed(4)},${lon.toFixed(4)}););out center 40;`;
+      // Overpass asks clients to identify themselves; mirrors are tried in order.
+      for (const host of ['https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']) {
+        try {
+          const res = await fetch(host, {method: 'POST', headers: {'content-type': 'application/x-www-form-urlencoded', 'user-agent': 'FreshRoute prototype (freshroute.pages.dev)', accept: 'application/json'}, body: 'data=' + encodeURIComponent(q), signal: AbortSignal.timeout(9000)});
+          if (!res.ok) continue;
+          const {elements = []} = await res.json();
+          return json(elements.map((e) => ({id: e.id, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon, name: e.tags?.name || e.tags?.brand || '', street: [e.tags?.['addr:housenumber'], e.tags?.['addr:street']].filter(Boolean).join(' '), city: e.tags?.['addr:city'] || ''})));
+        } catch {
+          /* try the next mirror */
+        }
+      }
+      return bad('Store lookup unavailable', 502);
+    }
+
     // ---- /api/deliveries[/:id]  (food bank deliveries to this pantry)
     if (parts[0] === 'deliveries') {
       const id = parts[1];
@@ -221,7 +240,7 @@ async function storeLink(env, method, driveId, storeId, request) {
   const ready = await env.DB.prepare("SELECT data FROM events WHERE drive = ? AND kind = 'store-ready' ORDER BY t DESC LIMIT 1").bind(driveId).first();
   return json({
     status: row.status,
-    van: d.van, driverFirst: (d.driver || '').split(' ')[0], bankName: d.bankName,
+    van: [d.van, d.plate && `plate ${d.plate}`].filter(Boolean).join(', '), driverFirst: (d.driver || '').split(' ')[0], bankName: d.bankName,
     stop: {storeId, name: stop.name, address: stop.address, items: stop.items, promiseAt: stop.promiseAt, etaAt: stop.etaAt, arrivedAt: stop.arrivedAt},
     updated: last ? last.t : null,
     ready: ready ? JSON.parse(ready.data).ready : false,

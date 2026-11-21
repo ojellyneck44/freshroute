@@ -1,3 +1,4 @@
+import {motion} from 'motion/react';
 import {simNow} from '../../lib/simclock.js';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, Badge} from '@astryxdesign/core';
@@ -196,7 +197,7 @@ function Live() {
             const next = (d.stops || []).find((s) => !s.departedAt);
             const cold = d.coldStartAt ? simNow(d) - d.coldStartAt : 0;
             return (
-              <a key={d.id} className="truck-card" href={`/bank/truck/${d.id}`} onClick={(e) => (e.preventDefault(), navigate(`/bank/truck/${d.id}`))}>
+              <motion.a key={d.id} layout initial={{opacity: 0, y: 12}} animate={{opacity: 1, y: 0}} whileTap={{scale: 0.98}} className="truck-card" href={`/bank/truck/${d.id}`} onClick={(e) => (e.preventDefault(), navigate(`/bank/truck/${d.id}`))}>
                 <Ring forecast={f} promise={d.promiseAt} progress={progressOf(d)} size={96} stroke={8} timeSize={20} />
                 <div className="stack" style={{gap: 'var(--space-2xs)'}}>
                   <div className="store-name">{d.van}<span className="sep">·</span>{d.driver}</div>
@@ -208,7 +209,7 @@ function Live() {
                     {d.sim > 0 && <span className="chip" title="Times are drive time, which runs faster than the clock on the wall">Simulated at {d.clock?.speed || d.sim}×</span>}
                   </div>
                 </div>
-              </a>
+              </motion.a>
             );
           })}
         </section>
@@ -255,7 +256,7 @@ function TruckDetail({id}) {
         <div>
           <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
           <h1 style={{marginTop: 'var(--space-sm)'}}>{d.van}<span className="sep">·</span>{d.driver}</h1>
-          <div className="muted">{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}{d.sim > 0 ? ` · simulated at ${d.clock?.speed || d.sim}×, so times run on drive time (now ${clockAmPm(simNow(d))})` : ''}</div>
+          <div className="muted">{d.plate ? `Plate ${d.plate} · ` : ''}{STATUS[d.status] || d.status} · started {clockAmPm(d.startedAt)}{d.sim > 0 ? ` · simulated at ${d.clock?.speed || d.sim}×, so times run on drive time (now ${clockAmPm(simNow(d))})` : ''}</div>
         </div>
         <Button label="Full report" icon={<FileText size={18} />} onClick={() => navigate(`/bank/report/${d.id}`)} />
       </div>

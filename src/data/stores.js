@@ -194,7 +194,7 @@ const toMin = (hhmm) => {
 // Next donation window at or after `now` (within 8 days). Returns {start: Date, end: Date, isOpen}.
 // Demo stores spread around Denton: a rolling window that is always open, so there is always somewhere to test-drive to.
 const DEMO_OPEN = new Set(['kroger-university', 'walmart-loop288', 'aldi-ector', 'sprouts-teasley', 'natural-grocers-sherman']);
-export const isDemoOpen = (store) => DEMO_OPEN.has(store.id);
+export const isDemoOpen = (store) => DEMO_OPEN.has(store.id) || !!store.demo;
 
 export function nextWindow(store, now = new Date()) {
   if (isDemoOpen(store)) {

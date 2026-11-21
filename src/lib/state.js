@@ -5,7 +5,8 @@ const KEY = 'freshroute:v1';
 const initial = {
   role: null, // 'driver' (pantry volunteer) | 'hauler' (food bank truck driver) | 'bank' (the pantry)
   code: '', // food bank join code
-  profile: {name: '', van: '', cold: false, consent: false},
+  profile: {name: '', van: '', plate: '', cold: false, consent: false},
+
   prefs: {theme: 'auto', camera: '', headsUp: true},
   route: [], // [{storeId}] being planned
   haul: null, // delivery id a food bank driver is about to start
@@ -61,3 +62,5 @@ export const usePath = () =>
 // Each role's home screen.
 export const homeFor = (role) => (role === 'hauler' ? '/haul' : role === 'bank' ? '/bank' : '/drive');
 export const drives = (role) => role === 'driver' || role === 'hauler';
+// How a pantry or store recognises the vehicle: description plus plate.
+export const vehicleText = (van, plate) => [van, plate && `plate ${plate}`].filter(Boolean).join(', ');

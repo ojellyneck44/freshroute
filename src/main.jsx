@@ -7,9 +7,11 @@ import '@fontsource-variable/overpass/wght.css';
 import './styles/tokens.css';
 import './styles/app.css';
 import App from './App.jsx';
+import {applyArea} from './data/area.js';
 import Crash from './components/Crash.jsx';
 
 window.__frStarted = true;
+applyArea(); // practice area "around me": move the demo pantry and stores before anything reads them
 // Safari ignores user-scalable=no, so block pinch-zoom here (the app is laid out for each screen size).
 for (const ev of ['gesturestart', 'gesturechange']) document.addEventListener(ev, (e) => e.preventDefault(), {passive: false});
 createRoot(document.getElementById('root')).render(

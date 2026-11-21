@@ -9,6 +9,7 @@ export default function Setup() {
   const profile = useAppState((s) => s.profile);
   const [name, setName] = useState(profile.name);
   const [van, setVan] = useState(profile.van || '');
+  const [plate, setPlate] = useState(profile.plate || '');
   const [cold, setCold] = useState(profile.cold);
   const [consent, setConsent] = useState(profile.consent);
   const [error, setError] = useState(null);
@@ -16,7 +17,7 @@ export default function Setup() {
   const save = () => {
     if (!name.trim()) return setError('Add your name so the pantry knows who is driving.');
     if (!consent) return setError('Recording is part of every FreshRoute drive. Agree to the recording terms to continue.');
-    setState({profile: {name: name.trim(), van: van.trim() || 'Volunteer vehicle', cold, consent: true}});
+    setState({profile: {name: name.trim(), van: van.trim() || 'Volunteer vehicle', plate: plate.trim().toUpperCase(), cold, consent: true}});
     navigate(homeFor(getState().role));
   };
 
@@ -26,7 +27,10 @@ export default function Setup() {
         <div className="back"><Button variant="ghost" label="Back" icon={<ArrowLeft size={18} />} onClick={() => (setState({role: null}), navigate('/'))} /></div>
         <h1>{getState().role === 'hauler' ? 'Set up your deliveries' : 'Set up your pickup runs'}</h1>
         <TextInput label="Your name" value={name} onChange={setName} autoComplete="name" placeholder="First and last name" />
-        <TextInput label="Your vehicle" value={van} onChange={setVan} placeholder="e.g. Silver Honda Odyssey, plate ends 4KD" description="Stores and the pantry use this to spot you at the dock." />
+        <div className="fields2 vehicle">
+          <TextInput label="Vehicle" value={van} onChange={setVan} placeholder="e.g. Silver Honda Odyssey" description="Make, model and colour, so stores and the pantry can spot you." />
+          <TextInput label="License plate" value={plate} onChange={(v) => setPlate(v.toUpperCase())} placeholder="e.g. KDF 4821" autoComplete="off" isOptional />
+        </div>
         <Switch label="This vehicle has cold storage" description="Pickups with chilled or frozen food are marked for you either way." value={cold} onChange={setCold} labelSpacing="spread" labelPosition="start" />
         <section className="stack" aria-labelledby="rec">
           <h2 className="as-h3" id="rec">Recording during drives</h2>

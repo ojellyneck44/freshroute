@@ -1,3 +1,4 @@
+import {motion, AnimatePresence} from 'motion/react';
 import {useEffect, useMemo, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Badge} from '@astryxdesign/core';
 import {ArrowLeft, Plus, Check, ChevronUp, ChevronDown, X, Settings, Snowflake, FileText, MapPin} from 'lucide-react';
@@ -125,8 +126,8 @@ export default function Plan() {
                   {list.length === 0 && (
                     <div className="empty"><h2 className="as-h3">No pickups {filter === 'open' ? 'open right now' : 'today'}</h2><p>Try “All” to see the next donation windows this week.</p></div>
                   )}
-                  {list.map(({s, w}) => (
-                    <button key={s.id} className="listbtn" onClick={() => setSel(s.id)} aria-label={`${s.name}, ${s.address}`}>
+                  {list.map(({s, w}, idx) => (
+                    <motion.button key={s.id} className="listbtn" layout="position" initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} transition={{delay: Math.min(idx, 8) * 0.03}} whileTap={{scale: 0.98}} onClick={() => setSel(s.id)} aria-label={`${s.name}, ${s.address}`}>
                       <span className={`pin ${pinClass(w, now)}`} aria-hidden="true" style={{flex: 'none', marginTop: 'var(--space-2xs)'}} />
                       <span className="grow stack" style={{gap: 'var(--space-2xs)'}}>
                         <span className="store-name">{s.name}</span>
@@ -138,7 +139,7 @@ export default function Plan() {
                         </span>
                       </span>
                       {inRoute(s.id) && <Check size={20} color="var(--fr-sprout)" aria-label="In your route" />}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </>
@@ -234,13 +235,14 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
     <>
       <div className="sheet-body">
         <ol className="timeline" aria-label="Stops in order">
+          <AnimatePresence initial={false}>
           {route.map((r, i) => {
             const s = storeById(r.storeId);
             const w = nextWindow(s, now);
             const at = promise?.stops[i];
             const outside = at && w && (at < w.start.getTime() || at > w.end.getTime());
             return (
-              <li key={r.storeId}>
+              <motion.li key={r.storeId} layout initial={{opacity: 0, x: -16}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: 24, transition: {duration: 0.18}}}>
                 <span className="stopnum" aria-hidden="true">{i + 1}</span>
                 <div>
                   <div className="store-name">{s.name}</div>
@@ -257,14 +259,15 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
                   <Button variant="ghost" isIconOnly size="sm" label={`Move ${s.name} down`} icon={<ChevronDown size={18} />} isDisabled={i === route.length - 1} onClick={() => move(i, 1)} />
                   <Button variant="ghost" isIconOnly size="sm" label={`Remove ${s.name}`} icon={<X size={18} />} onClick={() => remove(r.storeId)} />
                 </div>
-              </li>
+              </motion.li>
             );
           })}
-          <li>
+          </AnimatePresence>
+          <motion.li layout>
             <span className="stopnum done" aria-hidden="true">FB</span>
             <div><div className="store-name">{BANK.name}</div><div className="muted" style={{fontSize: 'var(--fs-label)'}}>Drop-off</div></div>
             <span />
-          </li>
+          </motion.li>
         </ol>
         {!vanCold && route.some((r) => needsCold(storeById(r.storeId).items)) && (
           <div style={{marginTop: 'var(--space-lg)'}}><Banner status="warning" title="Cold items on a van without cold storage" description="Put chilled pickups last so they spend the least time out of the fridge." /></div>

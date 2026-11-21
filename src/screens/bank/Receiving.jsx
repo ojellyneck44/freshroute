@@ -1,3 +1,4 @@
+import {motion} from 'motion/react';
 import {useEffect, useState} from 'react';
 import {Button, Banner, Badge, SegmentedControl, SegmentedControlItem, Switch, TextInput, TextArea, TimeInput} from '@astryxdesign/core';
 import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send, Phone, Video, Trash2} from 'lucide-react';
@@ -96,7 +97,7 @@ export function DeliveryCard({d, onChanged}) {
   const called = (min) => patch({calledAt: Date.now(), calledEta: Date.now() + min * 60000});
   const remove = () => confirm(`Remove order ${d.order}? It disappears from every iPad at the pantry.`) && api(`deliveries/${d.id}`, {method: 'DELETE'}).then(onChanged);
   return (
-    <article className="panel delivery stack" aria-labelledby={`dl-${d.id}`}>
+    <motion.article layout initial={{opacity: 0, y: 14}} animate={{opacity: 1, y: 0}} className="panel delivery stack" aria-labelledby={`dl-${d.id}`}>
       <div className="row" style={{alignItems: 'flex-start', gap: 'var(--space-lg)'}}>
         <Ring forecast={d.receipt ? d.receipt.at : d.etaAt} promise={d.windowEnd} progress={d.receipt ? 1 : progress} size={112} stroke={9} timeSize={22} />
         <div className="grow stack" style={{gap: 'var(--space-2xs)'}}>
@@ -132,7 +133,7 @@ export function DeliveryCard({d, onChanged}) {
         {d.real && !d.receipt && <Button variant="ghost" label="Remove" icon={<Trash2 size={18} />} onClick={remove} />}
         {cold > 0 && !d.receipt && <span className="faint" style={{fontSize: 'var(--fs-sub)'}}>Bring the pallet blanket: cold lines can't be received without it.</span>}
       </div>
-    </article>
+    </motion.article>
   );
 }
 

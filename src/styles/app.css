@@ -34,7 +34,9 @@ input, textarea, [contenteditable='true'] { -webkit-user-select: text; user-sele
 .astryx-text-input, .astryx-number-input, .astryx-text-area, .astryx-selector, .astryx-time-input { min-height: var(--fr-target); }
 /* The time field centres its own text: the 44 px rule below goes on its box, not its inner input. */
 .astryx-field .astryx-time-input input:not([type='checkbox']):not([type='radio']) { min-height: 0; }
-.fields2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.fields2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); align-items: start; }
+.fields2.vehicle { grid-template-columns: 3fr 2fr; }
+@media (max-width: 600px) { .fields2, .fields2.vehicle { grid-template-columns: 1fr; } }
 .astryx-text-input { padding-block: 0; }
 .astryx-text-input input, .astryx-number-input input, .astryx-text-area textarea, .astryx-field input:not([type='checkbox']):not([type='radio']), .astryx-field textarea {
   font-size: var(--fs-body);
@@ -333,3 +335,12 @@ button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-b
 .dest.hub .pin-body { fill: var(--fr-raised); stroke: var(--fr-text-3); }
 .dest.hub .pin-icon { stroke: var(--fr-text-2); }
 .key.dest { width: var(--space-xl); height: calc(var(--space-xl) * 1.2); margin: 0 calc(var(--space-2xs) * -1); filter: none; border-radius: 0; background: none; }
+
+.report-done { margin-top: var(--space-2xl); padding-top: var(--space-xl); border-top: 1px solid var(--fr-line); display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+
+/* ---------- More below (MoreBelow.jsx) ---------- */
+.more-below { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; height: var(--size-count); display: flex; align-items: flex-end; justify-content: center; padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom)); pointer-events: none; opacity: 0; transition: opacity var(--fr-snap) var(--fr-ease); background: linear-gradient(to bottom, transparent, var(--fr-bg) 85%); }
+.more-below.on { opacity: 1; }
+.more-below button { pointer-events: auto; display: inline-flex; align-items: center; gap: var(--space-xs); min-height: var(--fr-target); padding: 0 var(--space-lg); border-radius: var(--r-control); color: var(--fr-text); font: 600 var(--fs-callout)/1 var(--fr-ui); cursor: pointer; }
+.more-below:not(.on) button { pointer-events: none; }
+.more-below.tabs { padding-bottom: calc(var(--size-tab) + var(--space-2xl)); }

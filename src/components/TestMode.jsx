@@ -1,3 +1,4 @@
+import PracticeArea from './PracticeArea.jsx';
 import {useEffect, useState, useSyncExternalStore} from 'react';
 import {Button, Badge, SegmentedControl, SegmentedControlItem, Selector} from '@astryxdesign/core';
 import {FlaskConical, X, Download, Play, Square} from 'lucide-react';
@@ -98,7 +99,7 @@ const writeLog = (l) => localStorage.setItem(LOG, JSON.stringify(l));
 // drive in progress, receipts, local reports) but keep the test log, then start again at Welcome.
 function resetForNext() {
   if (!confirm('Reset FreshRoute on this device for the next participant? The test log stays.')) return;
-  for (const k of Object.keys(localStorage)) if (k.startsWith('freshroute:') && k !== LOG && k !== FLAG) localStorage.removeItem(k);
+  for (const k of Object.keys(localStorage)) if (k.startsWith('freshroute:') && k !== LOG && k !== FLAG && k !== 'freshroute:area') localStorage.removeItem(k);
   sessionStorage.removeItem('freshroute:alerts');
   location.href = '/';
 }
@@ -208,6 +209,7 @@ export function Facilitator() {
       )}
       {tab === 'log' && (
         <div className="stack">
+          <PracticeArea compact />
           {log.rows.length === 0 && <p className="muted" style={{margin: 0}}>No tasks timed yet.</p>}
           {log.rows.slice(-8).reverse().map((r, i) => (
             <div key={i} className="spread"><span>{r.p} · {r.task}</span><span className="num muted">{Math.round(r.ms / 1000)} s · {r.outcome}</span></div>

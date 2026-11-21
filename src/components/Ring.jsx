@@ -1,3 +1,4 @@
+import {motion, AnimatePresence} from 'motion/react';
 import {Check, Clock, AlertCircle} from 'lucide-react';
 import {clock, etaState} from '../lib/format.js';
 
@@ -17,8 +18,10 @@ export default function Ring({forecast, promise, progress = 0, size = 160, strok
         <circle className="fill" cx={size / 2} cy={size / 2} r={r} fill="none" stroke={COLOR[st.key]} strokeWidth={stroke} strokeLinecap="round"
           strokeDasharray={c} strokeDashoffset={c * (1 - Math.max(0.02, Math.min(1, progress)))} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
       </svg>
-      <div style={{textAlign: 'center'}}>
-        <div className="ring-time" style={{fontSize: timeSize}}>{clock(forecast)}</div>
+      <div style={{textAlign: 'center', overflow: 'hidden'}}>
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div key={clock(forecast)} className="ring-time" style={{fontSize: timeSize}} initial={{y: timeSize * 0.6, opacity: 0}} animate={{y: 0, opacity: 1}} exit={{y: -timeSize * 0.6, opacity: 0}}>{clock(forecast)}</motion.div>
+        </AnimatePresence>
         <div className="ring-state" style={{color: COLOR[st.key]}}><Glyph size={14} strokeWidth={2.5} aria-hidden="true" />{st.label}</div>
       </div>
     </div>
