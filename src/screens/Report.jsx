@@ -192,24 +192,35 @@ function Metric({label, value, base, tone}) {
 // Clock time on the y-axis, so managers read it like a schedule. Promise is dashed with a ±3 min band.
 // Where the expected return time jumped, and why: the plain-language story under the chart.
 export function etaJumps(d, pts) {
-  const out = [];
-  const ev = (d.events || []).filter((e) => ['delay', 'arrived', 'loaded', 'skipped', 'reroute'].includes(e.kind));
+  // Group the line into episodes: a steady climb during a long stop counts as one change, like a sudden jump.
+  const eps = [];
+  let cur = null;
   for (let i = 1; i < pts.length; i++) {
-    const dm = Math.round((pts[i].eta - pts[i - 1].eta) / 60000);
-    if (Math.abs(dm) < 2) continue;
-    const t = pts[i].t;
-    const near = ev.filter((e) => Math.abs(e.t - t) < 3 * 60000).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0];
-    let why = '';
-    if (near?.kind === 'delay') why = `${near.data?.reason || 'a delay'}`;
-    else if (near?.kind === 'loaded' || near?.kind === 'skipped') {
-      const s = (d.stops || []).find((x) => x.storeId === near.data?.storeId);
-      const dwell = s?.arrivedAt && s?.departedAt ? Math.round((s.departedAt - s.arrivedAt) / 60000) : null;
-      why = dwell != null ? `the stop at ${near.data?.name} took ${dwell} min, against the 12 planned` : `the stop at ${near.data?.name}`;
-    } else if (near?.kind === 'arrived') why = `arriving at ${near.data?.name}`;
-    else if (near?.kind === 'reroute') why = 'a new route after leaving the planned one';
-    out.push({t, y0: pts[i - 1].eta, y1: pts[i].eta, dm, why});
+    const dm = (pts[i].eta - pts[i - 1].eta) / 60000;
+    const sign = Math.abs(dm) < 0.05 ? 0 : Math.sign(dm);
+    if (sign && cur && cur.sign === sign) Object.assign(cur, {t1: pts[i].t, y1: pts[i].eta});
+    else {
+      if (cur) eps.push(cur);
+      cur = sign ? {sign, t0: pts[i - 1].t, t1: pts[i].t, y0: pts[i - 1].eta, y1: pts[i].eta} : null;
+    }
   }
-  return out;
+  if (cur) eps.push(cur);
+  const ev = (d.events || []).filter((e) => ['delay', 'arrived', 'loaded', 'skipped', 'reroute', 'reason'].includes(e.kind));
+  return eps.map((e) => ({...e, dm: Math.round((e.y1 - e.y0) / 60000)})).filter((e) => Math.abs(e.dm) >= 2).map((e) => {
+    const near = ev.filter((x) => x.t >= e.t0 - 3 * 60000 && x.t <= e.t1 + 3 * 60000);
+    const pick = near.find((x) => x.kind === 'delay') || near.find((x) => x.kind === 'loaded' || x.kind === 'skipped') || near.find((x) => x.kind === 'reroute') || near.find((x) => x.kind === 'arrived');
+    let why = '';
+    if (pick?.kind === 'delay') why = pick.data?.reason || 'a delay';
+    else if (pick?.kind === 'loaded' || pick?.kind === 'skipped') {
+      const s = (d.stops || []).find((x) => x.storeId === pick.data?.storeId);
+      const dwell = s?.arrivedAt && s?.departedAt ? Math.round((s.departedAt - s.arrivedAt) / 60000) : null;
+      why = dwell != null ? `the stop at ${pick.data?.name} took ${dwell} min, against the 12 planned` : `the stop at ${pick.data?.name}`;
+    } else if (pick?.kind === 'reroute') why = 'a new route after leaving the planned one';
+    else if (pick?.kind === 'arrived') why = `arriving at ${pick.data?.name}`;
+    const reason = near.find((x) => x.kind === 'reason');
+    if (reason && e.dm > 0) why += `${why ? '; ' : ''}the driver said: ${reason.data?.reason?.toLowerCase()}`;
+    return {t: e.t1, t0: e.t0, y0: e.y0, y1: e.y1, dm: e.dm, why};
+  });
 }
 
 function EtaChart({d, end}) {
@@ -244,8 +255,8 @@ function EtaChart({d, end}) {
     <figure className="stack" style={{margin: 0}}>
       <p style={{margin: 0, maxWidth: 'var(--size-form)'}}>
         {`It started ${fst.key === 'on-time' ? 'on time' : `${Math.abs(fst.delta)} min ${fst.delta > 0 ? 'behind' : 'ahead'}`}. `}
-        {jumps.map((j) => `At ${clock(j.t)} the return time moved ${Math.abs(j.dm)} min ${j.dm > 0 ? 'later' : 'earlier'}${j.why ? `: ${j.why}` : ''}. `).join('')}
-        {`It ${end && d.status === 'delivered' ? 'finished' : 'is now expected'} ${st.delta === 0 ? 'right on time' : `${Math.abs(st.delta)} min ${st.delta > 0 ? 'late' : 'early'}`}.`}
+        {jumps.map((j) => `${j.t - j.t0 > 3 * 60000 ? `Between ${clock(j.t0)} and ${clock(j.t)}` : `At ${clock(j.t)}`} the return time moved ${Math.abs(j.dm)} min ${j.dm > 0 ? 'later' : 'earlier'}${j.why ? `: ${j.why}` : ''}. `).join('')}
+        {(() => { const done = arrivedAt(d); const f = etaState(done || lastEta, d.promiseAt); return `It ${done ? 'arrived' : 'is now expected'} ${f.delta === 0 ? 'right on time' : `${Math.abs(f.delta)} min ${f.delta > 0 ? 'late' : 'early'}`}.`; })()}
       </p>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{overflow: 'hidden'}} role="img" aria-label={`Expected return time during the drive. Promised ${clock(d.promiseAt)}. Last expected ${clock(lastEta)}.`}>
         <rect x={L} y={Y(d.promiseAt + band)} width={W - L - R} height={Y(d.promiseAt - band) - Y(d.promiseAt + band)} fill="var(--fr-sprout)" opacity="0.08" />
@@ -256,7 +267,7 @@ function EtaChart({d, end}) {
         {yTicks.map((t) => <text key={t} x={L - 10} y={Y(t) + 4} textAnchor="end" fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
         {xTicks.map((t, i) => <text key={i} x={X(t)} y={H - 8} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fontSize="12" fill="var(--fr-text-3)" fontFamily="var(--fr-ui)">{clock(t)}</text>)}
         <path d={path} fill="none" stroke={st.key === 'on-time' ? 'var(--fr-text)' : `var(--fr-${st.key === 'slipping' ? 'apricot' : 'tomato'})`} strokeWidth="3" strokeLinejoin="round" />
-        {jumps.map((j, k) => text(X(j.t) + 6, (Y(j.y0) + Y(j.y1)) / 2 + 4, `${Math.abs(j.dm)} min ${j.dm > 0 ? 'later' : 'earlier'}`, {key: k, fill: j.dm > 0 ? 'var(--fr-apricot)' : 'var(--fr-sprout)', fontWeight: 600}))}
+        {jumps.map((j, k) => text((X(j.t0) + X(j.t)) / 2 + 6, (Y(j.y0) + Y(j.y1)) / 2 + 4, `${Math.abs(j.dm)} min ${j.dm > 0 ? 'later' : 'earlier'}`, {key: k, fill: j.dm > 0 ? 'var(--fr-apricot)' : 'var(--fr-sprout)', fontWeight: 600}))}
         {events.map((e, k) => <rect key={k} x={X(e.t) - 2} y={H - B} width="4" height="10" rx="2" fill={e.kind === 'motion' || e.kind === 'delay' ? 'var(--fr-apricot)' : 'var(--fr-sprout)'} />)}
         {labelled.map((l, k) => text(Math.min(W - R - 4, Math.max(L, l.x)), H - B + 24 + l.row * 14, l.text, {key: 'l' + k, textAnchor: l.x < L + 60 ? 'start' : l.x > W - R - 60 ? 'end' : 'middle', fontSize: 11}))}
       </svg>

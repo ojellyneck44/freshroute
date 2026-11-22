@@ -180,7 +180,7 @@ function ReceiveForm({order}) {
         <div>
           <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
           <h1 style={{marginTop: 'var(--space-sm)'}}>Receive order {order.order || id}</h1>
-          <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>{order.phase === 'here' ? 'The truck is here.' : phaseText(order) + '.'} Check each line against the invoice, then sign before the driver leaves.</p>
+          <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>{order.real || order.phase === 'here' ? '' : phaseText(order) + '. '}Check each line against the invoice, then sign before the driver leaves.</p>
         </div>
       </div>
       <div className="receive">

@@ -147,7 +147,9 @@ function Live() {
   const parent = useParentDelivery();
   const [deliveries, reloadDeliveries] = useDeliveries();
   const {mine, me, chips} = useMine();
-  const [alerts, dismiss] = useHeadsUp(drives, parent);
+  // The sample delivery is a demo stand-in: once the pantry has real deliveries, it steps aside.
+  const sampleOn = deliveries !== null && !(deliveries || []).length;
+  const [alerts, dismiss] = useHeadsUp(drives, sampleOn ? parent : null);
   const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
   const [starting, setStarting] = useState(false);
   const {drive: localSim} = useDrive();
@@ -168,11 +170,14 @@ function Live() {
       setStarting(false);
     }
   };
+  // The road of a food bank truck that's on its way right now (its live FreshRoute run).
+  const live = real.find((x) => x.drive && x.phase === 'road');
+  const liveRoad = live?.drive?.routeCoords ? {coords: live.drive.routeCoords} : null;
   const markers = [
     destPin('pantry', 'bank', BANK.lon, BANK.lat, BANK.name),
-    destPin('hub', 'hub', HUB.lon, HUB.lat, `${HUB.name}, shared stop`),
+    ...(sampleOn ? [destPin('hub', 'hub', HUB.lon, HUB.lat, `${HUB.name}, shared stop`)] : []),
     destPin('foodbank', 'parent-wh', PARENT.lon, PARENT.lat, `${PARENT.name} warehouse`),
-    ...(parent.pos && !parent.receipt ? [{id: 'parent', lon: parent.pos[0], lat: parent.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck, ${phaseLabel(parent)}`}] : []),
+    ...(sampleOn && parent.pos && !parent.receipt ? [{id: 'parent', lon: parent.pos[0], lat: parent.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck, ${phaseLabel(parent)}`}] : []),
     ...real.filter((x) => x.pos && !x.receipt && x.phase !== 'here').map((x) => ({id: 'dl-' + x.id, lon: x.pos[0], lat: x.pos[1], className: 'truck-dot parent', label: `${PARENT.name} truck for order ${x.order}`, onClick: () => navigate(`/bank/truck/${x.drive.id}`)})),
     ...active.filter((d) => d.last).map((d) => ({id: d.id, lon: d.last.lon, lat: d.last.lat, className: 'truck-dot', style: {background: STATE_VAR[etaState(forecastOf(d), d.promiseAt).key]}, label: `${d.van}, ${etaState(forecastOf(d), d.promiseAt).label}`, onClick: () => navigate(`/bank/truck/${d.id}`)})),
   ];
@@ -198,7 +203,7 @@ function Live() {
       <div className="trucks">
         <section className="stack" aria-label="Incoming food">
           {real.map((x) => <DeliveryCard key={x.id} d={x} onChanged={reloadDeliveries} />)}
-          {!mine && <DeliveryCard d={parent} />}
+          {!mine && sampleOn && <DeliveryCard d={parent} />}
           <h2 className="as-h3" style={{marginTop: 'var(--space-lg)'}}>Volunteer pickup runs</h2>
           {drives === null && !err && <p className="muted" aria-busy="true">Loading pickup runs…</p>}
           {drives && active.length === 0 && (
@@ -231,8 +236,8 @@ function Live() {
           })}
         </section>
         <section className="mapbox" aria-label="Map of trucks">
-          <MapView markers={markers} route={parent.receipt || parent.phase === 'here' ? null : parent.coords} split={parent.split || 0} fitKey={`${active.map((d) => d.id).join(',') || 'none'}|${parent.coords ? 'road' : ''}`} label="Map of food coming to the pantry" legendAt="bl"
-            legend={{title: 'Food on its way to you', items: [['truck parent', `${PARENT.name} truck`], ...(parent.phase === 'here' ? [] : [['line', 'Its road to you']]), ['dest foodbank', `${PARENT.name} warehouse`], ['dest hub', `${HUB.name} (shared stop)`], ['truck', 'Volunteer vehicle: green on time, amber slipping, red late'], ['dest pantry', 'Your pantry']]}} />
+          <MapView markers={markers} route={liveRoad ? liveRoad.coords : !sampleOn || parent.receipt || parent.phase === 'here' ? null : parent.coords} split={liveRoad ? 0 : parent.split || 0} fitKey={`${active.map((d) => d.id).join(',') || 'none'}|${parent.coords ? 'road' : ''}`} label="Map of food coming to the pantry" legendAt="bl"
+            legend={{title: 'Food on its way to you', items: [['truck parent', `${PARENT.name} truck`], ...(liveRoad || (sampleOn && parent.phase !== 'here') ? [['line', 'Its road to you']] : []), ['dest foodbank', `${PARENT.name} warehouse`], ...(sampleOn ? [['dest hub', `${HUB.name} (shared stop)`]] : []), ['truck', 'Volunteer vehicle: green on time, amber slipping, red late'], ['dest pantry', 'Your pantry']]}} />
         </section>
       </div>
     </>
