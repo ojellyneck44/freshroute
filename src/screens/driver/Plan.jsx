@@ -1,3 +1,4 @@
+import {House} from 'lucide-react';
 import {motion, AnimatePresence} from 'motion/react';
 import {useEffect, useMemo, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, Badge} from '@astryxdesign/core';
@@ -264,7 +265,7 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
           })}
           </AnimatePresence>
           <motion.li layout>
-            <span className="stopnum done" aria-hidden="true">FB</span>
+            <span className="stopnum done home" aria-hidden="true"><House size={16} strokeWidth={2.4} /></span>
             <div><div className="store-name">{BANK.name}</div><div className="muted" style={{fontSize: 'var(--fs-label)'}}>Drop-off</div></div>
             <span />
           </motion.li>

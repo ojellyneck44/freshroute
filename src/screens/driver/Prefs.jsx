@@ -33,7 +33,7 @@ export default function Prefs() {
         <div className="panel stack">
           <div className="label">Pantry join code</div>
           <strong>{code}</strong>
-          <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>You agreed to drive recording on {profile.consent ? 'this device' : 'no device yet'}. Video, sound (if on), location and motion markers are shared with your food bank during drives only.</p>
+          <p className="muted" style={{margin: 0, fontSize: 'var(--fs-label)'}}>You agreed to drive recording on {profile.consent ? 'this device' : 'no device yet'}. Video, sound (if on), location and motion markers are shared with your pantry during drives only.</p>
         </div>
         <PracticeArea />
         <Switch label="Test mode" description="Shows the usability testing panel: task script, timer, survey and export. You can also hold the FreshRoute logo for a second." value={isTest} onChange={setTestMode} labelSpacing="spread" labelPosition="start" />

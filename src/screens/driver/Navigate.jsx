@@ -1,3 +1,4 @@
+import {House} from 'lucide-react';
 import {motion} from 'motion/react';
 import {useEffect, useRef, useState} from 'react';
 import {Button, Banner, SegmentedControl, SegmentedControlItem, TextArea, Dialog} from '@astryxdesign/core';
@@ -238,7 +239,7 @@ function Progress({drive, live, now, onClose}) {
                 );
               })}
               <li>
-                <span className="stopnum done" aria-hidden="true">FB</span>
+                <span className="stopnum done home" aria-hidden="true"><House size={16} strokeWidth={2.4} /></span>
                 <div><div className="store-name">{drive.dest.name}</div><div className="muted num" style={{fontSize: 'var(--fs-label)'}}>Promised {clock(drive.promiseAt)} · now {clock(live.forecast)}</div></div>
                 <span className={`chip ${st.key}`}>{st.label}</span>
               </li>

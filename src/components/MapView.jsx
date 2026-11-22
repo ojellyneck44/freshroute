@@ -83,7 +83,9 @@ export default function MapView({route, split = 0, trail, state = 'on-time', mar
   function fit() {
     const m = map.current;
     if (!ready.current || follow !== 'fit') return;
-    const pts = [...(latest.current.route || []), ...(latest.current.trail || []), ...markers.filter((x) => x.fit !== false).map((x) => [x.lon, x.lat])];
+    // With a route, frame the route; otherwise frame every marker.
+    const r = [...(latest.current.route || []), ...(latest.current.trail || [])];
+    const pts = r.length ? r : markers.filter((x) => x.fit !== false).map((x) => [x.lon, x.lat]);
     if (puck) pts.push([puck.lon, puck.lat]);
     if (!pts.length) return;
     const b = pts.reduce((bb, p) => bb.extend(p), new maplibregl.LngLatBounds(pts[0], pts[0]));

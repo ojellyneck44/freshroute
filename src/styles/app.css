@@ -344,3 +344,5 @@ button.chip[aria-pressed='true'] { background: var(--fr-text); color: var(--fr-b
 .more-below button { pointer-events: auto; display: inline-flex; align-items: center; gap: var(--space-xs); min-height: var(--fr-target); padding: 0 var(--space-lg); border-radius: var(--r-control); color: var(--fr-text); font: 600 var(--fs-callout)/1 var(--fr-ui); cursor: pointer; }
 .more-below:not(.on) button { pointer-events: none; }
 .more-below.tabs { padding-bottom: calc(var(--size-tab) + var(--space-2xl)); }
+
+.stopnum.home { background: var(--fr-text); color: var(--fr-bg); }
