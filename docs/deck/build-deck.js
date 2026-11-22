@@ -1,4 +1,4 @@
-// FreshRoute final presentation (Maroon Moose). Structure follows the team's whiteboard template.
+// FreshRoute final presentation. Structure follows the team's whiteboard template.
 const pptxgen = require('pptxgenjs');
 const fs = require('fs');
 const {applyTheme} = require('/Users/stevi/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/4fda1e4e-bff1-4ec4-9c46-2cd48d77ef17/82994720-5a99-4f09-b4f3-f95850a10e98/skills/pptx/scripts/apply_theme.js');
@@ -17,8 +17,7 @@ const HEX = THEME.colors;
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE'; // 13.33 x 7.5
 pres.title = 'FreshRoute: Know when the food gets here';
-pres.author = 'Maroon Moose: Alyssa Cuarenta, Stevie McLane, Rosly Tavarez, Anaya Smith';
-pres.company = 'Maroon Moose';
+pres.author = 'Alyssa Cuarenta, Stevie McLane, Rosly Tavarez, Anaya Smith';
 pres.theme = {headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace};
 const C = pres.SchemeColor;
 const BG = C.text1, TXT = C.background1, SURF = C.text2, TXT2 = C.background2;
@@ -27,7 +26,7 @@ const W = 13.333, H = 7.5, M = 0.6;
 
 // ---------- Layouts ----------
 const footer = [
-  {text: {text: 'FreshRoute · Maroon Moose', options: {x: M, y: H - 0.45, w: 5, h: 0.3, fontSize: 10, color: TXT3, margin: 0}}},
+  {text: {text: 'FreshRoute', options: {x: M, y: H - 0.45, w: 5, h: 0.3, fontSize: 10, color: TXT3, margin: 0}}},
 ];
 // The R-D-U tracker from the whiteboard: three linked pills, the current section filled.
 const tracker = (cur) => {
@@ -53,16 +52,29 @@ content('PLAIN', null);
 pres.defineSlideMaster({title: 'TITLE', background: {color: HEX.dk1}, objects: []});
 
 // ---------- Helpers ----------
-const fit = (f, x, y, w, h, extra = {}) => {
-  const [iw, ih] = DIMS[f];
-  const r = Math.min(w / iw, h / ih);
-  const ww = iw * r, hh = ih * r;
-  return {path: IMG(f), x: x + (w - ww) / 2, y: y + (h - hh) / 2, w: ww, h: hh, ...extra};
+const sharp = require('sharp');
+const PPI = 170, RADIUS = 0.14; // rounded corners on every image, painted in the slide background colour
+fs.mkdirSync('prep', {recursive: true});
+let prepN = 0;
+async function prep(f, w, h, mode) {
+  const W = Math.round(w * PPI), H = Math.round(h * PPI), r = Math.round(RADIUS * PPI);
+  const out = `prep/${++prepN}-${f.replace(/\.[a-z]+$/i, '')}.jpg`;
+  const base = sharp(IMG(f)).rotate().flatten({background: '#' + HEX.dk1}); // .rotate() applies the photo's EXIF orientation
+  const img = mode === 'cover' ? base.resize(W, H, {fit: 'cover', position: sharp.strategy.attention}) : base.resize(W, H, {fit: 'fill'});
+  const mask = Buffer.from(`<svg width="${W}" height="${H}"><rect width="${W}" height="${H}" rx="${r}" ry="${r}" fill="#fff"/></svg>`);
+  const rounded = await img.composite([{input: mask, blend: 'dest-in'}]).png().toBuffer();
+  await sharp({create: {width: W, height: H, channels: 3, background: '#' + HEX.dk1}}).composite([{input: rounded}]).jpeg({quality: 88}).toFile(out);
+  return out;
+}
+const orient = async (f) => { const m = await sharp(IMG(f)).metadata(); const [w, h] = [m.width, m.height]; return m.orientation >= 5 ? [h, w] : [w, h]; };
+// contain: whole image, aspect kept, centred in the box
+const fit = async (f, x, y, w, h, extra = {}) => {
+  const [iw, ih] = await orient(f);
+  const r = Math.min(w / iw, h / ih), ww = iw * r, hh = ih * r;
+  return {path: await prep(f, ww, hh, 'fill'), x: x + (w - ww) / 2, y: y + (h - hh) / 2, w: ww, h: hh, ...extra};
 };
-const cover = (f, x, y, w, h, extra = {}) => {
-  const [iw, ih] = DIMS[f];
-  return {path: IMG(f), x, y, w, h, sizing: {type: 'cover', w, h}, ...extra};
-};
+// cover: fills the box, cropped (never stretched)
+const cover = async (f, x, y, w, h, extra = {}) => ({path: await prep(f, w, h, 'cover'), x, y, w, h, ...extra});
 const t = (s, text, o) => s.addText(text, {isTextBox: true, margin: 0, color: TXT, fontSize: 16, valign: 'top', ...o});
 const card = (s, x, y, w, h, fill = SURF) => s.addShape(pres.shapes.ROUNDED_RECTANGLE, {x, y, w, h, fill: {color: fill}, line: {color: fill}, rectRadius: 0.12});
 const bullets = (items, o = {}) => items.map((it, i) => ({text: it, options: {bullet: {indent: 16}, breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 8}}));
@@ -78,26 +90,26 @@ const stat = (s, big, label, x, y, w, color = SPROUT) => {
   t(s, label, {x, y: y + 0.92, w, h: 0.8, fontSize: 14, color: TXT2});
 };
 
+(async () => {
 // =====================================================================
 // 1. TITLE (Rosly)
 pres.addSection({title: '1 · Intro'});
 {
   const s = pres.addSlide({masterName: 'TITLE', sectionTitle: '1 · Intro'});
-  s.addImage(cover('26-navigation.jpg', 6.4, 0, 6.933, 7.5));
-  s.addShape(pres.shapes.RECTANGLE, {x: 6.4, y: 0, w: 6.933, h: 7.5, fill: {color: HEX.dk1, transparency: 35}, line: {color: HEX.dk1, transparency: 100}});
-  s.addImage(fit('icon.png', M, 0.8, 0.9, 0.9));
+  s.addImage(await fit('26-navigation.jpg', 6.6, 0.6, 6.13, 6.3));
+  s.addImage({path: IMG('icon.png'), x: M, y: 0.8, w: 0.9, h: 0.9});
   t(s, 'FreshRoute', {x: M + 1.1, y: 0.95, w: 5, h: 0.6, fontSize: 26, bold: true});
   t(s, 'FOOD REDISTRIBUTION', {x: M, y: 2.3, w: 5.6, h: 0.4, fontSize: 14, bold: true, color: SPROUT, charSpacing: 3});
   t(s, 'Know when the food gets here', {x: M, y: 2.75, w: 5.7, h: 2.0, fontSize: 46, bold: true});
   t(s, 'Live delivery tracking, receiving and cold-chain proof for food pantries', {x: M, y: 4.85, w: 5.4, h: 0.8, fontSize: 16, color: TXT2});
-  t(s, 'Maroon Moose: Rosly Tavarez · Anaya Smith · Stevie McLane · Alyssa Cuarenta', {x: M, y: 6.4, w: 5.8, h: 0.6, fontSize: 13, color: TXT3});
+  t(s, 'Rosly Tavarez · Anaya Smith · Stevie McLane · Alyssa Cuarenta', {x: M, y: 6.4, w: 5.8, h: 0.6, fontSize: 13, color: TXT3});
   s.addNotes(`PRESENTER: Rosly
 
-Hi everyone, we're Maroon Moose. Our project is FreshRoute, and our six-word catchphrase is: "Know when the food gets here."
+Hi everyone. Our project is FreshRoute, and our six-word catchphrase is: "Know when the food gets here."
 
 FreshRoute is an iPad app for food pantries. It shows when food is on its way (from the parent food bank or from the pantry's own volunteer drivers), helps staff check deliveries in at the door, and keeps proof that cold food stayed cold.
 
-Board note (yellow sticky): "What we learned?" Open by telling the audience what they'll walk away with: how a pantry like the UNT Food Pantry actually receives food, and where it breaks down.`);
+Board note (yellow sticky): "What we learned?" Open by telling the audience what they'll walk away with: how a pantry like the Diamond Eagle Basic Needs Hub at UNT actually receives food, and where it breaks down.`);
 }
 
 // 2. PROJECT OVERVIEW (Rosly)
@@ -165,28 +177,28 @@ pres.addSection({title: '2 · Research'});
 {
   const s = slide('RESEARCH', '2 · Research', 'RESEARCH', 'How we learned the workflow');
   const methods = [
-    ['Contextual inquiry + interview', 'Cody Kimpton, UNT Food Pantry coordinator, at his pantry and desk'],
-    ['Grocery store outreach', 'Contacted Albertsons and WinCo managers; Kroger pickup observed'],
+    ['Contextual inquiry + interview', 'Cody Kimpton, Diamond Eagle Basic Needs Hub (UNT), at the Hub'],
+    ['Food bank interview', 'Poncho, manager and driver at Tarrant Area Food Bank'],
     ['Competitive feature analysis', 'Too Good To Go, HelloFresh, Plentiful, Misfits Market'],
     ['Heuristic + perspective audits', 'Careit, the donation platform pantries use today (40 findings)'],
     ['Desk research', 'How parent food banks supply pantries (Tarrant Area and North Texas Food Banks)'],
   ];
   methods.forEach(([h, d], i) => {
-    const y = 1.7 + i * 0.98;
+    const y = 1.7 + i * 0.98;  // five methods, evenly spaced
     s.addShape(pres.shapes.OVAL, {x: M, y: y + 0.05, w: 0.22, h: 0.22, fill: {color: SPROUT}, line: {color: SPROUT}});
     t(s, h, {x: M + 0.4, y, w: 5.6, h: 0.4, fontSize: 17, bold: true});
     t(s, d, {x: M + 0.4, y: y + 0.4, w: 5.6, h: 0.5, fontSize: 13, color: TXT2});
   });
-  s.addImage(cover('p08.jpg', 7.0, 1.7, 5.7, 3.4));
-  caption(s, 'Interviewing Cody at the UNT Food Pantry', 7.0, 5.2, 5.7);
-  s.addImage(cover('p17.jpg', 7.0, 5.55, 2.75, 1.25));
-  s.addImage(cover('p09.jpg', 9.95, 5.55, 2.75, 1.25));
+  s.addImage(await cover('p08.jpg', 7.0, 1.7, 5.7, 3.4));
+  caption(s, 'Interviewing Cody at the Diamond Eagle Basic Needs Hub at UNT', 7.0, 5.2, 5.7);
+  s.addImage(await cover('p17.jpg', 7.0, 5.55, 2.75, 1.25));
+  s.addImage(await cover('p09.jpg', 9.95, 5.55, 2.75, 1.25));
   s.addNotes(`PRESENTER: Anaya
 
 We used five methods.
 
-1. Contextual inquiry and interview with Cody Kimpton, the coordinator at the UNT Food Pantry. We interviewed him at his desk and walked the pantry with him (shelves, fridges, the low-stock area) and watched him use the Tarrant Area Food Bank ordering portal.
-2. Grocery store outreach: we contacted managers at Albertsons and WinCo to understand the donor side.
+1. Contextual inquiry and interview with Cody Kimpton, the coordinator at the Diamond Eagle Basic Needs Hub at UNT. We interviewed him at his desk and walked the pantry with him (shelves, fridges, the low-stock area) and watched him use the Tarrant Area Food Bank ordering portal.
+2. An interview with Poncho, a manager and driver at Tarrant Area Food Bank, the parent food bank that supplies the Hub. He described the other side of a pickup: at one store, donations come out in shopping carts he has to roll to his truck and bring back, and he covers cold items with an insulated blanket. (We also reached out to Albertsons and WinCo managers for the store's perspective.)
 3. A competitive feature analysis of four apps, one per team member.
 4. A heuristic audit and a perspective-based audit of Careit, the donation platform pantries use today. That produced 40 findings.
 5. Desk research on how parent food banks like Tarrant Area Food Bank supply their partner pantries: ordering deadlines, delivery windows, receiving rules.
@@ -220,7 +232,7 @@ Photos: Cody's interview, the protein shelf, and his ordering portal.`);
 Desk research. Three numbers frame the opportunity:
 - 73.9 million tons of surplus food in the US in 2023, worth $382 billion (ReFED, U.S. Food Waste Report 2025).
 - Only about 2% of surplus food is donated (ReFED).
-- Tarrant Area Food Bank alone supplies 560+ partner agencies across 13 counties, including Denton, where the UNT Food Pantry is.
+- Tarrant Area Food Bank alone supplies 560+ partner agencies across 13 counties, including Denton, where the Diamond Eagle Basic Needs Hub at UNT is.
 
 How the parent food bank works (from the North Texas Food Bank partner guidebook; TAFB doesn't publish its handbook, and both use the same ordering software):
 - Orders are placed in an online portal 3 business days ahead.
@@ -275,17 +287,17 @@ Board note (pink sticky): gaps and opportunities in current systems indicate flo
   const cx = 4.0, cy = 4.15;
   const nodes = [
     ['Volunteer drivers', 'Pickup runs to stores', 4.0, 1.95, SPROUT],
-    ['Tarrant Area Food Bank', 'Orders, truck, credits', 1.65, 3.45, FROST],
+    ['Tarrant Area Food Bank', 'Poncho: truck and deliveries', 1.65, 3.45, FROST],
     ['Grocery stores', 'Donate surplus', 6.4, 3.45, SPROUT],
     ['Households', '~600 visits a week', 1.85, 5.85, TXT2],
     ['Anti-persona', 'Shrinkage risk', 6.15, 5.85, TOM],
   ];
   nodes.forEach(([, , x, y]) => s.addShape(pres.shapes.LINE, {x: Math.min(cx, x), y: Math.min(cy, y), w: Math.abs(x - cx) || 0.01, h: Math.abs(y - cy) || 0.01, flipH: (x < cx) !== (y < cy), line: {color: HEX.accent5, width: 2}}));
-  s.addShape(pres.shapes.OVAL, {x: cx - 1.1, y: cy - 1.1, w: 2.2, h: 2.2, fill: {color: SPROUT}, line: {color: SPROUT}});
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, {x: cx - 1.15, y: cy - 0.85, w: 2.3, h: 1.7, fill: {color: SPROUT}, line: {color: SPROUT}, rectRadius: 0.18});
   t(s, 'Pantry coordinator', {x: cx - 1.0, y: cy - 0.5, w: 2.0, h: 0.6, fontSize: 15, bold: true, color: BG, align: 'center', valign: 'middle'});
   t(s, 'Primary user', {x: cx - 1.0, y: cy + 0.1, w: 2.0, h: 0.4, fontSize: 12, color: BG, align: 'center'});
   nodes.forEach(([h, d, x, y, col]) => {
-    s.addShape(pres.shapes.OVAL, {x: x - 1.0, y: y - 0.62, w: 2.0, h: 1.24, fill: {color: SURF}, line: {color: col, width: 2}});
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, {x: x - 1.05, y: y - 0.6, w: 2.1, h: 1.2, fill: {color: SURF}, line: {color: col, width: 2}, rectRadius: 0.16});
     t(s, h, {x: x - 0.85, y: y - 0.45, w: 1.7, h: 0.55, fontSize: 12, bold: true, align: 'center', valign: 'middle'});
     t(s, d, {x: x - 0.85, y: y + 0.1, w: 1.7, h: 0.35, fontSize: 11, color: TXT2, align: 'center'});
   });
@@ -300,9 +312,9 @@ Board note (pink sticky): gaps and opportunities in current systems indicate flo
 Our stakeholder map, centred on the pantry coordinator, someone like Cody.
 
 - Volunteer drivers do pickup runs from grocery stores (or the food bank warehouse). They're the ones being recorded, so the app has to be worth it to them.
-- Tarrant Area Food Bank, the parent food bank: their truck delivers the weekly order, and their partner services team handles receipts and credits.
+- Tarrant Area Food Bank, the parent food bank: their truck delivers the weekly order (Poncho, whom we interviewed, manages and drives these runs), and their partner services team handles receipts and credits.
 - Grocery stores donate surplus. They only need to know when the driver arrives and a way to say "ready at the dock", with no account.
-- Households, about 600 visits a week at Cody's pantry, never touch the app, but they're who it's for.
+- Households, about 600 visits a week at the Hub, never touch the app, but they're who it's for.
 - The anti-persona (next slides) represents shrinkage risk.
 
 Board note (pink sticky): stakeholders make or break every project. If the coordinator doesn't adopt it, nothing else matters.`);
@@ -311,7 +323,7 @@ Board note (pink sticky): stakeholders make or break every project. If the coord
 // 8. PERSONA (Anaya)
 {
   const s = slide('RESEARCH', '2 · Research', 'DESIGN DRIVERS · PERSONA', 'Maya, food pantry coordinator');
-  s.addImage(cover('maya.jpg', M, 1.7, 3.1, 3.6));
+  s.addImage(await cover('maya.jpg', M, 1.7, 3.1, 3.6));
   t(s, '"You could be sending an important email and then it\'s like, oh, the truck\'s here."', {x: M, y: 5.45, w: 3.2, h: 1.3, fontSize: 14, italic: true, color: SPROUT});
   t(s, 'Runs a pantry with ~600 household visits a week, one other staff member and rotating volunteers. Orders 3,000–6,000 lb a week from the regional food bank portal.', {x: 4.1, y: 1.7, w: 8.6, h: 0.95, fontSize: 15, color: TXT});
   const cols = [
@@ -341,7 +353,7 @@ These became our design drivers: warn before the truck arrives, time cold food f
 // 9. ANTI-PERSONA (Anaya)
 {
   const s = slide('RESEARCH', '2 · Research', 'DESIGN DRIVERS · ANTI-PERSONA', 'Max, the food scammer');
-  s.addImage(cover('max.jpg', M, 1.7, 3.1, 3.6));
+  s.addImage(await cover('max.jpg', M, 1.7, 3.1, 3.6));
   t(s, '"They\'ll be alright, they already have enough stock."', {x: M, y: 5.45, w: 3.2, h: 1.0, fontSize: 14, italic: true, color: TOM});
   t(s, "A trusted volunteer who takes poorly tracked food and resells it online. He's who we design against: not to catch people, but to close the gaps that make shrinkage easy.", {x: 4.1, y: 1.7, w: 8.6, h: 0.95, fontSize: 15});
   const gaps = [
@@ -371,29 +383,32 @@ Board note (pink sticky): this matters to food banks because shrinkage is a real
 
 // 10. USER INTENTIONS (Anaya)
 {
-  const s = slide('RESEARCH', '2 · Research', 'DESIGN DRIVERS · USER INTENTIONS', 'In Cody\'s words');
+  const s = slide('RESEARCH', '2 · Research', 'DESIGN DRIVERS · USER INTENTIONS', 'In their words');
   const q = [
     ['"Every Thursday, we get a truck from Tarrant Area Food Bank … I kind of call them our big mama food bank."', 'Wants to plan the day around a delivery he can\'t see coming'],
     ['"Unless they\'re actively timing when they took it out of the fridge, we don\'t know how long it\'s been out … we can\'t accept it."', 'Wants proof that cold food stayed cold'],
     ['"It\'s mostly just having the time for someone to go and pick up. Time slash staffing."', 'Wants pickups that fit the staff he has'],
+    ['Poncho (Tarrant Area Food Bank): at one store the food comes out in shopping carts he rolls to the truck and must bring back; cold items ride under an insulated blanket.', 'Wants to know how each store hands food over before he arrives'],
   ];
   q.forEach(([quote, intent], i) => {
-    const y = 1.7 + i * 1.7;
-    t(s, String(i + 1), {x: M, y, w: 0.6, h: 0.8, fontSize: 40, bold: true, color: SPROUT});
-    t(s, quote, {x: M + 0.8, y, w: 7.3, h: 1.4, fontSize: 17, italic: true, valign: 'middle'});
-    card(s, 8.95, y + 0.15, 3.75, 1.1);
-    t(s, intent, {x: 9.2, y: y + 0.15, w: 3.3, h: 1.1, fontSize: 14, color: TXT2, valign: 'middle'});
+    const y = 1.65 + i * 1.22;
+    t(s, String(i + 1), {x: M, y, w: 0.6, h: 1.05, fontSize: 36, bold: true, color: i === 3 ? FROST : SPROUT, valign: 'middle'});
+    t(s, quote, {x: M + 0.8, y, w: 7.4, h: 1.05, fontSize: 15, italic: i < 3, color: i < 3 ? TXT : TXT2, valign: 'middle'});
+    card(s, 8.95, y + 0.05, 3.78, 0.95);
+    t(s, intent, {x: 9.2, y: y + 0.05, w: 3.35, h: 0.95, fontSize: 14, color: TXT2, valign: 'middle'});
   });
-  caption(s, 'Cody Kimpton, UNT Food Pantry coordinator, interview Nov 2026 (lightly edited for transcription)', M, 6.75, 9);
+  caption(s, '1–3: Cody Kimpton, Diamond Eagle Basic Needs Hub (UNT), lightly edited for transcription. 4: from our interview with Poncho, paraphrased.', M, 6.6, 11);
   s.addNotes(`PRESENTER: Anaya
 
-Three things Cody said that shaped what we built. (Quotes are from our interview transcript, lightly cleaned up where the transcription garbled words.)
+Three things Cody said, and one from Poncho, that shaped what we built. (Quotes are from our interview transcript, lightly cleaned up where the transcription garbled words.)
 
 1. "Every Thursday, we get a truck from Tarrant Area Food Bank … I kind of call them our big mama food bank." Intention: he wants to plan his day around a delivery he can't see coming.
 2. "Unless they're actively timing when they took it out of the fridge, we don't know how long it's been out … we can't accept it." Intention: proof that cold food stayed cold.
 3. "It's mostly just having the time for someone to go and pick up. Time slash staffing." Intention: pickups that fit the staff he actually has.
 
-These three intentions map straight onto FreshRoute's live arrival time, cold-chain timer and pickup planning.`);
+4. From our interview with Poncho, manager and driver at Tarrant Area Food Bank (paraphrased from our notes, not a direct quote): at one store, donations come out in shopping carts that he has to roll to his truck and bring back, and he throws an insulated blanket over cold items. Intention: know how each store hands food over before he gets there.
+
+These intentions map onto FreshRoute's live arrival time, cold-chain timer, pickup planning, and the "How pickup works here" note on every store page.`);
 }
 
 // 11. JOURNEY MAP (Anaya to Stevie)
@@ -412,8 +427,6 @@ These three intentions map straight onto FreshRoute's live arrival time, cold-ch
     card(s, x0 + i * cw + 0.03, top, cw - 0.12, 0.62, RAISED);
     t(s, `${i + 1}. ${h}`, {x: x0 + i * cw + 0.13, y: top, w: cw - 0.3, h: 0.62, fontSize: 13, bold: true, valign: 'middle'});
   });
-  t(s, '+', {x: x0 - 0.35, y: mid - amp - 0.1, w: 0.3, h: 0.3, fontSize: 14, color: TXT3});
-  t(s, '–', {x: x0 - 0.35, y: mid + amp - 0.1, w: 0.3, h: 0.3, fontSize: 14, color: TXT3});
   const pts = stages.map(([, , e], i) => [x0 + i * cw + cw / 2, mid + 0.55 - e * amp]);
   for (let i = 1; i < pts.length; i++) {
     const [a, b] = [pts[i - 1], pts[i]];
@@ -457,8 +470,8 @@ pres.addSection({title: '3 · Design'});
   t(s, 'Need #2', {x: M + 0.3, y: 4.43, w: 2, h: 0.35, fontSize: 13, bold: true, color: FROST});
   t(s, 'Food bank managers need a way to simplify inventory management so that they always know what\'s on hand, can sort it by category and expiration date, and distribute it before it spoils.', {x: M + 0.3, y: 4.8, w: 5.0, h: 1.7, fontSize: 15});
   t(s, 'Big ideas', {x: 6.75, y: 1.7, w: 3, h: 0.4, fontSize: 18, bold: true});
-  s.addImage(fit('mi-3.png', 6.75, 2.15, 5.95, 3.75));
-  t(s, [{text: 'Need #1: ', options: {bold: true, color: SPROUT}}, {text: 'Notifications from FreshRoute · Handy Footage', options: {}}, {text: '\nNeed #2: ', options: {bold: true, color: FROST}}, {text: 'Camera Detection · Grocery Store Scanner', options: {}}], {x: 6.75, y: 5.95, w: 5.95, h: 0.75, fontSize: 13, color: TXT2});
+  s.addImage(await fit('mi-3.png', 6.75, 2.15, 5.95, 3.75));
+  t(s, [{text: 'Need #1: ', options: {bold: true, color: SPROUT}}, {text: 'Notifications from FreshRoute · Handy Footage', options: {breakLine: true}}, {text: 'Need #2: ', options: {bold: true, color: FROST}}, {text: 'Camera Detection · Grocery Store Scanner'}], {x: 6.75, y: 5.95, w: 5.95, h: 0.75, fontSize: 13, color: TXT2});
   s.addNotes(`PRESENTER: Stevie
 
 From the journey map we wrote two need statements.
@@ -474,7 +487,7 @@ The storyboards on screen are our original sketches.`);
 // 13. WHAT WE WILL FOCUS ON (Stevie)
 {
   const s = slide('DESIGN', '3 · Design', 'PRIORITIES', 'What we will focus on');
-  s.addImage(fit('mi-5.png', M, 1.65, 5.9, 3.7));
+  s.addImage(await fit('mi-5.png', M, 1.65, 5.9, 3.7));
   caption(s, 'Our prioritization matrix: impact vs. feasibility', M, 5.45, 5.9);
   const f = [
     ['Live arrival time for every delivery', 'The no-brainer: notifications won on impact and feasibility.'],
@@ -503,11 +516,11 @@ So we focused on three things:
 {
   const s = slide('DESIGN', '3 · Design', 'DESIGN STUDIO', 'Sketch, vote, combine');
   const ph = [['p21.jpg', 'Individual sketches and dot votes'], ['p02.jpg', 'Grouping into three main ideas'], ['p06.jpg', 'Working the big idea']];
-  ph.forEach(([f, c], i) => {
+  for (const [i, [f, c]] of ph.entries()) {
     const x = M + i * 4.1;
-    s.addImage(cover(f, x, 1.7, 3.85, 3.6));
+    s.addImage(await cover(f, x, 1.7, 3.85, 3.6));
     t(s, c, {x, y: 5.4, w: 3.85, h: 0.35, fontSize: 14, bold: true});
-  });
+  }
   t(s, 'Top votes: colour creates urgency · user input feeds store descriptions · multiple destinations · useful metrics. Cut by vote: gamification (it distracted and stressed drivers).', {x: M, y: 5.95, w: 12.1, h: 0.8, fontSize: 14, color: TXT2});
   s.addNotes(`PRESENTER: Stevie
 
@@ -521,7 +534,7 @@ One thing we cut by vote: gamification. It distracted and stressed drivers, whic
 // 15. BIG IDEA: WHO WHAT WOW (Stevie)
 {
   const s = slide('DESIGN', '3 · Design', 'BIG IDEA', 'Safe Transport: who, what, wow');
-  s.addImage(cover('p04.jpg', M, 1.7, 5.2, 3.9));
+  s.addImage(await cover('p04.jpg', M, 1.7, 5.2, 3.9));
   caption(s, 'Our who, what, wow board', M, 5.7, 5.2);
   const www = [
     ['Who', 'Food bank managers, and the drivers and store managers they depend on'],
@@ -546,7 +559,7 @@ Wow: food arrives in the same state it was picked up, and if something goes miss
 // 16. WIREFRAMES (Stevie)
 {
   const s = slide('DESIGN', '3 · Design', 'WIREFRAMES', 'Two flows, 26 screens');
-  s.addImage(fit('wf-3.png', M, 1.6, 7.9, 4.95));
+  s.addImage(await fit('wf-3.png', M, 1.6, 7.9, 4.95));
   card(s, 8.85, 1.7, 3.85, 4.85);
   t(s, 'Mid-fidelity, then inspection', {x: 9.15, y: 1.9, w: 3.3, h: 0.75, fontSize: 17, bold: true, color: SPROUT});
   t(s, bullets([
@@ -567,22 +580,22 @@ Since then the pantry became the main user, and we added the food bank delivery 
 }
 
 // 17–18. HIGH-FIDELITY BEFORE / AFTER (Stevie)
-const beforeAfter = (title, pairs, notes) => {
+const beforeAfter = async (title, pairs, notes) => {
   const s = slide('DESIGN', '3 · Design', 'HIGH-FIDELITY VISUALS', title);
   const n = pairs.length, gap = 0.2, lw = 1.15;
   const cw = (12.1 - lw - gap * (n - 1)) / n, ch = cw / 1.43;
   t(s, 'BEFORE', {x: M, y: 1.75, w: lw, h: ch, fontSize: 14, bold: true, color: TXT3, valign: 'middle'});
   t(s, 'AFTER', {x: M, y: 1.95 + ch, w: lw, h: ch, fontSize: 14, bold: true, color: SPROUT, valign: 'middle'});
-  pairs.forEach(([wf, shot, label], i) => {
+  for (const [i, [wf, shot, label]] of pairs.entries()) {
     const x = M + lw + i * (cw + gap);
-    s.addImage(fit(wf, x, 1.75, cw, ch));
-    s.addImage(fit(shot, x, 1.95 + ch, cw, ch));
+    s.addImage(await cover(wf, x, 1.75, cw, ch));
+    s.addImage(await cover(shot, x, 1.95 + ch, cw, ch));
     t(s, label, {x, y: 2.05 + 2 * ch, w: cw, h: 0.6, fontSize: 13, bold: true, align: 'center'});
-  });
+  }
   s.addNotes(notes);
   return s;
 };
-beforeAfter('Driver flow, wireframe to app', [
+await beforeAfter('Driver flow, wireframe to app', [
   ['wf6.png', '22-pickups-list-and-map.jpg', 'Pickups and map'],
   ['wf8.png', '23-store-detail.jpg', 'Store detail'],
   ['wf11.png', '26-navigation.jpg', 'Navigation'],
@@ -595,7 +608,7 @@ Before and after for the driver flow: the mid-fidelity wireframe on top, the wor
 2. Store detail: what the store usually donates, with pack sizes, weights and storage type. That came straight from Cody's popcorn story.
 3. Navigation: camera top-left, ETA ring top-right, as sketched. The map now shows only the road to the next stop, and the camera is picture-in-picture: front camera on the driver, road camera in the corner.
 4. Drive report: the schedule chart now explains itself in a sentence, for example "the stop at Walmart took 24 min against the 12 planned".`);
-beforeAfter('Pantry flow, wireframe to app', [
+await beforeAfter('Pantry flow, wireframe to app', [
   ['wf19.png', '08-option-b-pantry-sees-truck-live.jpg', 'Incoming'],
   ['wf20.png', '29-volunteer-run-live-video.jpg', 'Run, live'],
   ['wf22.png', '40-pantry-run-report.jpg', 'Report review'],
@@ -621,7 +634,7 @@ pres.addSection({title: '4 · Usability'});
     'At the door, a volunteer checks each line. One case of apples arrived crushed.',
     'FreshRoute turns it into a credit request, due within 3 business days.',
   ], {gap: 12}), {x: M, y: 1.75, w: 5.6, h: 4.9, fontSize: 16, color: TXT});
-  s.addImage(fit('09-heads-up-truck-close.jpg', 6.5, 1.7, 6.2, 4.4));
+  s.addImage(await fit('09-heads-up-truck-close.jpg', 6.5, 1.7, 6.2, 4.4));
   caption(s, 'The heads-up, 15 minutes before the truck arrives', 6.5, 6.2, 6.2);
   s.addNotes(`PRESENTER: Alyssa
 
@@ -637,7 +650,7 @@ Here's the scenario we evaluated, built from Cody's real Thursday.
 // 20. PROTOTYPE DEMO (Alyssa)
 {
   const s = slide('USABILITY', '4 · Usability', 'PROTOTYPE', 'Live demo');
-  s.addImage(fit('08-option-b-pantry-sees-truck-live.jpg', M, 1.65, 7.3, 5.1));
+  s.addImage(await fit('08-option-b-pantry-sees-truck-live.jpg', M, 1.65, 7.3, 5.1));
   s.addShape(pres.shapes.OVAL, {x: M + 3.65 - 0.6, y: 1.65 + 2.55 - 0.6, w: 1.2, h: 1.2, fill: {color: HEX.accent1}, line: {color: HEX.dk1, width: 3}});
   s.addShape(pres.shapes.ISOSCELES_TRIANGLE, {x: M + 3.65 - 0.2, y: 1.65 + 2.55 - 0.25, w: 0.5, h: 0.5, rotate: 90, fill: {color: HEX.dk1}, line: {color: HEX.dk1}});
   card(s, 8.2, 1.7, 4.5, 5.0);
@@ -719,14 +732,14 @@ Important caveat: this is an expert review. It tells us where the design breaks 
     ['2', 'The truck can "finish" before the pantry signs', '"I\'m at the pantry" shows from 39 miles away. Fix: show it only on arrival; wait for the signature.', '07-option-b-food-bank-truck-navigation.jpg'],
     ['2', 'Invoice entry depends on syntax', 'Volunteers must remember to type "(frozen)". Fix: a storage picker per line, or portal import.', '03-add-a-delivery.jpg'],
   ];
-  f.forEach(([sv, h, d, img], i) => {
+  for (const [i, [sv, h, d, img]] of f.entries()) {
     const y = 1.7 + i * 1.7;
-    s.addImage(fit(img, M, y, 2.3, 1.55));
+    s.addImage(await cover(img, M, y, 2.3, 1.45));
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, {x: 3.15, y: y + 0.05, w: 0.45, h: 0.4, fill: {color: sv === '3' ? HEX.accent4 : HEX.accent3}, line: {color: HEX.dk1}, rectRadius: 0.06});
     t(s, sv, {x: 3.15, y: y + 0.05, w: 0.45, h: 0.4, fontSize: 14, bold: true, color: BG, align: 'center', valign: 'middle'});
     t(s, h, {x: 3.8, y, w: 8.9, h: 0.5, fontSize: 18, bold: true});
     t(s, d, {x: 3.8, y: y + 0.55, w: 8.9, h: 0.9, fontSize: 14, color: TXT2});
-  });
+  }
   s.addNotes(`PRESENTER: Alyssa
 
 The three findings we'd fix first:
@@ -745,14 +758,14 @@ Also on the list: the Incoming card gets crowded (up to 7 controls), and there's
     ['before-plan.jpg', '22-pickups-list-and-map.jpg', 'Maps explain themselves', 'Before: pins with no key, "FB" and "P" badges that read like app logos. After: a key on every map, house and warehouse pins.'],
     ['before-chart.jpg', '36-drive-report-schedule-chart.jpg', 'The chart tells you why', 'Before: "Promise vs forecast", a line nobody could read. After: "Did the truck stay on schedule?" with the cause in a sentence.'],
   ];
-  pairs.forEach(([b, a, h, d], i) => {
+  for (const [i, [b, a, h, d]] of pairs.entries()) {
     const y = 1.7 + i * 2.55;
-    s.addImage(fit(b, M, y, 3.4, 2.3));
-    t(s, '→', {x: M + 3.45, y: y + 0.85, w: 0.5, h: 0.6, fontSize: 28, color: SPROUT, align: 'center'});
-    s.addImage(fit(a, M + 4.0, y, 3.3, 2.3));
+    s.addImage(b === 'before-chart.jpg' ? await fit(b, M, y, 3.4, 2.3) : await cover(b, M, y, 3.4, 2.3));
+    t(s, '→', {x: M + 3.4, y, w: 0.6, h: 2.3, fontSize: 28, color: SPROUT, align: 'center', valign: 'middle'});
+    s.addImage(await cover(a, M + 4.0, y, 3.4, 2.3));
     t(s, h, {x: 8.25, y: y + 0.2, w: 4.45, h: 0.5, fontSize: 18, bold: true});
     t(s, d, {x: 8.25, y: y + 0.75, w: 4.45, h: 1.4, fontSize: 14, color: TXT2});
-  });
+  }
   s.addNotes(`PRESENTER: Alyssa
 
 Two fixes from our own review, before and after.
@@ -840,7 +853,7 @@ Board note (pink sticky): this matters to food banks because the system should b
 
 // 27. OUR TEAM
 {
-  const s = slide('PLAIN', '5 · Next steps', 'MAROON MOOSE', 'Our team');
+  const s = slide('PLAIN', '5 · Next steps', 'THE TEAM', 'Our team');
   const team = [['Rosly Tavarez', 'Intro and next steps'], ['Anaya Smith', 'Research'], ['Stevie McLane', 'Design'], ['Alyssa Cuarenta', 'Usability']];
   team.forEach(([n, r], i) => {
     const x = M + i * 3.05, cx = x + 1.4;
@@ -871,27 +884,26 @@ pres.addSection({title: 'Appendix'});
     'USDA ERS, Household Food Security in the United States in 2023: 13.5% of US households food insecure',
     'Nielsen, J., "10 Usability Heuristics for User Interface Design," Nielsen Norman Group',
     'Gibbons, S., Journey Map template, Nielsen Norman Group',
-    'Maroon Moose research: Cody Kimpton interview and contextual inquiry (UNT Food Pantry), competitive analysis sheet, Careit heuristic audit, persona and anti-persona, journey map',
+    'Our research: interviews with Cody Kimpton (Diamond Eagle Basic Needs Hub, UNT) and Poncho (Tarrant Area Food Bank), contextual inquiry at the Hub, competitive analysis sheet, Careit heuristic audit, persona and anti-persona, journey map',
   ], {gap: 8}), {x: M, y: 1.7, w: 12.1, h: 5.0, fontSize: 13, color: TXT2});
   s.addNotes('Reference slide. Not presented unless asked.');
 }
 {
   const s = slide('PLAIN', 'Appendix', 'APPENDIX', 'Persona sheets');
-  s.addImage(fit('persona-1.png', M, 1.6, 5.9, 5.2));
-  s.addImage(fit('anti-1.png', 6.8, 1.6, 5.9, 5.2));
+  s.addImage(await fit('persona-1.png', M, 1.6, 5.9, 5.2));
+  s.addImage(await fit('anti-1.png', 6.8, 1.6, 5.9, 5.2));
   s.addNotes('Full persona (Maya) and anti-persona (Max) sheets, for reference during questions.');
 }
 {
-  const s = slide('PLAIN', 'Appendix', 'APPENDIX', "Contextual inquiry: Cody's pantry");
+  const s = slide('PLAIN', 'Appendix', 'APPENDIX · DIAMOND EAGLE BASIC NEEDS HUB, UNT', 'Contextual inquiry at the Hub');
   const ph = ['p14.jpg', 'p16.jpg', 'p17.jpg', 'p15.jpg', 'p20.jpg', 'p13.jpg'];
-  ph.forEach((f, i) => {
+  for (const [i, f] of ph.entries()) {
     const col = i % 3, row = Math.floor(i / 3);
-    s.addImage(cover(f, M + col * 4.1, 1.65 + row * 2.6, 3.85, 2.4));
-  });
-  s.addNotes("Photos from our contextual inquiry at the UNT Food Pantry: fridges, the low-stock shelf, protein, hygiene, Cody's desk, and the Tarrant Area Food Bank ordering portal (shopping cart with gross weight). Useful backup if asked how the pantry works.");
+    s.addImage(await cover(f, M + col * 4.1, 1.65 + row * 2.6, 3.85, 2.4));
+  }
+  s.addNotes("Photos from our contextual inquiry at the Diamond Eagle Basic Needs Hub at UNT: fridges, the low-stock shelf, protein, hygiene, Cody's desk, and the Tarrant Area Food Bank ordering portal (shopping cart with gross weight). Useful backup if asked how the pantry works.");
 }
 
-(async () => {
   await pres.writeFile({fileName: OUT});
   await applyTheme(OUT, THEME);
   console.log('wrote', OUT);
