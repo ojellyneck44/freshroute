@@ -198,7 +198,7 @@ pres.addSection({title: '2 · Research'});
 We used five methods.
 
 1. Contextual inquiry and interview with Cody Kimpton, the coordinator at the Diamond Eagle Basic Needs Hub at UNT. We interviewed him at his desk and walked the pantry with him (shelves, fridges, the low-stock area) and watched him use the Tarrant Area Food Bank ordering portal.
-2. An interview with Poncho, a manager and driver at Tarrant Area Food Bank, the parent food bank that supplies the Hub. He described the other side of a pickup: at one store, donations come out in shopping carts he has to roll to his truck and bring back, and he covers cold items with an insulated blanket. (We also reached out to Albertsons and WinCo managers for the store's perspective.)
+2. An interview with Poncho, a manager and driver at Tarrant Area Food Bank, the parent food bank that supplies the Hub. He picks up store donations (ALDI, and Walmart through manager contacts), weighs and checks them, and logs temperature and weight by hand into a Google Form. Food comes out in carts he loads himself, and cold food rides under blankets. He flagged three pain points: he can't see a pickup before he gets there, blankets are his only cold storage so they limit how far he can go, and moving the food is hard work. (We also reached out to Albertsons and WinCo managers for the store's perspective.)
 3. A competitive feature analysis of four apps, one per team member.
 4. A heuristic audit and a perspective-based audit of Careit, the donation platform pantries use today. That produced 40 findings.
 5. Desk research on how parent food banks like Tarrant Area Food Bank supply their partner pantries: ordering deadlines, delivery windows, receiving rules.
@@ -388,7 +388,7 @@ Board note (pink sticky): this matters to food banks because shrinkage is a real
     ['"Every Thursday, we get a truck from Tarrant Area Food Bank … I kind of call them our big mama food bank."', 'Wants to plan the day around a delivery he can\'t see coming'],
     ['"Unless they\'re actively timing when they took it out of the fridge, we don\'t know how long it\'s been out … we can\'t accept it."', 'Wants proof that cold food stayed cold'],
     ['"It\'s mostly just having the time for someone to go and pick up. Time slash staffing."', 'Wants pickups that fit the staff he has'],
-    ['Poncho (Tarrant Area Food Bank): at one store the food comes out in shopping carts he rolls to the truck and must bring back; cold items ride under an insulated blanket.', 'Wants to know how each store hands food over before he arrives'],
+    ['Poncho (Tarrant Area Food Bank): he can\'t see a pickup before he gets there, and with blankets as his only cold storage, how far he can drive is limited.', 'Wants to see each pickup, and how long it can stay cold, before he leaves'],
   ];
   q.forEach(([quote, intent], i) => {
     const y = 1.65 + i * 1.22;
@@ -397,7 +397,7 @@ Board note (pink sticky): this matters to food banks because shrinkage is a real
     card(s, 8.95, y + 0.05, 3.78, 0.95);
     t(s, intent, {x: 9.2, y: y + 0.05, w: 3.35, h: 0.95, fontSize: 14, color: TXT2, valign: 'middle'});
   });
-  caption(s, '1–3: Cody Kimpton, Diamond Eagle Basic Needs Hub (UNT), lightly edited for transcription. 4: from our interview with Poncho, paraphrased.', M, 6.6, 11);
+  caption(s, '1–3: Cody Kimpton, Diamond Eagle Basic Needs Hub (UNT), lightly edited. 4: Poncho, Tarrant Area Food Bank, from our interview notes.', M, 6.6, 11);
   s.addNotes(`PRESENTER: Anaya
 
 Three things Cody said, and one from Poncho, that shaped what we built. (Quotes are from our interview transcript, lightly cleaned up where the transcription garbled words.)
@@ -406,7 +406,7 @@ Three things Cody said, and one from Poncho, that shaped what we built. (Quotes 
 2. "Unless they're actively timing when they took it out of the fridge, we don't know how long it's been out … we can't accept it." Intention: proof that cold food stayed cold.
 3. "It's mostly just having the time for someone to go and pick up. Time slash staffing." Intention: pickups that fit the staff he actually has.
 
-4. From our interview with Poncho, manager and driver at Tarrant Area Food Bank (paraphrased from our notes, not a direct quote): at one store, donations come out in shopping carts that he has to roll to his truck and bring back, and he throws an insulated blanket over cold items. Intention: know how each store hands food over before he gets there.
+4. From our interview with Poncho, manager and driver at Tarrant Area Food Bank (from our notes, not a direct quote). He marked three pain points: "Can't see pickup beforehand"; cold storage is "blankets only", which "restricts range"; and "ease of transportation" (the food comes out in carts he loads himself). He also said everything is logged by hand into a Google Form, and nearly all his communication goes through Tarrant Area Food Bank by phone, sometimes email. Intention: see each pickup, and how long its cold food can stay out, before he leaves.
 
 These intentions map onto FreshRoute's live arrival time, cold-chain timer, pickup planning, and the "How pickup works here" note on every store page.`);
 }
