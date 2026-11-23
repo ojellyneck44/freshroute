@@ -6,10 +6,10 @@ import {ORDER_LINES} from './deliveries.js';
 
 export const BANK = {
   id: 'north-loop',
-  name: 'North Loop Food Pantry',
-  address: '1200 E McKinney St, Denton',
-  lat: 33.2105,
-  lon: -97.118,
+  name: 'Diamond Eagle Basic Needs Hub',
+  address: '621 S Welch St, Denton (UNT)',
+  lat: 33.2088,
+  lon: -97.1466,
 };
 
 // days: 0 = Sunday … 6 = Saturday. Times are local 24 h.

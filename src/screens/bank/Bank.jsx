@@ -147,8 +147,11 @@ function Live() {
   const parent = useParentDelivery();
   const [deliveries, reloadDeliveries] = useDeliveries();
   const {mine, me, chips} = useMine();
-  // The sample delivery is a demo stand-in: once the pantry has real deliveries, it steps aside.
-  const sampleOn = deliveries !== null && !(deliveries || []).length;
+  // An unreceived order from an earlier day isn't incoming today, so it leaves the board.
+  const dayStart = new Date().setHours(0, 0, 0, 0);
+  const current = (deliveries || []).filter((x) => (x.receipt ? x.receipt.at >= dayStart : x.windowEnd >= dayStart)); // received ones stay until the end of the day
+  // The sample delivery is a demo stand-in: once the pantry has real deliveries today, it steps aside.
+  const sampleOn = deliveries !== null && !current.length;
   const [alerts, dismiss] = useHeadsUp(drives, sampleOn ? parent : null);
   const [perm, setPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'unsupported');
   const [starting, setStarting] = useState(false);
@@ -156,10 +159,9 @@ function Live() {
   // Food bank delivery runs belong to their delivery card; everything else is a volunteer pickup run.
   const active = (drives || []).filter((d) => isActive(d) && d.kind !== 'delivery' && (!mine || d.profileId === me)).sort((a, b) => forecastOf(a) - forecastOf(b));
   const runFor = (id) => (drives || []).filter((d) => d.kind === 'delivery' && d.deliveryId === id).sort((a, b) => b.startedAt - a.startedAt)[0];
-  const today = new Date().toDateString();
-  const real = (deliveries || [])
+  const real = current
     .map((x) => realView(x, runFor(x.id)))
-    .filter((x) => !x.receipt || new Date(x.receipt.at).toDateString() === today) // received ones stay until the end of the day
+    .filter((x) => !x.receipt || x.receipt.at >= dayStart) // a receipt kept only on this iPad
     .filter((x) => !mine || x.addedBy?.id === me || x.receipt?.receiverId === me)
     .sort((a, b) => a.windowStart - b.windowStart);
   const sample = async () => {

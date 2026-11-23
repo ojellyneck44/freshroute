@@ -349,7 +349,9 @@ export function finishDrive({dropCounts, feedback}) {
   const motionCount = (drive.events || []).filter((e) => e.kind === 'motion').length;
   patchDrive({status: 'delivered', deliveredAt: t, arrivedBankAt: drive.arrivedBankAt, dropCounts, feedback, stops: drive.stops, motionCount});
   if (feedback?.text || feedback?.tags?.length) {
-    for (const s of drive.stops) if (shared()) send('notes', {store: s.storeId, drive: drive.id, text: feedback.text || feedback.tags.join(', '), tags: feedback.tags});
+    const text = feedback.text || feedback.tags.join(', ');
+    const named = drive.stops.filter((s) => text.toLowerCase().includes(s.name.split(' ')[0].toLowerCase()));
+    for (const s of named.length ? named : drive.stops) if (shared()) send('notes', {store: s.storeId, drive: drive.id, text, tags: feedback.tags});
   }
   const id = drive.id;
   setState({driveId: null, lastReport: id});

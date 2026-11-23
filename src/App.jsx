@@ -37,8 +37,10 @@ const TITLES = {
   '/drive/nav': 'Navigation · FreshRoute',
   '/drive/prefs': 'Preferences · FreshRoute',
   '/haul': 'Deliveries · FreshRoute',
-  '/bank': 'Trucks on the road · FreshRoute',
-  '/bank/reports': 'Drive reports · FreshRoute',
+  '/bank': 'Incoming · FreshRoute',
+  '/bank/receiving': 'Receiving · FreshRoute',
+  '/bank/delivery/new': 'Add a delivery · FreshRoute',
+  '/bank/reports': 'Pickup runs · FreshRoute',
   '/bank/stores': 'Stores · FreshRoute',
 };
 
@@ -52,7 +54,7 @@ export default function App() {
   useTestMode();
 
   useEffect(() => {
-    document.title = TITLES[path] || (path.startsWith('/s/') ? 'Pickup ETA · FreshRoute' : path.includes('report') ? 'Drive report · FreshRoute' : path.startsWith('/bank/truck') ? 'Live truck · FreshRoute' : 'FreshRoute');
+    document.title = TITLES[path] || (path.startsWith('/s/') ? 'Pickup ETA · FreshRoute' : path.includes('report') ? 'Pickup run report · FreshRoute' : path.startsWith('/bank/truck') ? 'Live truck · FreshRoute' : 'FreshRoute');
     document.querySelector('main, [data-screen]')?.focus?.({preventScroll: true});
   }, [path]);
 

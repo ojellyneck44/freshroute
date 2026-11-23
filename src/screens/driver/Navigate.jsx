@@ -79,6 +79,7 @@ export default function Navigate() {
   // Open the right overlay when the van gets somewhere.
   const target = drive ? currentTarget() : null;
   const atStop = target?.kind === 'stop' && drive.stops[target.i].arrivedAt;
+  const far = (live?.legLeft ?? 0) > 800; // metres
   useEffect(() => {
     if (atStop && overlay !== 'pickup') setOverlay('pickup');
   }, [atStop]);
@@ -156,14 +157,15 @@ export default function Navigate() {
           ))}
           <b /><i className={target.kind === 'bank' ? 'now' : ''} />
         </div>
+        {/* Manual arrival stays available (GPS can fail), but reads as an override while still far away. */}
         {target.kind === 'stop' ? (
           atStop ? (
             <button className="btn primary drive" onClick={() => setOverlay('pickup')}><PackageCheck size={22} aria-hidden="true" />Record pickup</button>
           ) : (
-            <button className="btn primary drive" onClick={() => arrive(target.i)}>I've arrived</button>
+            <button className={`btn ${far ? '' : 'primary '}drive`} onClick={() => arrive(target.i)}>I've arrived{far ? ` (${miles(live.legLeft)} away)` : ''}</button>
           )
         ) : (
-          <button className="btn primary drive" onClick={() => setOverlay('end')}>{drive.kind === 'delivery' ? "I'm at the pantry" : "I'm back at the pantry"}</button>
+          <button className={`btn ${far ? '' : 'primary '}drive`} onClick={() => setOverlay('end')}>{drive.kind === 'delivery' ? "I'm at the pantry" : "I'm back at the pantry"}{far ? ` (${miles(live.legLeft)} away)` : ''}</button>
         )}
       </div>
 

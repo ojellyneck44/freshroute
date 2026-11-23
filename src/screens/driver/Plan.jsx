@@ -32,6 +32,7 @@ export default function Plan() {
   const [sel, setSel] = useState(null);
   const [plan, setPlan] = useState(null);
   const [planErr, setPlanErr] = useState(null);
+  const [retry, setRetry] = useState(0);
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60000);
@@ -55,7 +56,7 @@ export default function Plan() {
       planRoute(ids).then((p) => alive && setPlan(p)).catch((e) => alive && setPlanErr(e.message));
     }, 300);
     return () => ((alive = false), clearTimeout(t));
-  }, [ids.join(',')]);
+  }, [ids.join(','), retry]);
 
   const list = useMemo(() => {
     const withW = stores.map((s) => ({s, w: nextWindow(s, now)}));
@@ -124,6 +125,7 @@ export default function Plan() {
                   ))}
                 </div>
                 <div className="sheet-body">
+                  {!ids.length && !lastReport && <p className="muted" style={{margin: '0 0 var(--space-sm)', fontSize: 'var(--fs-label)'}}>First run? Tap a store with a green dot, add it to your route, then open Route and tap Check and start.</p>}
                   {list.length === 0 && (
                     <div className="empty"><h2 className="as-h3">No pickups {filter === 'open' ? 'open right now' : 'today'}</h2><p>Try “All” to see the next donation windows this week.</p></div>
                   )}
@@ -145,7 +147,7 @@ export default function Plan() {
                 </div>
               </>
             ) : (
-              <RouteTray route={route} plan={plan} planErr={planErr} promise={promise} now={now} move={move} remove={toggle} vanCold={profile.cold} onAdd={() => setTab('pickups')} />
+              <RouteTray route={route} plan={plan} planErr={planErr} onRetry={() => setRetry((x) => x + 1)} promise={promise} now={now} move={move} remove={toggle} vanCold={profile.cold} onAdd={() => setTab('pickups')} />
             )}
             {lastReport && tab === 'pickups' && (
               <div className="sheet-foot"><Button variant="ghost" label="Last drive report" icon={<FileText size={18} />} onClick={() => navigate(`/drive/report/${lastReport}`)} /></div>
@@ -221,7 +223,7 @@ function StoreDetail({store, now, added, onToggle, onBack, vanCold}) {
   );
 }
 
-function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, onAdd}) {
+function RouteTray({route, plan, planErr, onRetry, promise, now, move, remove, vanCold, onAdd}) {
   if (!route.length)
     return (
       <div className="sheet-body">
@@ -273,7 +275,7 @@ function RouteTray({route, plan, planErr, promise, now, move, remove, vanCold, o
         {!vanCold && route.some((r) => needsCold(storeById(r.storeId).items)) && (
           <div style={{marginTop: 'var(--space-lg)'}}><Banner status="warning" title="Cold items on a van without cold storage" description="Put chilled pickups last so they spend the least time out of the fridge." /></div>
         )}
-        {planErr && <div style={{marginTop: 'var(--space-lg)'}}><Banner status="error" title="Couldn't plan the route" description={`${planErr}. Check your connection and try again.`} /></div>}
+        {planErr && <div className="stack" style={{marginTop: 'var(--space-lg)'}}><Banner status="error" title="Couldn't plan the route" description={`${planErr}. Check your connection and try again.`} /><Button label="Try again" onClick={onRetry} /></div>}
       </div>
       <div className="sheet-foot stack">
         {plan && promise ? (
