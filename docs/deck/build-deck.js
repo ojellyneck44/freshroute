@@ -96,7 +96,7 @@ const stat = (s, big, label, x, y, w, color = SPROUT) => {
 pres.addSection({title: '1 · Intro'});
 {
   const s = pres.addSlide({masterName: 'TITLE', sectionTitle: '1 · Intro'});
-  s.addImage(await fit('26-navigation.jpg', 6.6, 0.6, 6.13, 6.3));
+  s.addImage(await fit('08-option-b-pantry-sees-truck-live.jpg', 6.6, 0.6, 6.13, 6.3));
   s.addImage({path: IMG('icon.png'), x: M, y: 0.8, w: 0.9, h: 0.9});
   t(s, 'FreshRoute', {x: M + 1.1, y: 0.95, w: 5, h: 0.6, fontSize: 26, bold: true});
   t(s, 'FOOD REDISTRIBUTION', {x: M, y: 2.3, w: 5.6, h: 0.4, fontSize: 14, bold: true, color: SPROUT, charSpacing: 3});
@@ -465,7 +465,8 @@ pres.addSection({title: '3 · Design'});
   const s = slide('DESIGN', '3 · Design', 'DESIGN', 'User needs and big ideas');
   card(s, M, 1.7, 5.6, 2.35);
   t(s, 'Need #1', {x: M + 0.3, y: 1.88, w: 2, h: 0.35, fontSize: 13, bold: true, color: SPROUT});
-  t(s, 'Food bank managers need a way to monitor deliveries so that they can accurately predict turnaround time, prepare, and ensure donations arrive reliably.', {x: M + 0.3, y: 2.25, w: 5.0, h: 1.7, fontSize: 15});
+  t(s, 'Food bank managers need a way to monitor deliveries so that they can accurately predict turnaround time, prepare, and ensure donations arrive reliably.', {x: M + 0.3, y: 2.25, w: 5.0, h: 1.05, fontSize: 15});
+  t(s, [{text: 'Pain point: ', options: {bold: true, color: SPROUT}}, {text: '"Can\'t see pickup beforehand" (Poncho, Tarrant Area Food Bank)', options: {italic: true}}], {x: M + 0.3, y: 3.4, w: 5.0, h: 0.5, fontSize: 13, color: TXT2});
   card(s, M, 4.25, 5.6, 2.35);
   t(s, 'Need #2', {x: M + 0.3, y: 4.43, w: 2, h: 0.35, fontSize: 13, bold: true, color: FROST});
   t(s, 'Food bank managers need a way to simplify inventory management so that they always know what\'s on hand, can sort it by category and expiration date, and distribute it before it spoils.', {x: M + 0.3, y: 4.8, w: 5.0, h: 1.7, fontSize: 15});
@@ -476,7 +477,7 @@ pres.addSection({title: '3 · Design'});
 
 From the journey map we wrote two need statements.
 
-Need 1: food bank managers need a way to monitor deliveries so they can predict turnaround time, prepare, and make sure donations arrive reliably.
+Need 1: food bank managers need a way to monitor deliveries so they can predict turnaround time, prepare, and make sure donations arrive reliably. Poncho, who drives for Tarrant Area Food Bank, marked the same gap from the driver's side as a pain point in our interview: he "can't see pickup beforehand". Both ends of the trip are working blind.
 Need 2: food bank managers need a way to simplify inventory management so they always know what's on hand, sorted by category and expiration, and get it out before it spoils.
 
 We sketched big ideas for each. For need 1: Notifications from FreshRoute (the store and the pantry get the driver's live arrival time) and Handy Footage (a camera explains damage after the fact). For need 2: Camera Detection (categorizing food on arrival) and a Grocery Store Scanner (stores log items as they scan them).
