@@ -12,7 +12,7 @@ import {session, startCapture, stopCapture, useCamera} from '../../lib/session.j
 import {useAppState, setState, navigate, homeFor, getState} from '../../lib/state.js';
 import {instruction} from '../../lib/osrm.js';
 import {clock, clockAmPm, deltaText, etaState, hms, miles, coldState} from '../../lib/format.js';
-import {pending} from '../../lib/api.js';
+import {api, pending} from '../../lib/api.js';
 import {motionLabel} from '../../lib/motion.js';
 import {useIsTest} from '../../components/TestMode.jsx';
 
@@ -367,22 +367,43 @@ function EndDrive({drive, onClose, onFinishing}) {
 }
 
 // A food bank delivery ends at the pantry's door: the pantry checks the order in on their own iPad.
+// The driver waits for that signature, so a delivery can't look complete when it isn't.
 function EndDelivery({drive, onClose, onFinishing}) {
   const [text, setText] = useState('');
+  const [receipt, setReceipt] = useState(null);
+  useEffect(() => {
+    if (!drive.deliveryId) return;
+    let alive = true;
+    const check = () => api('deliveries').then((list) => alive && setReceipt(list.find((x) => x.id === drive.deliveryId)?.receipt || null)).catch(() => {});
+    check();
+    const t = setInterval(check, 5000);
+    return () => ((alive = false), clearInterval(t));
+  }, [drive.deliveryId]);
   const finish = () => {
     onFinishing();
     stopCapture();
     const id = finishDrive({dropCounts: {}, feedback: {tags: [], text}});
     navigate(`/drive/report/${id}`, {replace: true});
   };
+  const signed = !!receipt || !drive.deliveryId;
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="end">
       <div className="overlay-inner" style={{maxWidth: 'var(--size-form)'}}>
         <Button variant="ghost" label="Back to map" icon={<ChevronLeft size={20} />} onClick={onClose} />
-        <h1 id="end" style={{marginTop: 'var(--space-lg)'}}>Delivered to {drive.dest.name}</h1>
-        <p className="muted" style={{margin: 'var(--space-2xs) 0 var(--space-xl)'}}>The pantry checks the order in, line by line, on their iPad and signs for it there. Finish once they've signed.</p>
-        <TextArea label="Anything the pantry or the food bank should know?" isOptional value={text} onChange={setText} placeholder="e.g. Dock was blocked, unloaded at the front door" />
-        <button className="btn primary drive" style={{marginTop: 'var(--space-xl)', width: '100%'}} onClick={finish}>Finish delivery</button>
+        <h1 id="end" style={{marginTop: 'var(--space-lg)'}}>{signed ? 'Delivered to' : 'At'} {drive.dest.name}</h1>
+        <p className="muted" style={{margin: 'var(--space-2xs) 0 var(--space-lg)'}}>The pantry checks the order in, line by line, on their iPad and signs for it there.</p>
+        <div aria-live="polite">
+          {receipt ? (
+            <Banner status="success" title={`Signed by ${receipt.receiver} at ${clockAmPm(receipt.at)}`} description="You're done here. Finish the delivery." />
+          ) : drive.deliveryId ? (
+            <div className="stack">
+              <Banner status="info" title="Waiting for the pantry to sign" description="This updates by itself as soon as they sign on their iPad. Or hand them yours." />
+              <Button label="Pantry signs on this iPad" icon={<PackageCheck size={18} />} onClick={() => navigate(`/bank/receive/${drive.deliveryId}`)} />
+            </div>
+          ) : null}
+        </div>
+        <div style={{marginTop: 'var(--space-lg)'}}><TextArea label="Anything the pantry or the food bank should know?" isOptional value={text} onChange={setText} placeholder="e.g. Dock was blocked, unloaded at the front door" /></div>
+        <button className={`btn ${signed ? 'primary ' : ''}drive`} style={{marginTop: 'var(--space-xl)', width: '100%'}} onClick={() => (signed || confirm("The pantry hasn't signed yet. Finish without their signature?")) && finish()}>{signed ? 'Finish delivery' : 'Finish without a signature'}</button>
       </div>
     </div>
   );

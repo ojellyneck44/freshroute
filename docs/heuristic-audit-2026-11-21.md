@@ -44,6 +44,15 @@ This replaces usability testing results until the team runs sessions.
 5. **No first-run help** (H10, severity 2).
    - **Fix:** a three-step intro for each role, skippable.
 
+## Fixed after this review (23 Nov)
+
+- **A signed receipt is final** (H3, 3): it can now be corrected ("Correct it" in Receiving) until the credit request is sent; corrections are marked on the record.
+- **Driver can finish before the pantry signs** (H5, 2): the driver's screen waits for the signature ("Waiting for the pantry to sign"), finishing without one needs a confirmation, and the pantry can sign on the driver's iPad.
+- **"I'm at the pantry" from far away** (H1, 2): arrival buttons turn secondary and show the distance while more than about half a mile out.
+- **"Couldn't plan the route" had no retry** (H9, 1): added Try again.
+- **No first-run help** (H10, 2): partly fixed with a one-line hint on Pickups for a driver's first run.
+- Also found in a new-user walkthrough: stale orders from earlier days stayed on "Incoming today" and hid the sample truck; a driver's note went to every store on the run instead of the one named; page titles didn't match the menu.
+
 ## Fixed during this review cycle
 
 These were found by heuristic and accessibility review and fixed before the screenshots were taken:

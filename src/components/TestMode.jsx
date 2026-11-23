@@ -29,8 +29,8 @@ export const TASKS = [
   {id: 'L3', who: 'Food bank driver', text: 'Join as a food bank driver and set up your deliveries'},
   {id: 'L4', who: 'Food bank driver', text: 'Start the delivery for your order'},
   {id: 'L5', who: 'Food bank driver', text: 'Find out whether you will reach the pantry inside its window'},
-  {id: 'L6', who: 'Food bank driver', text: 'Finish the delivery at the pantry'},
-  {id: 'L7', who: 'Pantry', text: 'Receive your order. Everything arrived except one case is missing'},
+  {id: 'L6', who: 'Pantry', text: 'The truck is at your door. Receive your order (on the pantry iPad, or on the driver\'s with Pantry signs on this iPad): everything arrived except one case is missing'},
+  {id: 'L7', who: 'Food bank driver', text: 'Finish the delivery once the pantry has signed'},
 ];
 const SUS = [
   'I think that I would like to use FreshRoute frequently.',

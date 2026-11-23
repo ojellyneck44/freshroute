@@ -1,7 +1,7 @@
 import {motion} from 'motion/react';
 import {useEffect, useState} from 'react';
 import {Button, Banner, Badge, SegmentedControl, SegmentedControlItem, Switch, TextInput, TextArea, TimeInput} from '@astryxdesign/core';
-import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send, Phone, Video, Trash2} from 'lucide-react';
+import {ArrowLeft, Camera, Minus, Plus, PackageCheck, Send, Phone, Video, Trash2, Pencil} from 'lucide-react';
 import Ring from '../../components/Ring.jsx';
 import {Cold} from '../../components/Glyphs.jsx';
 import {navigate, getState} from '../../lib/state.js';
@@ -145,17 +145,27 @@ export function Receive({id}) {
   const real = list?.find((x) => x.id === id);
   if (!id.startsWith('AI-') && !real) return <p className="muted" aria-busy={list === null}>{list === null ? 'Loading the order…' : 'That order is no longer on the board.'}</p>;
   const order = real ? realView(real) : d.id === id ? d : {...d, id, phase: 'here'}; // an older sample order still waiting to be checked in
-  return <ReceiveForm key={id} order={order} />;
+  const prev = loadReceipts()[id] || real?.receipt || null;
+  if (prev?.creditSentAt) return (
+    <div className="stack">
+      <div className="back"><Button variant="ghost" label="Receiving" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank/receiving')} /></div>
+      <Banner status="info" title={`Order ${prev.order || id} is final`} description={`The credit request went to ${PARENT.name} on ${day(prev.creditSentAt)}. To correct it now, contact their partner services.`} />
+    </div>
+  );
+  return <ReceiveForm key={id} order={prev?.orderLines ? {...order, lines: prev.orderLines} : order} prev={prev} />;
 }
 
-function ReceiveForm({order}) {
+// prev: a signed receipt being corrected. It stays editable until the credit request is sent.
+function ReceiveForm({order, prev}) {
   const id = order.id;
-  const [note, setNote] = useState('');
-  const [lines, setLines] = useState(() => Object.fromEntries(order.lines.map((l) => [l.name, {status: 'ok', cases: 0}])));
-  const [temp, setTemp] = useState('');
-  const [blanket, setBlanket] = useState(false);
+  const [note, setNote] = useState(prev?.note || '');
+  const [lines, setLines] = useState(() => Object.fromEntries(order.lines.map((l) => [l.name, prev?.lines?.[l.name] || {status: 'ok', cases: 0}])));
+  const [temp, setTemp] = useState(prev?.temp || '');
+  const [blanket, setBlanket] = useState(!!prev?.blanket);
   const [photos, setPhotos] = useState([]);
-  const [receiver, setReceiver] = useState(getState().profile.name || '');
+  // Handed over on the driver's iPad: the pantry person signs with their own name, and the driver gets their drive back.
+  const handoff = getState().role !== 'bank';
+  const [receiver, setReceiver] = useState(prev?.receiver || (handoff ? '' : getState().profile.name) || '');
   const [err, setErr] = useState(null);
   const coldLines = order.lines.filter(isCold);
   const set = (name, patch) => setLines((x) => ({...x, [name]: {...x[name], ...patch}}));
@@ -167,20 +177,20 @@ function ReceiveForm({order}) {
     if (coldLines.length && temp.trim() === '') return setErr('Take the temperature of a cold case and enter it. The food bank asks for it at every drop-off.');
     if (!receiver.trim()) return setErr('Add your name. It signs the invoice for the pantry.');
     const all = loadReceipts();
-    const receipt = {id, order: order.order || id, at: Date.now(), lines, orderLines: order.lines, temp: temp.trim(), blanket, receiver: receiver.trim(), receiverId: getState().profileId, photos: photos.length, note: note.trim(), real: !!order.real};
+    const receipt = {...prev, id, order: order.order || id, at: prev?.at || Date.now(), lines, orderLines: order.lines, temp: temp.trim(), blanket, receiver: receiver.trim(), receiverId: prev?.receiverId || (handoff ? null : getState().profileId), photos: (prev?.photos || 0) + photos.length, note: note.trim(), real: !!order.real, ...(prev ? {editedAt: Date.now(), editedBy: getState().profile.name || receiver.trim()} : {})};
     all[id] = receipt;
     saveReceipts(all);
     // Real deliveries keep the receipt on the server too, so every iPad at the pantry sees it.
-    (order.real ? api(`deliveries/${id}`, {method: 'PATCH', body: {receipt}}).catch(() => {}) : Promise.resolve()).then(() => navigate('/bank/receiving'));
+    (order.real ? api(`deliveries/${id}`, {method: 'PATCH', body: {receipt}}).catch(() => {}) : Promise.resolve()).then(() => navigate(handoff ? '/drive/nav' : '/bank/receiving'));
   };
 
   return (
     <>
       <div className="main-head">
         <div>
-          <div className="back"><Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} /></div>
-          <h1 style={{marginTop: 'var(--space-sm)'}}>Receive order {order.order || id}</h1>
-          <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>{order.real || order.phase === 'here' ? '' : phaseText(order) + '. '}Check each line against the invoice, then sign before the driver leaves.</p>
+          <div className="back">{handoff ? <Button variant="ghost" label="Back to the drive" icon={<ArrowLeft size={18} />} onClick={() => navigate('/drive/nav')} /> : prev ? <Button variant="ghost" label="Receiving" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank/receiving')} /> : <Button variant="ghost" label="Incoming" icon={<ArrowLeft size={18} />} onClick={() => navigate('/bank')} />}</div>
+          <h1 style={{marginTop: 'var(--space-sm)'}}>{prev ? `Correct order ${order.order || id}` : `Receive order ${order.order || id}`}</h1>
+          <p className="muted" style={{margin: 'var(--space-2xs) 0 0'}}>{prev ? `Signed ${day(prev.at)} ${clockAmPm(prev.at)} by ${prev.receiver}. You can change it until the credit request is sent.` : `${order.real || order.phase === 'here' ? '' : phaseText(order) + '. '}Check each line against the invoice, then sign before the driver leaves.`}</p>
         </div>
       </div>
       <div className="receive">
@@ -226,7 +236,7 @@ function ReceiveForm({order}) {
           <div className="panel stack">
             <span className="label">Photos of anything short or damaged</span>
             <label className="photo-btn">
-              <Camera size={18} aria-hidden="true" />{photos.length ? `${photos.length} photo${photos.length === 1 ? '' : 's'} added` : 'Take or add photos'}
+              <Camera size={18} aria-hidden="true" />{photos.length ? `${photos.length} photo${photos.length === 1 ? '' : 's'} added` : prev?.photos ? `${prev.photos} saved · add more` : 'Take or add photos'}
               <input type="file" accept="image/*" capture="environment" multiple onChange={(e) => setPhotos([...photos, ...e.target.files])} />
             </label>
             <span className="faint" style={{fontSize: 'var(--fs-sub)'}}>Photos go with the credit request.</span>
@@ -237,7 +247,7 @@ function ReceiveForm({order}) {
             <strong>{issues === 0 ? 'Everything received' : `${issues} ${issues === 1 ? 'line' : 'lines'} to claim`}</strong>
             <span className="muted" style={{fontSize: 'var(--fs-sub)'}}>{issues === 0 ? 'Nothing to claim.' : `A credit request is ready to send. ${PARENT.name} accepts claims until ${day(creditDeadline(Date.now()))}, 5 PM.`}</span>
           </div>
-          <Button variant="primary" size="lg" width="100%" label="Sign and finish" onClick={finish} />
+          <Button variant="primary" size="lg" width="100%" label={prev ? 'Save changes' : 'Sign and finish'} onClick={finish} />
         </section>
       </div>
     </>
@@ -289,6 +299,7 @@ export function Receiving() {
               </ul>
               <div className="row wrap">
                 <Button variant="primary" label="Send credit request" icon={<Send size={18} />} onClick={() => send(r)} />
+                <Button variant="ghost" label="Correct it" icon={<Pencil size={18} />} onClick={() => navigate(`/bank/receive/${r.id}`)} />
                 <span className="faint" style={{fontSize: 'var(--fs-sub)'}}>Prototype: marks it sent. The real version files it with {PARENT.name}'s partner services.</span>
               </div>
             </article>
@@ -299,7 +310,7 @@ export function Receiving() {
         <h2 id="hist-h" className="as-h3">Received deliveries</h2>
         <div style={{overflowX: 'auto'}}>
           <table className="table">
-            <thead><tr><th>Received</th><th>Order</th><th>Weight</th><th>Cold case</th><th>Claims</th><th>Signed by</th></tr></thead>
+            <thead><tr><th>Received</th><th>Order</th><th>Weight</th><th>Cold case</th><th>Claims</th><th>Signed by</th><th><span className="sr-only">Correct</span></th></tr></thead>
             <tbody>
               {list.map((r) => {
                 const c = claimsOf(r);
@@ -311,7 +322,8 @@ export function Receiving() {
                     <td className="num">{lb ? `${lb.toLocaleString()} lb` : 'n/a'}</td>
                     <td className="num">{r.temp ? `${r.temp} °F` : 'n/a'}{r.temp && r.blanket ? ', blanket' : ''}</td>
                     <td>{c.length === 0 && !r.note ? 'None' : r.creditSentAt ? <Badge variant="neutral" label={`Sent ${day(r.creditSentAt)}`} /> : <Badge variant="orange" label="To send" />}</td>
-                    <td>{r.receiver}</td>
+                    <td>{r.receiver}{r.editedAt && <div className="muted">Corrected {day(r.editedAt)}</div>}</td>
+                    <td>{!r.creditSentAt && <Button size="sm" variant="ghost" label="Correct" icon={<Pencil size={16} />} onClick={() => navigate(`/bank/receive/${r.id}`)} />}</td>
                   </tr>
                 );
               })}
@@ -334,7 +346,7 @@ export function AddDelivery({onDone}) {
   const [start, setStart] = useState(hh(next));
   const [end, setEnd] = useState(hh(next + 2));
   const [truck, setTruck] = useState('');
-  const [linesMode, setLinesMode] = useState('type');
+  const [linesMode, setLinesMode] = useState('sample'); // easiest to test; real pantries switch to Type them
   const [text, setText] = useState('');
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
